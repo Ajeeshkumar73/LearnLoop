@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register - CareerAI</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#135bec",
+              "background-light": "#f6f6f8",
+              "background-dark": "#101622",
+            },
+            fontFamily: {
+              "display": ["Manrope", "Noto Sans", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111318] dark:text-white h-screen overflow-hidden">
+<div class="flex w-full h-full">
+
+<!-- Left Side: Registration Form -->
+<div class="w-full lg:w-[45%] xl:w-[40%] h-full flex flex-col bg-white dark:bg-background-dark relative z-10 overflow-y-auto">
+
+<div class="flex flex-col min-h-full px-6 py-8 md:px-12 lg:px-16">
+  <div class="alert mb-4 px-4 py-3 rounded-lg ...">
+  {% if messages %}
+  {% for message in messages %}
+    <div
+      class="mb-4 px-4 py-3 rounded-lg text-sm font-medium
+      {% if message.tags == 'success' %}
+        bg-green-100 text-green-800
+      {% elif message.tags == 'error' %}
+        bg-red-100 text-red-800
+      {% elif message.tags == 'warning' %}
+        bg-yellow-100 text-yellow-800
+      {% else %}
+        bg-blue-100 text-blue-800
+      {% endif %}">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+  </div>
+<!-- Header: Logo & Login Link -->
+<header class="flex items-center justify-between w-full mb-12">
+<div class="flex items-center gap-3 text-primary">
+<div class="size-8">
+</div>
+<h2 class="text-[#111318] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">Learn Loop</h2>
+</div>
+<div class="hidden sm:flex items-center gap-2 text-sm font-medium">
+<span class="text-[#616f89] dark:text-gray-400">Already a member?</span>
+<a href="{% url 'accounts:login' %}" ><button class="text-primary hover:text-primary/80 font-bold transition-colors">Log in</button></a>
+</div>
+</header>
+   
+
+<!-- Form Container -->
+<main class="flex-1 flex flex-col justify-center max-w-[480px] w-full mx-auto">
+<div class="mb-8">
+<h1 class="text-[#111318] dark:text-white tracking-tight text-[32px] font-bold leading-tight mb-2">Create your account</h1>
+<p class="text-[#616f89] dark:text-gray-400 text-base font-normal leading-normal">Start your journey to a better future.</p>
+</div>
+<!-- Social Sign Up -->
+<div class="grid grid-cols-2 gap-3 mb-6">
+
+<!-- Google -->
+      <button type="button"
+        class="flex items-center justify-center gap-2 h-12 px-4 rounded-lg border border-[#dbdfe6] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 bg-white dark:bg-[#1e2532] transition-colors group">
+        <img class="w-5 h-5" src="https://www.svgrepo.com/show/475656/google-color.svg">
+        <span class="text-sm font-bold text-[#111318] dark:text-white group-hover:text-primary transition-colors">Google</span>
+      </button>
+    </a>
+
+    <!-- LinkedIn -->
+      <button type="button"
+        class="flex items-center justify-center gap-2 h-12 px-4 rounded-lg border border-[#dbdfe6] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 bg-white dark:bg-[#1e2532] transition-colors group">
+        <img class="w-5 h-5" src="https://www.svgrepo.com/show/475661/linkedin-color.svg">
+        <span class="text-sm font-bold text-[#111318] dark:text-white group-hover:text-primary transition-colors">LinkedIn</span>
+      </button>
+    </a>
+</div>
+<!-- Divider -->
+<div class="relative flex items-center py-2 mb-6">
+<div class="flex-grow border-t border-[#f0f2f4] dark:border-gray-700"></div>
+<span class="flex-shrink-0 mx-4 text-[#616f89] dark:text-gray-500 text-xs font-bold uppercase tracking-wider">Or register with email</span>
+<div class="flex-grow border-t border-[#f0f2f4] dark:border-gray-700"></div>
+</div>
+<!-- Form Fields -->
+<form method="POST" action="{% url 'accounts:register' %}" class="flex flex-col gap-5">
+    {% csrf_token %}
+<label class="flex flex-col gap-2">
+<span class="text-[#111318] dark:text-white text-sm font-bold leading-normal">Full Name</span>
+<input class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111318] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#dbdfe6] dark:border-gray-600 bg-white dark:bg-[#1e2532] focus:border-primary h-14 placeholder:text-[#616f89] dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal transition-all shadow-sm" type="text" name="full_name" placeholder="Full Name" required="" value=""/>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-[#111318] dark:text-white text-sm font-bold leading-normal">Email Address</span>
+<input class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111318] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#dbdfe6] dark:border-gray-600 bg-white dark:bg-[#1e2532] focus:border-primary h-14 placeholder:text-[#616f89] dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal transition-all shadow-sm" type="email" name="email" placeholder="Email" required="" value=""/>
+</label>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<label class="flex flex-col gap-2 relative group">
+<span class="text-[#111318] dark:text-white text-sm font-bold leading-normal">Password</span>
+<div class="relative">
+<input class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111318] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#dbdfe6] dark:border-gray-600 bg-white dark:bg-[#1e2532] focus:border-primary h-14 placeholder:text-[#616f89] dark:placeholder:text-gray-500 p-[15px] pr-12 text-base font-normal leading-normal transition-all shadow-sm" id="password" type="password" name="password" placeholder="Password" required="" value=""/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-[#616f89] hover:text-[#111318] dark:hover:text-white transition-colors p-1" onclick="togglePassword('password', this)" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility_off</span>
+</button>
+</div>
+</label>
+<label class="flex flex-col gap-2 relative">
+<span class="text-[#111318] dark:text-white text-sm font-bold leading-normal">Confirm Password</span>
+<div class="relative">
+<input class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111318] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#dbdfe6] dark:border-gray-600 bg-white dark:bg-[#1e2532] focus:border-primary h-14 placeholder:text-[#616f89] dark:placeholder:text-gray-500 p-[15px] pr-12 text-base font-normal leading-normal transition-all shadow-sm" type="password" name="confirm_password" placeholder="Confirm Password" required="" value=""/>
+</div>
+</label>
+</div>
+<div class="flex items-start gap-3 mt-1">
+<div class="flex items-center h-5">
+<input class="w-4 h-4 border border-[#dbdfe6] rounded bg-white focus:ring-3 focus:ring-primary/30 text-primary cursor-pointer" id="terms" type="checkbox" required=""/>
+</div>
+<label class="text-sm font-normal text-[#616f89] dark:text-gray-400 select-none" for="terms">
+                                I agree to the <a class="font-semibold text-primary hover:underline" href="#">Terms of Service</a> and <a class="font-semibold text-primary hover:underline" href="#">Privacy Policy</a>.
+                            </label>
+</div>
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-14 px-4 bg-primary hover:bg-[#1152d4] text-white text-base font-bold leading-normal tracking-[0.015em] transition-all shadow-lg shadow-primary/30 mt-2" type="submit">
+                            Get Started
+                        </button>
+</form>
+<div class="sm:hidden mt-8 text-center text-sm">
+<span class="text-[#616f89] dark:text-gray-400">Already a member?</span>
+<button class="text-primary font-bold ml-1">Log in</button>
+</div>
+</main>
+<footer class="mt-12 text-center text-xs text-[#9aa4b2] dark:text-gray-600">
+                    © 2026 Learnloop Inc. All rights reserved.
+                </footer>
+</div>
+</div>
+<!-- Right Side: Feature / Visual Area -->
+<div class="hidden lg:flex flex-1 relative bg-background-light dark:bg-[#0b101b] items-center justify-center p-12 overflow-hidden">
+<!-- Abstract Background Shapes -->
+<div class="absolute top-0 right-0 -mr-32 -mt-32 w-[600px] h-[600px] bg-primary/10 dark:bg-primary/20 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-0 left-0 -ml-32 -mb-32 w-[600px] h-[600px] bg-[#6366f1]/10 dark:bg-[#6366f1]/10 rounded-full blur-[120px]"></div>
+<!-- Grid Pattern Overlay -->
+<div class="absolute inset-0 bg-[linear-gradient(rgba(19,91,236,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(19,91,236,0.03)_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+<div class="relative z-10 max-w-xl w-full flex flex-col gap-10">
+<!-- Main Visual Card -->
+<div class="group relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/5 dark:ring-white/10 transition-transform duration-500 hover:scale-[1.01]">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Group of diverse students working together around a laptop in a bright modern office" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBmckOWBG44DkbTUoqhnbyOdFhh4Ny0QYm0DraAn2szYgGlSdBJckdiXuULa0wGRHYbdbhMq0CKwogRA8yBz4tPA4pvGj5610AaLGX3rrT54JFPbKOZPrwKY2MS_c-DU0dbBM7Q2O88QpXlPVhtHvF9X4v9kOz1ptu3KXiXSwCPCsJiWWP6E04ZxuQF8gn4yJ9wQx_vzG5uaO3oZp4c48QJ8-bZr8JIqR6V8aNsWoNL186oDyfOGMa3gugMZdgOkCnVVS0g-wEw40Y");'>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+<!-- Floating Testimonial Card -->
+<div class="absolute bottom-6 left-6 right-6 bg-white/95 dark:bg-[#101622]/95 backdrop-blur-md p-6 rounded-xl shadow-lg ring-1 ring-black/5 dark:ring-white/10 transform transition-all duration-500 translate-y-2 group-hover:translate-y-0">
+<div class="flex items-start gap-4">
+<div class="relative flex-shrink-0">
+<img alt="Sarah M." class="w-12 h-12 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm" data-alt="Portrait of a smiling young woman" src="https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg"/>
+<div class="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white dark:border-[#101622]"></div>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-yellow-400 text-[18px] fill-current">star</span>
+<span class="material-symbols-outlined text-yellow-400 text-[18px] fill-current">star</span>
+<span class="material-symbols-outlined text-yellow-400 text-[18px] fill-current">star</span>
+<span class="material-symbols-outlined text-yellow-400 text-[18px] fill-current">star</span>
+<span class="material-symbols-outlined text-yellow-400 text-[18px] fill-current">star</span>
+</div>
+<p class="text-[#111318] dark:text-white text-sm font-medium leading-relaxed">
+                                    "CareerAI completely transformed my job search. The personalized roadmap helped me land my dream internship at a top tech company!"
+                                </p>
+<p class="text-[#616f89] dark:text-gray-400 text-xs font-bold mt-1">— Ajeesh Kumar B.S. , MCA Student</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Text Content -->
+<div class="flex flex-col gap-4 px-4">
+<h1 class="text-[#111318] dark:text-white text-3xl md:text-4xl font-extrabold leading-tight tracking-tight">
+                        Unlock Your <span class="text-primary">Career Potential</span>
+</h1>
+<p class="text-[#616f89] dark:text-gray-400 text-lg font-normal leading-relaxed max-w-lg">
+                        Get personalized career guidance powered by AI. Join over 10,000 students finding their path today.
+                    </p>
+<!-- Stats / Badges -->
+<div class="flex items-center gap-6 mt-2">
+<div class="flex flex-col gap-1">
+<span class="text-2xl font-bold text-[#111318] dark:text-white">10k+</span>
+<span class="text-xs font-medium text-[#616f89] dark:text-gray-500 uppercase tracking-wide">Students</span>
+</div>
+<div class="w-px h-10 bg-[#dbdfe6] dark:bg-gray-700"></div>
+<div class="flex flex-col gap-1">
+<span class="text-2xl font-bold text-[#111318] dark:text-white">95%</span>
+<span class="text-xs font-medium text-[#616f89] dark:text-gray-500 uppercase tracking-wide">Success Rate</span>
+</div>
+<div class="w-px h-10 bg-[#dbdfe6] dark:bg-gray-700"></div>
+<div class="flex items-center gap-2 bg-primary/10 dark:bg-primary/20 rounded-full px-3 py-1">
+<span class="material-symbols-outlined text-primary text-[20px]">school</span>
+<span class="text-xs font-bold text-primary">Free for Students</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!--visible password-->
+<script>
+function togglePassword(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const icon = btn.querySelector("span");
+
+  if (input.type === "password") {
+    input.type = "text";
+    icon.textContent = "visibility";
+  } else {
+    input.type = "password";
+    icon.textContent = "visibility_off";
+  }
+}
+</script>
+
+<!--agree terms-->
+<script>
+document.querySelector("form").addEventListener("submit", function (e) {
+  const terms = document.getElementById("terms");
+  if (!terms.checked) {
+    e.preventDefault();
+    alert("You must agree to the Terms and Privacy Policy");
+  }
+});
+</script>
+
+<!--message hide-->
+<script>
+  setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(el => el.remove());
+  }, 4000);
+</script>
+
+
+
+</body></html>

@@ -1,0 +1,260 @@
+import os, json, re, random
+from django.shortcuts import render
+from groq import Groq
+from dotenv import load_dotenv
+
+from .models import  UserCareerInput, CareerAnalysis
+
+load_dotenv()
+
+
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+
+VALID_ICONS = {
+    "code", "analytics", "cloud", "security", "smart_toy",
+    "business_center", "science", "precision_manufacturing",
+    "bolt", "work", "engineering", "developer_mode",
+    "memory", "terminal", "dataset"
+}
+
+
+def normalize_skills(text):
+    return set(s.strip().lower() for s in re.split(r",|\||/", text) if s.strip())
+
+
+def extract_growth_percent(growth_text):
+
+    if not growth_text:
+        return random.randint(12, 25)
+
+
+    growth_text = growth_text.lower()
+
+    match = re.search(r"(\d+)\s*%", growth_text)
+    if match:
+        return int(match.group(1))
+
+
+    if "high" in growth_text:
+        return 22
+    if "medium" in growth_text or "moderate" in growth_text:
+        return 15
+    if "low" in growth_text:
+        return 8
+
+
+    return random.randint(12, 25)
+
+def analyze_skill_gap(user_skills, required_skills):
+    user = normalize_skills(user_skills)
+    required = normalize_skills(required_skills)
+    missing = list(required - user)
+    match = int((len(user & required) / max(len(required), 1)) * 100)
+    return list(required), missing, match
+
+
+def get_career_recommendation(education, skills, interests, personality, user=None, session_key=None):
+    prompt = f"""
+You are an expert AI career counselor.
+Analyze the user profile below and suggest the TOP 3 most suitable career domains.
+
+User Profile:
+- Education: {education}
+- Skills: {skills}
+- Interests: {interests}
+- Personality Traits: {personality}
+
+For EACH career, provide:
+1. Career name
+2. Why this career is suitable
+3. Short career description
+4. Required skills
+5. Salary range in India
+6. Future growth outlook
+
+Return ONLY valid JSON in this exact format:
+[
+  {{
+    "career": "",
+    "match" : 0,
+    "fit" : "",
+    "why": "",
+    "description": "",
+    "skills": "",
+    "salary": "",
+    "growth": "",
+    "icon": "",
+    "color": "",
+    "domain" : ""
+  }}
+]
+
+
+"""
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {"role": "system", "content": "You are a professional AI career guidance expert."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.4,
+        max_tokens=800
+    )
+
+    content = response.choices[0].message.content.strip()
+    results = json.loads(content)
+
+    for career in results:
+        icon = career.get("icon", "").strip()
+
+        if icon not in VALID_ICONS:
+            career["icon"] = "work"  # default safe icon
+
+        
+        growth_text = career.get("growth", "")
+        growth_percent = extract_growth_percent(growth_text)
+
+        career["growth_percent"] = growth_percent
+
+
+        required, missing, match = analyze_skill_gap(skills, career.get("skills", ""))
+
+
+        CareerAnalysis.objects.create(
+            user=user,
+            session_key=session_key,
+            career=career.get("career"),
+            match=match,
+            required_skills=required,
+            missing_skills=missing,
+            salary=career.get("salary"),
+            growth=career.get("growth"),
+            growth_percent=growth_percent,
+            icon=career.get("icon"),
+            domain=career.get("domain", "")
+        )
+
+
+        career["match"] = match
+        career["missing_skills"] = missing
+        career["growth_percent"] = growth_percent
+
+
+    return results
+
+def career_recom(request):
+    if not request.session.session_key:
+        request.session.create()
+
+
+    session_key = request.session.session_key
+
+
+    if request.method == "POST":
+        education = request.POST.get("education")
+        specialization = request.POST.get("specialization")
+        expert = request.POST.get("expert_skills")
+        intermediate = request.POST.get("intermediate_skills")
+        soft = ", ".join(request.POST.getlist("soft_skills"))
+        interests = request.POST.get("interests")
+        personality = ", ".join(request.POST.getlist("personality"))
+
+
+        UserCareerInput.objects.create(
+            user=request.user if request.user.is_authenticated else None,
+            session_key=session_key,
+            education=education,
+            specialization=specialization,
+            expert_skills=expert,
+            intermediate_skills=intermediate,
+            soft_skills=soft,
+            interests=interests,
+            personality=personality
+        )
+
+
+        skills = f"Expert: {expert} | Intermediate: {intermediate} | Soft: {soft}"
+        education_full = f"{education} ({specialization})"
+
+
+        results = get_career_recommendation(
+            education_full,
+            skills,
+            interests,
+            personality,
+            user=request.user if request.user.is_authenticated else None,
+            session_key=session_key
+        )
+
+
+        return render(request, "career_recomendetion.html", {"results": results})
+
+
+    return render(request, "career_recomendetion.html")
+
+
+
+    <script>
+function saveCareerUI(careerName, icon) {
+
+    // 🔥 1. SAVE TO DB (MongoDB)
+    fetch("{% url 'career_analysis:save_career' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: "career_name=" + encodeURIComponent(careerName)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "exists") {
+            alert("Career already saved!");
+            return;
+        }
+
+        if (data.status === "success") {
+            window.location.href = data.redirect_url;
+        }    
+
+        if (data.status !== "success") {
+            alert("Error saving career");
+            return;
+        }
+
+        //  2. UPDATE UI ONLY IF SAVED SUCCESSFULLY
+        const section = document.getElementById("savedCareersSection");
+        const list = document.getElementById("savedCareersList");
+
+        section.classList.remove("hidden");
+
+        //prevent duplicate UI cards
+        if (list.querySelector(`[data-career="${careerName}"]`)) return;
+
+        const div = document.createElement("div");
+        div.dataset.career = careerName;
+        div.className =
+            "flex items-center gap-3 bg-white dark:bg-[#1a202c] p-2 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer hover:shadow-md transition-shadow";
+
+        div.innerHTML = `
+            <div class="size-8 rounded bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-500">
+                <span class="material-symbols-outlined text-sm">${icon}</span>
+            </div>
+
+            <div class="flex-1 ml-3">
+                <p class="text-sm font-bold text-[#111318] dark:text-white">
+                    ${careerName}
+                </p>
+            </div>
+
+            <button class="ml-auto px-2 text-gray-400 hover:text-primary">
+                <span class="material-symbols-outlined text-lg">arrow_forward</span>
+            </button>
+        `;
+
+        list.appendChild(div);
+        div.scrollIntoView({ behavior: "smooth", block: "end" });
+    });
+}
+</script>

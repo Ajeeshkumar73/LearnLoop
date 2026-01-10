@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Career Recommendation Engine</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        /* Hide scrollbar for chrome/safari/opera */
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+          -ms-overflow-style: none;  /* IE and Edge */
+          scrollbar-width: none;  /* Firefox */
+        }
+
+         /* collapse cards 2 & 3 only */
+.career-card[data-index="2"],
+.career-card[data-index="3"] {
+    max-height: 320px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* expanded */
+.career-card.expanded {
+    max-height: 2000px;
+}
+
+/* fade overlay */
+.career-card[data-index="2"]:not(.expanded)::after,
+.career-card[data-index="3"]:not(.expanded)::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: linear-gradient(to bottom, transparent, white);
+}
+
+.dark .career-card[data-index="2"]:not(.expanded)::after,
+.dark .career-card[data-index="3"]:not(.expanded)::after {
+    background: linear-gradient(to bottom, transparent, #1a202c);
+}
+
+html{
+    behavior : smooth;
+}
+
+
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111318] dark:text-white">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden font-display">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f4] dark:border-[#2a3140] bg-white dark:bg-[#1a202c] px-4 lg:px-10 py-3 shadow-sm">
+<div class="flex items-center gap-4 text-[#111318] dark:text-white">
+<div class="size-8 flex items-center justify-center text-primary">
+</div>
+<h2 class="text-[#111318] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Learn Loop</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-[#111318] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-[#111318] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Skill Analyzer</a>
+<a class="text-[#111318] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Career Library</a>
+</div>
+<a href="{% url 'accounts:logout' %}" >
+<button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors" type="submit">
+<span class="truncate">Log Out</span>
+</button>
+</a>
+</header>
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-4 md:px-10 lg:px-40 flex flex-1 justify-center py-8">
+<div class="layout-content-container flex flex-col w-full max-w-[1200px] flex-1">
+<div class="@container mb-8">
+<div class="flex flex-col gap-6 lg:gap-12 lg:flex-row items-center">
+<div class="flex flex-col gap-6 lg:w-1/2 justify-center">
+<div class="flex flex-col gap-4 text-left">
+<div class="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-primary">
+<span class="material-symbols-outlined text-sm">auto_awesome</span>
+                                    AI-Powered Career Guidance
+                                </div>
+<h1 class="text-[#111318] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em] lg:text-5xl">
+                                    Discover Your Future Path
+                                </h1>
+<h2 class="text-slate-600 dark:text-slate-300 text-base lg:text-lg font-normal leading-relaxed">
+                                    Tell us about yourself, and our intelligent engine will analyze your profile to find your perfect career match based on your unique skills and personality.
+                                </h2>
+</div>
+</div>
+<div class="w-full lg:w-1/2">
+<div class="relative w-full aspect-video rounded-xl overflow-hidden shadow-2xl bg-white dark:bg-gray-800">
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent z-10"></div>
+<div class="w-full h-full bg-center bg-no-repeat bg-cover" data-alt="Student looking at future career options on laptop" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBVlsY39DXiRuFDPCOFkmiaylZRR0jA1W8oOl60oLynBoKDvYvOiZyZEXzdQKh6grEkiJ9hcusfnQg8A8btgtmlwEgfuiHgPrWtQ4_7eHc7vm3UPykiNo1TBujDpMWHvMUgj1wXFvhKpae9gBL9l55D9MsVluB0pF9UXFPi_6c6uuOJDCZ6cVmgwbSmJzDTNWxlFkhiswaDKV_8SGcXhXRUqpvCtD2OIVEa3yEs_CD2PIgRG31U4XvbhfzTvVUalDHqOqVIDrC0jCQ");'></div>
+<div class="absolute bottom-6 left-6 right-6 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md p-4 rounded-lg shadow-lg z-20 border border-white/20">
+<div class="flex items-center gap-3 mb-2">
+<div class="size-2 rounded-full bg-green-500 animate-pulse"></div>
+<p class="text-xs font-bold text-gray-500 uppercase tracking-wider">AI Analysis</p>
+</div>
+
+<div class="flex justify-between items-center">
+    <p class="font-bold text-sm">Matching skills with market trends...</p>
+
+    {% if results %}
+        <span class="text-primary font-bold">
+            {{ avg_match }}%
+        </span>
+    {% endif %}
+</div>
+
+<div class="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+    {% if results %}
+        <div
+            id="avgBar"
+            data-width="{{ avg_match }}"
+            class="bg-primary h-1.5 rounded-full transition-all duration-700"
+            style="width:0%;">
+        </div>
+    {% else %}
+        <div class="bg-primary h-1.5 rounded-full" style="width:0%;"></div>
+    {% endif %}
+</div>
+
+
+
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-8">
+<div class="lg:col-span-7 flex flex-col gap-6">
+<div class="bg-white dark:bg-[#1a202c] rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2d3748] p-6">
+<div class="flex items-center gap-3 mb-6">
+<div class="bg-primary/10 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">edit_note</span>
+</div>
+<div>
+<h3 class="text-xl font-bold text-[#111318] dark:text-white">Your Profile Input</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400">Complete these sections to get accurate recommendations</p>
+</div>
+</div>
+<form method="POST">
+    {% csrf_token %}
+<div class="flex flex-col gap-4">
+<details class="group rounded-lg border border-[#dbdfe6] dark:border-[#4a5568] bg-white dark:bg-[#2d3748]" open="">
+<summary class="flex cursor-pointer items-center justify-between gap-4 p-4 hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors rounded-t-lg select-none">
+<div class="flex items-center gap-3">
+<span class="flex items-center justify-center size-6 rounded-full bg-primary text-white text-xs font-bold">1</span>
+<p class="text-[#111318] dark:text-white text-sm font-bold leading-normal">Education &amp; Background</p>
+</div>
+<span class="material-symbols-outlined text-gray-500 group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="p-4 pt-0 border-t border-transparent group-open:border-[#f0f2f4] dark:group-open:border-[#4a5568]">
+<div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+<div>
+<label class="text-[#111318] dark:text-white text-sm font-medium mb-2 block">Education</label>
+<div class="relative">
+<select class="w-full rounded-lg border border-[#dbdfe6] dark:border-[#4a5568] bg-transparent p-3 pr-10 text-[#111318] dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none"
+name="education" id="education" onchange="updateEducationFields()" required>
+<option disabled="" selected="" value="">Select Education</option>
+<option value="B.Tech">B.Tech</option>
+<option value="B.Sc">B.Sc</option>
+<option value="Diploma">Diploma</option>
+<option value="MBA">MBA</option>
+<option value="MCA">MCA</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+</div>
+<div>
+<label class="text-[#111318] dark:text-white text-sm font-medium mb-2 block">Specialization</label>
+<div class="relative">
+<select class="w-full rounded-lg border border-[#dbdfe6] dark:border-[#4a5568] bg-transparent p-3 pr-10 text-[#111318] dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none"
+name="specialization" id="specialization" onchange="updatePlaceholders()" required>
+<option disabled="" selected="" value="">Select Specialization</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</details>
+<details class="group rounded-lg border border-[#dbdfe6] dark:border-[#4a5568] bg-white dark:bg-[#2d3748]">
+<summary class="flex cursor-pointer items-center justify-between gap-4 p-4 hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors rounded-lg group-open:rounded-b-none select-none">
+<div class="flex items-center gap-3">
+<span class="flex items-center justify-center size-6 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 text-xs font-bold group-open:bg-primary group-open:text-white transition-colors">2</span>
+<p class="text-[#111318] dark:text-white text-sm font-bold leading-normal">Skills &amp; Technical Proficiency</p>
+</div>
+<span class="material-symbols-outlined text-gray-500 group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="p-4 pt-0 border-t border-transparent group-open:border-[#f0f2f4] dark:group-open:border-[#4a5568]">
+<div class="mt-4 flex flex-col gap-5">
+<div>
+<label class="text-[#111318] dark:text-white text-sm font-medium mb-2 block">Skills (Expert Level)</label>
+<input class="w-full rounded-lg border border-[#dbdfe6] dark:border-[#4a5568] bg-transparent p-3 text-[#111318] dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400" type="text" name="expert_skills" id="expert_skills"
+               placeholder="Select education first"/>
+</div>
+<div>
+<label class="text-[#111318] dark:text-white text-sm font-medium mb-2 block">Skills (Intermediate Level)</label>
+<input class="w-full rounded-lg border border-[#dbdfe6] dark:border-[#4a5568] bg-transparent p-3 text-[#111318] dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400" type="text" name="intermediate_skills" id="intermediate_skills"
+               placeholder="Select education first"/>
+</div>
+<div>
+<label class="text-[#111318] dark:text-white text-sm font-medium mb-3 block">Soft Skills</label>
+<div class="grid grid-cols-2 gap-3">
+<label class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors">
+<input class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent" type="checkbox" name="soft_skills"/>
+<span class="text-sm text-[#111318] dark:text-white font-medium">Communication</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors">
+<input class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent" type="checkbox" name="soft_skills"/>
+<span class="text-sm text-[#111318] dark:text-white font-medium">Teamwork</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors">
+<input class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent" type="checkbox" name="soft_skills"/>
+<span class="text-sm text-[#111318] dark:text-white font-medium">Time Management</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors">
+<input class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent" type="checkbox"name="soft_skills"/>
+<span class="text-sm text-[#111318] dark:text-white font-medium">Adaptability</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors">
+<input class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent" type="checkbox" name="soft_skills"/>
+<span class="text-sm text-[#111318] dark:text-white font-medium">Critical Thinking</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors">
+<input class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent" type="checkbox" name="soft_skills"/>
+<span class="text-sm text-[#111318] dark:text-white font-medium">No Soft Skills</span>
+</label>
+</div>
+</div>
+</div>
+</div>
+</details>
+<details class="group rounded-lg border border-[#dbdfe6] dark:border-[#4a5568] bg-white dark:bg-[#2d3748]">
+<summary class="flex cursor-pointer items-center justify-between gap-4 p-4 hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors rounded-lg group-open:rounded-b-none select-none">
+<div class="flex items-center gap-3">
+<span class="flex items-center justify-center size-6 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 text-xs font-bold group-open:bg-primary group-open:text-white transition-colors">3</span>
+<p class="text-[#111318] dark:text-white text-sm font-bold leading-normal">Interested Area</p>
+</div>
+<span class="material-symbols-outlined text-gray-500 group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="p-4 pt-0 border-t border-transparent group-open:border-[#f0f2f4] dark:group-open:border-[#4a5568]">
+<div class="mt-4">
+<label class="text-[#111318] dark:text-white text-sm font-medium mb-2 block">Interests fields</label>
+<input class="w-full rounded-lg border border-[#dbdfe6] dark:border-[#4a5568] bg-transparent p-3 text-[#111318] dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400" type="text" name="interests" id="interests"
+               placeholder="Select education first"/>
+</div>
+</div>
+</details>
+<details class="group rounded-lg border border-[#dbdfe6] dark:border-[#4a5568] bg-white dark:bg-[#2d3748]">
+<summary class="flex cursor-pointer items-center justify-between gap-4 p-4 hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors rounded-lg group-open:rounded-b-none select-none">
+<div class="flex items-center gap-3">
+<span class="flex items-center justify-center size-6 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 text-xs font-bold group-open:bg-primary group-open:text-white transition-colors">4</span>
+<p class="text-[#111318] dark:text-white text-sm font-bold leading-normal">Personality &amp; Strengths</p>
+</div>
+<span class="material-symbols-outlined text-gray-500 group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="p-4 pt-0 border-t border-transparent group-open:border-[#f0f2f4] dark:group-open:border-[#4a5568]">
+<p class="text-[#616f89] dark:text-gray-300 text-sm font-normal leading-normal pb-4 mt-2">Select the traits that best describe you.</p>
+<div class="grid grid-cols-2 gap-3">
+<label class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors">
+<input class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent" type="checkbox" name="personality"/>
+<span class="text-sm text-[#111318] dark:text-white font-medium">Analytical Thinker</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors">
+<input class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent" type="checkbox" name="personality"/>
+<span class="text-sm text-[#111318] dark:text-white font-medium">Creative Mindset</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors">
+<input class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent" type="checkbox" name="personality"/>
+<span class="text-sm text-[#111318] dark:text-white font-medium">Leadership Oriented</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors">
+<input class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent" type="checkbox" name="personality"/>
+<span class="text-sm text-[#111318] dark:text-white font-medium">Detail Oriented</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors">
+<input class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent" type="checkbox" name="personality"/>
+<span class="text-sm text-[#111318] dark:text-white font-medium">Problem Solver</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors">
+<input class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent" type="checkbox" name="personality"/>
+<span class="text-sm text-[#111318] dark:text-white font-medium">Independent Worker</span>
+</label>
+</div>
+</div>
+</details>
+</div>
+<div class="mt-8">
+<button class="w-full flex cursor-pointer items-center justify-center rounded-lg h-12 px-5 bg-[#135bec] text-white text-base font-bold leading-normal tracking-[0.015em] shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all active:scale-[0.98]" type="submit">
+<span class="material-symbols-outlined mr-2">auto_awesome</span>
+                                    Analyze Profile
+                                </button>
+</form>                                
+</div>
+</div>
+</div>
+<div class="lg:col-span-5 flex flex-col gap-6">
+    {% if results %}
+<div id="topRecommendationsSection"  class="flex items-center justify-between">
+<h3 class="text-xl font-bold text-[#111318] dark:text-white">Top Recommendations</h3>
+<button onclick="resetSavedCareers()" class="text-sm font-medium text-primary hover:underline">Analyze Again</button>
+</div>
+
+
+<!-- Modal -->
+<!--<div id="modal" class="fixed inset-0 bg-black/40 hidden flex items-center justify-center">
+    <div class="bg-white p-6 rounded-xl w-96">
+        <h3 class="text-lg font-bold mb-3">All Career Matches</h3>
+
+        {% for career in results %}
+            <p class="text-sm mb-1">
+                <b>{{ career.title }}</b> – {{ career.match }}%
+            </p>
+        {% endfor %}
+
+        <button onclick="closeModal()" class="mt-4 text-sm underline">
+            Close
+        </button>
+    </div>
+</div>-->
+  
+{% for career in results %}
+<div
+   data-index="{{ forloop.counter }}"
+  onclick="expandCard(this); saveCareerUI('{{ career.career }}', '{{ career.icon }}')"
+  class="career-card bg-white dark:bg-[#1a202c] rounded-xl shadow-md
+         border border-l-4 border-[#e5e7eb] dark:border-[#2d3748]
+         border-l-primary p-5 hover:shadow-lg transition-shadow
+         cursor-pointer group hover:bg-gray-50 dark:hover:bg-[#202837]
+         transition-colors">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-start mb-3">
+        <div class="flex gap-4">
+            <div class="size-12 rounded-lg bg-blue-50 dark:bg-blue-900/30
+                        flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-2xl">
+                    {{ career.icon }}
+                </span>
+            </div>
+
+            <div>
+                <h4 class="text-lg font-bold text-[#111318] dark:text-white
+                           group-hover:text-primary transition-colors">
+                    {{ career.career }}
+                </h4>
+                <p class="text-sm text-gray-500">
+                    Technology • {{ career.domain }}
+                </p>
+            </div>
+        </div>
+
+        <div class="flex flex-col items-end">
+            <div class="text-primary font-black text-lg">
+                {{ career.match_percent }}%
+            </div>
+            <span class="text-xs font-medium px-2 py-0.5 rounded-full
+                {% if career.match >= 90 %}
+                    bg-green-100 text-green-700
+                {% elif career.match >= 80 %}
+                    bg-blue-100 text-blue-700
+                {% else %}
+                    bg-orange-100 text-orange-700
+                {% endif %}">
+                {{ career.fit }}
+            </span>
+        </div>
+    </div>
+
+    <!-- WHY + DESCRIPTION -->
+    <div class="my-3 bg-gray-50 dark:bg-[#2d3748] p-3 rounded-lg">
+        <div class="flex items-start gap-2">
+            <span class="material-symbols-outlined text-primary text-sm mt-0.5">
+                lightbulb
+            </span>
+            <p class="text-sm text-gray-600 dark:text-gray-300">
+                <b>Why:</b> {{ career.why }}
+            </p>
+        </div>
+
+    </div>
+
+    <!-- COLLAPSIBLE CONTENT -->
+    <div class="career-content">
+
+         <div class="mt-3">
+            <p class="text-xs font-bold uppercase mb-1">Description</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                {{ career.description }}
+            </p>
+        </div></br>
+
+       <!-- SKILLS -->
+<div class="mb-4">
+    <p class="text-xs font-bold uppercase mb-2">Required Skills</p>
+    <div class="flex flex-wrap gap-2">
+        {% for skill in career.skills_list %}
+        <span class="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-700">
+            {{ skill }}
+        </span>
+        {% endfor %}
+    </div>
+</div>
+
+        <!-- GROWTH TEXT -->
+        <div class="mb-5">
+            <p class="text-xs font-bold uppercase mb-1">Future Growth</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                {{ career.growth }}
+            </p>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-between border-t pt-3">
+            <div class="flex gap-2">
+                <span class="material-symbols-outlined text-gray-400">payments</span>
+                <div>
+                    <p class="text-[10px] uppercase font-bold">Salary</p>
+                    <p class="text-sm font-bold">{{ career.salary }}</p>
+                </div>
+            </div>
+
+            <div class="flex gap-2 text-right">
+                <span class="material-symbols-outlined text-gray-400">trending_up</span>
+                <div>
+                    <p class="text-[10px] uppercase font-bold">Growth</p>
+                    <p class="text-sm font-bold text-orange-600">
+                        +{{ career.growth_percent }}%
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+
+<div id="savedCareersSection" class="mt-4 bg-primary/5 rounded-xl p-5 border border-primary/10 hidden">
+<h4 class="font-bold text-sm text-[#111318] dark:text-white mb-3">Saved Careers</h4>
+<div class="flex flex-col gap-3">
+<div id="savedCareersList">
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!--form js-->
+<script>
+function updateEducationFields() {
+    const education = document.getElementById("education").value;
+    const specialization = document.getElementById("specialization");
+
+    specialization.innerHTML = `<option value="">Select Specialization</option>`;
+
+    if (education === "MCA") {
+        [
+            "MCA (General)",
+            "MCA in Data Analytics",
+            "MCA in Cyber Security",
+            "MCA in Data Science",
+            "MCA in Artificial Intelligence",
+            "MCA in Cloud Computing"
+        ].forEach(s => {
+            const opt = document.createElement("option");
+            opt.value = s;
+            opt.textContent = s;
+            specialization.appendChild(opt);
+        });
+    }
+
+    else if (education === "B.Tech") {
+        ["CSE", "IT", "AI & DS", "Mechanical", "Electrical"].forEach(s => {
+            specialization.appendChild(new Option(s, s));
+        });
+    }
+
+    else if (education === "B.Sc") {
+        ["Computer Science", "Data Science", "Mathematics", "Physics"].forEach(s => {
+            specialization.appendChild(new Option(s, s));
+        });
+    }
+
+    else if (education === "Diploma") {
+        ["Computer", "Mechanical", "Electrical"].forEach(s => {
+            specialization.appendChild(new Option(s, s));
+        });
+    }
+
+    else if (education === "MBA") {
+        ["Finance", "Marketing", "HR", "Business Analytics"].forEach(s => {
+            specialization.appendChild(new Option(s, s));
+        });
+    }
+}
+
+function updatePlaceholders() {
+    const spec = document.getElementById("specialization").value.toLowerCase();
+    const expert = document.getElementById("expert_skills");
+    const intermediate = document.getElementById("intermediate_skills");
+
+    // clear existing text
+    expert.value = "";
+    intermediate.value = "";
+
+    if (
+        spec.includes("data") ||
+        spec.includes("artificial") ||
+        spec.includes("cyber") ||
+        spec.includes("cloud") ||
+        spec.includes("computer") ||
+        spec.includes("cse") ||
+        spec.includes("it") ||
+        spec.includes("science")
+    ) {
+        expert.placeholder = "DSA, Python, SQL, Machine Learning, Cloud Platforms";
+        intermediate.placeholder = "Java, APIs, Linux, Statistics, Git";
+    }
+    else if (spec.includes("mechanical")) {
+        expert.placeholder = "AutoCAD, SolidWorks, Thermodynamics";
+        intermediate.placeholder = "Manufacturing Processes, Materials";
+    }
+    else if (
+        spec.includes("finance") ||
+        spec.includes("marketing") ||
+        spec.includes("hr") ||
+        spec.includes("business")
+    ) {
+        expert.placeholder = "Financial Modeling, Market Analysis, Strategy";
+        intermediate.placeholder = "Excel, Power BI, Communication";
+    }
+    else {
+        expert.placeholder = "Enter expert-level skills";
+        intermediate.placeholder = "Enter intermediate-level skills";
+    }
+}
+</script>
+
+<!--view all career-->
+<!--<script>
+    function openModal() {
+    document.getElementById("modal").classList.remove("hidden");
+}
+function closeModal() {
+    document.getElementById("modal").classList.add("hidden");
+}
+
+</script>-->
+
+<!--career save button-->
+<script>
+function saveCareerUI(careerName, icon) {
+    const section = document.getElementById("savedCareersSection");
+    const list = document.getElementById("savedCareersList");
+
+    // show section
+    section.classList.remove("hidden");
+
+    list.innerHTML = "";
+
+    // create card
+    const div = document.createElement("div");
+    div.dataset.career = careerName;
+    div.className =
+     "flex items-center gap-3 bg-white dark:bg-[#1a202c] p-2 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer hover:shadow-md transition-shadow";
+
+    div.innerHTML = `
+    <div class="size-8 rounded bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-500">
+        <span class="material-symbols-outlined text-sm">${icon}</span>
+    </div>
+
+    <div class="flex-1 ml-3">
+        <p class="text-sm font-bold text-[#111318] dark:text-white">
+            ${careerName}
+        </p>
+    </div>
+
+    <button class="ml-auto px-2 text-gray-400 hover:text-primary">
+        <span class="material-symbols-outlined text-lg">arrow_forward</span>
+    </button>
+`;
+
+    // Attach onclick to the button
+    const button = div.querySelector("button");
+    button.onclick = function(e) {
+        e.stopPropagation(); // prevent triggering card click
+
+        // 🔥 Save to DB and redirect
+        fetch("{% url 'career_analysis:save_career' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: "career_name=" + encodeURIComponent(careerName)
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data); // debug
+
+            if (data.status === "exists") {
+                alert("Career already saved!");
+                return;
+            }
+
+            if (data.status === "success") {
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url; //  redirect works now
+                } else {
+                    alert("Redirect URL missing!");
+                }
+                return;
+            }
+
+            alert("Error saving career");
+        })
+        .catch(err => {
+            console.error("Save career failed", err);
+        });
+    };
+
+    list.appendChild(div);
+    div.scrollIntoView({ behavior: "smooth", block: "end" });
+}
+</script>
+
+
+<!--expand the career card-->
+<script>
+function expandCard(card) {
+    document.querySelectorAll('.career-card')
+        .forEach(c => c.classList.remove('expanded'));
+
+    card.classList.add('expanded');
+}
+</script>
+
+<!--avgbar-->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const bar = document.getElementById("avgBar");
+    if (!bar) return;
+
+    const width = bar.dataset.width;
+    bar.style.width = width + "%";
+});
+</script>
+
+<!--reset career-->
+<script>
+function resetSavedCareers() {
+    fetch("{% url 'career_analysis:reset_saved_careers' %}", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}"
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "success") {
+            
+            document.getElementById("savedCareersList").innerHTML = "";
+            document.getElementById("savedCareersSection").classList.add("hidden");
+
+            
+            window.location.href = "{% url 'career_analysis:career_recom' %}";
+        }
+    });
+}
+</script>
+
+
+
+</body></html>

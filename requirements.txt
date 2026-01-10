@@ -1,0 +1,9 @@
+django
+groq 
+python-dotenv
+mongoengine 
+dnspython
+werkzeug
+pymongo 
+djongo
+pytz

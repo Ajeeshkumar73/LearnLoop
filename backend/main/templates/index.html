@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CareerAI - Unlock Your Future</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+        /* Custom scrollbar for cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        html{
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111318] dark:text-white font-display overflow-x-hidden antialiased">
+<div class="relative flex min-h-screen w-full flex-col group/design-root">
+<!-- Navigation -->
+<header class="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#101622]/90 backdrop-blur-sm border-b border-[#f0f2f4] dark:border-gray-800">
+<div class="layout-container flex justify-center">
+<div class="px-4 md:px-10 py-3 w-full max-w-[1280px]">
+<div class="flex items-center justify-between whitespace-nowrap">
+<div class="flex items-center gap-3 text-primary">
+<div class="size-8 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl"></span>
+</div>
+<h2 class="text-[#111318] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Learn Loop</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#features">Features</a>
+<a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#skills">Skill Analyzer</a>
+<a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#how-it-works">How it Works</a>
+<a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#reviews">Stories</a>
+</div>
+<a href="{% url 'register' %}">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-blue-700 transition-colors text-white text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">Sign Up</span>
+</button>
+</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow flex flex-col items-center w-full">
+<!-- Hero Section -->
+<section class="w-full flex justify-center bg-white dark:bg-[#101622]">
+<div class="w-full max-w-[1280px] px-4 md:px-10 py-12 md:py-20">
+<div class="flex flex-col-reverse lg:flex-row gap-10 lg:gap-16 items-center">
+<!-- Left Content -->
+<div class="flex flex-col gap-6 flex-1 text-center lg:text-left">
+<div class="flex flex-col gap-4">
+<div class="inline-flex items-center self-center lg:self-start gap-2 rounded-full bg-blue-50 dark:bg-blue-900/30 px-3 py-1 text-xs font-semibold text-primary dark:text-blue-300">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+                                    AI-Powered Career Guidance
+                                </div>
+<h1 class="text-[#111318] dark:text-white text-4xl md:text-5xl lg:text-6xl font-black leading-[1.1] tracking-[-0.033em]">
+                                    Unlock Your Future with <span class="text-primary">AI Intelligence</span>
+</h1>
+<h2 class="text-slate-600 dark:text-slate-300 text-lg font-normal leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                                    Don't guess your future. Engineer it. Our AI analyzes your unique skills and interests to build the perfect career roadmap tailored just for you.
+                                </h2>
+</div>
+<!--<div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
+<button class="flex min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-12 px-6 bg-primary hover:bg-blue-700 transition-colors text-white text-base font-bold tracking-[0.015em]">
+                                    Get Started Free
+                                </button>
+<button class="flex min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-12 px-6 bg-white dark:bg-transparent border border-slate-200 dark:border-slate-700 text-[#111318] dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-base font-bold tracking-[0.015em]">
+                                    View Demo
+                                </button>
+</div>-->
+<div class="flex items-center justify-center lg:justify-start gap-2 pt-4 text-sm text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-lg text-primary">check_circle</span>
+<span>No credit card required</span>
+<span class="mx-2">•</span>
+<span class="material-symbols-outlined text-lg text-primary">check_circle</span>
+<span>Free analysis included</span>
+</div>
+</div>
+<!-- Right Image -->
+<div class="w-full lg:w-1/2 flex justify-center">
+<div class="relative w-full aspect-square max-w-[500px] lg:max-w-none lg:aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl bg-slate-100 dark:bg-slate-800" data-alt="Abstract 3D illustration of glowing blue neural network connections representing career pathways" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAdVNlGyTRlt_WXkkI2O07GnIHROKYKjJQDb5X3pGhRZV6eDKJoRlC1LPva4jFIwSDou5p71eKZKsp_osWaXY2TDdgE-QFkKDG6dLVxf-GdffoA7Qc5T3Jl-Mx9GEhTPdjY4Ua6XwRqzlgtuNcgLQzYcz4jU1OunlAQyjTLN58zlXMAgDtFJRiCzY5C79Sko-giFekeM3s4zx14paH-0Ybf4l2ru6hoFZQ_5qULoOBHMUMC5t13-NDHtvoAKAegNKZFcK6fP0KDcJs'); background-size: cover; background-position: center;">
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent mix-blend-overlay"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Section -->
+<section class="w-full flex justify-center py-16 md:py-24 bg-background-light dark:bg-background-dark" id="features">
+<div class="w-full max-w-[1280px] px-4 md:px-10 flex flex-col gap-12">
+<div class="flex flex-col gap-4 text-center items-center">
+<h2 class="text-[#111318] dark:text-white text-3xl md:text-4xl font-bold leading-tight tracking-tight max-w-[720px]">
+                            Empower Your Career Journey
+                        </h2>
+<p class="text-slate-600 dark:text-slate-300 text-lg max-w-[600px]">
+                            Everything you need to navigate the job market with confidence, powered by cutting-edge machine learning.
+                        </p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Feature 1 -->
+<div class="flex gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1a202c] p-6 flex-col hover:shadow-lg transition-shadow duration-300">
+<div class="size-12 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">psychology</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-[#111318] dark:text-white text-xl font-bold">Recommendation Engine</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                    Data-driven career suggestions matched perfectly to your personality, interests, and aptitude.
+                                </p>
+</div>
+</div>
+<!-- Feature 2 -->
+<div class="flex gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1a202c] p-6 flex-col hover:shadow-lg transition-shadow duration-300">
+<div class="size-12 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">analytics</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-[#111318] dark:text-white text-xl font-bold">Skill Gap Analyzer</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                    Visualize exactly what skills you're missing for your dream job and how to bridge the gap.
+                                </p>
+</div>
+</div>
+<!-- Feature 3 -->
+<div class="flex gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1a202c] p-6 flex-col hover:shadow-lg transition-shadow duration-300">
+<div class="size-12 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">manage_search</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-[#111318] dark:text-white text-xl font-bold">Job Description Analysis</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                    AI-powered breakdown of complex job requirements into actionable learning goals.
+                                </p>
+</div>
+</div>
+<!-- Feature 4 -->
+<div class="flex gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1a202c] p-6 flex-col hover:shadow-lg transition-shadow duration-300">
+<div class="size-12 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">alt_route</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-[#111318] dark:text-white text-xl font-bold">Personalized Roadmaps</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                    Step-by-step guides to reach your career goals, from today to your first day on the job.
+                                </p>
+</div>
+</div>
+<!-- Feature 5 -->
+<div class="flex gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1a202c] p-6 flex-col hover:shadow-lg transition-shadow duration-300">
+<div class="size-12 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">smart_toy</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-[#111318] dark:text-white text-xl font-bold">AI Career Mentor</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                    24/7 guidance on resumes, interview prep, and networking strategies from an intelligent bot.
+                                </p>
+</div>
+</div>
+<!-- Feature 6 -->
+<div class="flex gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1a202c] p-6 flex-col hover:shadow-lg transition-shadow duration-300">
+<div class="size-12 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">groups</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-[#111318] dark:text-white text-xl font-bold">Career Community</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                    Connect with peers and mentors in your field to share opportunities and advice.
+                                </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Banner Section -->
+<section id="skills" class="w-full flex justify-center px-4 md:px-10 py-8">
+<div class="w-full max-w-[1280px]">
+<div class="bg-cover bg-center flex flex-col justify-end overflow-hidden rounded-2xl min-h-[400px] relative group" data-alt="Futuristic workspace with glowing digital overlays representing data analysis" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBe3H0VRfKJvtHkoq_P8cZ16pPJfQznZFlYk6g0kVZySgwTM7jEBFA9X50W93c2RsNeDA7xUPcwsR4rqK44PKibrElMARawe-8S-J8ssRuzHXxH3yHOFLL-QK1kTXt4GgAxzoUCruwpa7NQeERuxXXoTt7SEziPCsRSw3YwdkGXZ_6bged7hzNt7k_bbP4zzewZuAzthuKWg4nKQwNJGx4b-ylZJQGbVK0xigTqn_zFphIWohUnJmwzy5XB3OOc372ag7SxzzLqr6o");'>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+<div class="relative z-10 p-8 md:p-12 flex flex-col gap-4">
+<p class="text-white tracking-light text-3xl md:text-5xl font-bold leading-tight max-w-2xl">
+                                Experience the AI Advantage in Your Job Search
+                            </p>
+<p class="text-gray-200 text-lg max-w-xl">
+                                Join thousands of students who have fast-tracked their careers using our proprietary algorithms.
+                            </p>
+<div class="pt-4">
+<button class="flex min-w-[140px] cursor-pointer items-center justify-center rounded-lg h-12 px-6 bg-white text-primary text-base font-bold hover:bg-gray-100 transition-colors">
+                                    Start Now
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonials Section -->
+<section class="w-full flex justify-center py-16 md:py-24 bg-white dark:bg-[#101622]" id="reviews">
+<div class="w-full max-w-[1280px] px-4 md:px-10">
+<div class="flex flex-col gap-10">
+<div class="flex flex-col gap-2">
+<h2 class="text-[#111318] dark:text-white text-3xl font-bold">Student Success Stories</h2>
+<p class="text-slate-600 dark:text-slate-400">See how CareerAI has helped students land their dream jobs.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Review 1 -->
+<div class="flex flex-col gap-4 rounded-xl border border-[#dbdfe6] dark:border-gray-800 bg-background-light dark:bg-[#1a202c] p-6">
+<div class="flex items-center gap-4">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" data-alt="Portrait of Alex Johnson, a happy student" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAHgxQDz1lZodic5CRtGT0FPfiV8r-kDmG8nhK562RIVoo2WFhf6HsUWEg-WP6GG_IWo1RQsVzgVoSBPWnMkQMq0heB65jtoQq6hmSD3YeIT81KgnzsNnOTbbZ5gRSf1AHGIOPFNDw2gkhv2c163_CJw4-FYV06YMnmFLg3gHnkrWmOxmxtd1lKYmbaPzR5RgzbXfxxPCm5ChWq9JijTqaTjFdT4wqBKLXeCRk0kSVTLPbvtGlPg1gyM5sOK6tmneiyfwF22Ud4Ggc");'></div>
+<div class="flex-1">
+<p class="text-[#111318] dark:text-white text-base font-bold leading-normal">Alex Johnson</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-normal">Computer Science Major</p>
+</div>
+</div>
+<div class="flex gap-1 text-yellow-400">
+<span class="material-symbols-outlined text-[20px] filled">star</span>
+<span class="material-symbols-outlined text-[20px] filled">star</span>
+<span class="material-symbols-outlined text-[20px] filled">star</span>
+<span class="material-symbols-outlined text-[20px] filled">star</span>
+<span class="material-symbols-outlined text-[20px] filled">star</span>
+</div>
+<p class="text-[#111318] dark:text-gray-200 text-base font-normal leading-relaxed">
+                                    "This app completely changed my perspective on what I can do with my degree. The roadmap feature is a lifesaver! I found a niche I didn't even know existed."
+                                </p>
+</div>
+<!-- Review 2 -->
+<div class="flex flex-col gap-4 rounded-xl border border-[#dbdfe6] dark:border-gray-800 bg-background-light dark:bg-[#1a202c] p-6">
+<div class="flex items-center gap-4">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" data-alt="Portrait of Sarah Lee, a confident student" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDj8aUNtTdJFbu7JBM57Yd6BvnNd6t4YjzQ_aG9mctxuWMgmSh9SUUviBGEi9ZhlBNRa1qOHqaWx_ze9AClTnu6jqS5tXEdbF3lt0mp1BZQr-aeoQTENVBIywx3CPN8ltc_9rIyLZ8OarDm6QNoyyJ2hZepikwwzZdPXEs6P6DcRV-S-bfHKilGf7-jZl94Eqp_8JWYM89RxZKpBHu-q-hL19rEqrt1AUGoMGqvQZT6_RhygcryaUXHzXKdhyBGx1iNN4dHwHuSY6A");'></div>
+<div class="flex-1">
+<p class="text-[#111318] dark:text-white text-base font-bold leading-normal">Sarah Lee</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-normal">Marketing Graduate</p>
+</div>
+</div>
+<div class="flex gap-1 text-yellow-400">
+<span class="material-symbols-outlined text-[20px] filled">star</span>
+<span class="material-symbols-outlined text-[20px] filled">star</span>
+<span class="material-symbols-outlined text-[20px] filled">star</span>
+<span class="material-symbols-outlined text-[20px] filled">star</span>
+<span class="material-symbols-outlined text-[20px] filled">star</span>
+</div>
+<p class="text-[#111318] dark:text-gray-200 text-base font-normal leading-relaxed">
+                                    "The skill gap analyzer showed me exactly what I needed to learn. I took two recommended courses and got an internship within a month."
+                                </p>
+</div>
+<!-- Review 3 -->
+<div class="flex flex-col gap-4 rounded-xl border border-[#dbdfe6] dark:border-gray-800 bg-background-light dark:bg-[#1a202c] p-6">
+<div class="flex items-center gap-4">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" data-alt="Portrait of Michael Chen, a professional" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDl5ngmxuHyoIKnPY-cQXK0TgDd2s-5rcC-W3haYdB7eTswS1p0o3f3g0JJyUwVUDcNH0kS9Bx-rA6icE4fpEr7Ixcv3ATBs1_fYIuhBrJuka726zMdR9aJkyUuT_qh3llrXDzORaGFqamdyXWmw15oHVIQJs1-of0uOiUVPEvdqM-QDdl3bg2RulogSwFGuD8j659lwghLGWjpP4Nal_hw0xQmXaW9PSecuMncAmEdJtkfkbWI0nUwPM5hIfocY6qIHpzFnUuA07k");'></div>
+<div class="flex-1">
+<p class="text-[#111318] dark:text-white text-base font-bold leading-normal">Michael Chen</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-normal">Finance Student</p>
+</div>
+</div>
+<div class="flex gap-1 text-yellow-400">
+<span class="material-symbols-outlined text-[20px] filled">star</span>
+<span class="material-symbols-outlined text-[20px] filled">star</span>
+<span class="material-symbols-outlined text-[20px] filled">star</span>
+<span class="material-symbols-outlined text-[20px] filled">star</span>
+<span class="material-symbols-outlined text-[20px] filled">star</span>
+</div>
+<p class="text-[#111318] dark:text-gray-200 text-base font-normal leading-relaxed">
+                                    "Finally, career advice that feels personal and data-driven. The AI mentor is surprisingly helpful for late-night interview prep."
+                                </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA Footer -->
+<footer class="w-full bg-white dark:bg-[#101622] border-t border-slate-200 dark:border-gray-800 py-12">
+<div class="layout-container flex justify-center">
+<div class="px-4 md:px-10 w-full max-w-[1280px] flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col gap-2 items-center md:items-start">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-2xl">school</span>
+<span class="text-[#111318] dark:text-white text-lg font-bold">Learn Loop</span>
+</div>
+<p class="text-slate-500 text-sm">© 2026 Learnlopp Inc. All rights reserved.</p>
+</div>
+<div class="flex gap-8 text-sm font-medium text-[#111318] dark:text-gray-300">
+<a class="hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms</a>
+<a class="hover:text-primary transition-colors" href="#">Support</a>
+</div>
+<div class="flex gap-4">
+<a class="text-slate-400 hover:text-primary transition-colors" href="#">
+  <span class="sr-only">Instagram</span>
+  <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M7 2C4.243 2 2 4.243 2 7v10c0 2.757 2.243 5 5 5h10c2.757 0 5-2.243 5-5V7c0-2.757-2.243-5-5-5H7zm10 2a3 3 0 013 3v10a3 3 0 01-3 3H7a3 3 0 01-3-3V7a3 3 0 013-3h10zm-5 3a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6zm4.75-.25a1.25 1.25 0 11-2.5 0 1.25 1.25 0 012.5 0z"/>
+  </svg>
+</a>
+
+<a class="text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="sr-only">GitHub</span>
+<svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewbox="0 0 24 24">
+<path clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fill-rule="evenodd"></path>
+</svg>
+</a>
+</div>
+</div>
+</div>
+</footer>
+</main>
+</div>
+<!-- Styles for filled icon variant -->
+<style>
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</body></html>
