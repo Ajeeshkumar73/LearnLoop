@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, EmailField, ListField, DictField, DateTimeField
+from mongoengine import Document, StringField, EmailField, ListField, DictField, DateTimeField, IntField
 from datetime import datetime
 
 class CareerSubmission(Document):
@@ -22,15 +22,15 @@ class CareerSubmission(Document):
     created_at = DateTimeField(default=datetime.utcnow)
 
 class SavedCareer(Document):
-    # link to logged-in user
-    user_email = EmailField(required=True)
-
-    # saved career info
+    user_email = StringField(required=True)
     career_name = StringField(required=True)
-            
+    career_icon = StringField(default="work")
 
-    # timestamp
-    saved_at = DateTimeField(default=datetime.utcnow)
+    avg_match = IntField()
+    results = ListField(DictField())
+
+    created_at = DateTimeField(default=datetime.utcnow)
+
 
     meta = {
         "collection": "saved_careers",
@@ -38,3 +38,9 @@ class SavedCareer(Document):
             {"fields": ["user_email", "career_name"], "unique": True}
         ]
     }
+
+
+class SkillProgress(Document):
+    user_email = StringField(required=True)
+    skill_name = StringField(required=True)
+    completed_weeks = ListField(IntField())    

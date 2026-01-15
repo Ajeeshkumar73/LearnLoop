@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import User, Profile
-
+from career_analysis.models import SavedCareer
 def register(request):
     if request.method == "POST":
         full_name = request.POST.get("full_name")
@@ -45,8 +45,14 @@ def login_view(request):
 
         if user and user.check_password(password):
             request.session["user_email"] = user.email
-            request.session.set_expiry(3600)  # 1 hour
-            return redirect("career_analysis:career_recom")
+            request.session.set_expiry(3600)  
+            
+            saved = SavedCareer.objects(user_email=user.email).first()
+
+            if saved:
+                return redirect("career_analysis:gap_analyzer")
+            else:
+                return redirect("career_analysis:career_recom")
         else:
             messages.error(request, "Invalid email or password")
             return redirect("accounts:login")

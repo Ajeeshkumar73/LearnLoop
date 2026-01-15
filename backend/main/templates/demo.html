@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Skill Gap Analyzer - CareerAI</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Noto+Sans:wght@300..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white overflow-x-hidden antialiased selection:bg-primary/20 selection:text-primary">
+<div class="relative flex h-auto min-h-screen w-full flex-col">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 lg:px-10 py-3">
+<div class="flex items-center gap-4 text-slate-900 dark:text-white">
+<div class="size-8 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">token</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">CareerAI</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Dashboard</a>
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Career Paths</a>
+<a class="text-slate-900 dark:text-white text-sm font-bold leading-normal" href="#">Skill Analyzer</a>
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Learning Plan</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden sm:flex h-10 px-4 items-center justify-center rounded-lg bg-primary text-white text-sm font-bold hover:bg-blue-700 transition-colors">
+<span class="truncate">Profile</span>
+</button>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border border-slate-200 dark:border-slate-700" data-alt="User profile avatar image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCvqZU5Sd2Xk6AfzHII15Q0jkhSmw8ohSADZpVwNpNnuZhgCfmyDWqGI62OX1AYTaOifUBNq3UsskyG5NekYnEbZEuo8w1ilKI5KHW0TgT9EX298Auvu6P7QMWh_3LUKf2gmHF76ICmJAOHU0R3TW63ROjBJV_AbdI2Jvhu1ki1pJXDb0Nd79d9oeHVP_XAearMDjpnKs0O5KP5RsczpWiIyGkx_NK__Lk-g-lJfUPyYEI2_GlPzrt_5Wj3IFCZR4TA0ayb70G1JbE");'></div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="layout-container flex h-full grow flex-col">
+<div class="px-4 md:px-10 lg:px-40 flex flex-1 justify-center py-8">
+<div class="layout-content-container flex flex-col w-full max-w-[1024px] flex-1 gap-8">
+<!-- Page Header & Actions -->
+<div class="flex flex-wrap items-end justify-between gap-4">
+<div class="flex min-w-72 flex-col gap-2">
+<h1 class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-tight">Skill Gap Analysis</h1>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal max-w-2xl">
+                                Detailed comparison between your current profile and the requirements for <span class="font-bold text-primary">Product Manager</span>.
+                            </p>
+</div>
+<div class="flex gap-3">
+<button class="group flex h-10 px-4 items-center gap-2 justify-center rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-bold transition-all">
+<span class="material-symbols-outlined text-[20px]">print</span>
+<span class="truncate">Export Report</span>
+</button>
+<button class="flex h-10 px-4 items-center gap-2 justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+<span class="truncate">Change Target</span>
+</button>
+</div>
+</div>
+<!-- AI Insight Box -->
+<div class="bg-gradient-to-r from-primary/10 to-transparent rounded-xl border border-primary/20 p-6 flex flex-col md:flex-row gap-5 items-start">
+<div class="bg-white dark:bg-slate-900 p-2 rounded-lg shadow-sm text-primary shrink-0">
+<span class="material-symbols-outlined text-3xl">auto_awesome</span>
+</div>
+<div class="flex-1">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">AI Career Insight</h3>
+<p class="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base">
+                                You're exceptionally strong in <span class="font-bold text-slate-900 dark:text-white">Strategic Thinking</span> and <span class="font-bold text-slate-900 dark:text-white">Agile Methodologies</span>, which puts you in the top 15% of candidates. To reach your Product Manager goal within 3 months, focus your efforts on technical data skills—specifically <span class="font-bold text-slate-900 dark:text-white">SQL</span> and <span class="font-bold text-slate-900 dark:text-white">Data Analysis</span>.
+                            </p>
+</div>
+<button class="text-primary text-sm font-bold hover:underline whitespace-nowrap self-start md:self-center">
+                            View Roadmap →
+                        </button>
+</div>
+<!-- Key Stats Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[20px]">target</span>
+<p class="text-sm font-medium uppercase tracking-wider">Target Role</p>
+</div>
+<p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">Product Manager</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[20px]">donut_large</span>
+<p class="text-sm font-medium uppercase tracking-wider">Match Score</p>
+</div>
+<div class="flex items-center gap-2">
+<p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">65%</p>
+<span class="inline-flex items-center rounded-full bg-yellow-100 dark:bg-yellow-900/30 px-2 py-0.5 text-xs font-bold text-yellow-700 dark:text-yellow-500">
+                                    Intermediate
+                                </span>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[20px]">timelapse</span>
+<p class="text-sm font-medium uppercase tracking-wider">Time to Bridge</p>
+</div>
+<p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">3 Months</p>
+</div>
+</div>
+<!-- Charts & Skill Lists Split -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left: Visual Chart -->
+<div class="lg:col-span-7 flex flex-col gap-4">
+<div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+<div class="mb-6">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold">Skill Proficiency Comparison</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Your proficiency vs. Industry Standard</p>
+</div>
+<div class="relative h-[280px] w-full mt-4">
+<!-- Chart Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between text-xs text-slate-400 dark:text-slate-600">
+<div class="border-b border-dashed border-slate-200 dark:border-slate-800 w-full h-0"></div>
+<div class="border-b border-dashed border-slate-200 dark:border-slate-800 w-full h-0"></div>
+<div class="border-b border-dashed border-slate-200 dark:border-slate-800 w-full h-0"></div>
+<div class="border-b border-dashed border-slate-200 dark:border-slate-800 w-full h-0"></div>
+<div class="border-b border-dashed border-slate-200 dark:border-slate-800 w-full h-0"></div>
+</div>
+<!-- Bars Container -->
+<div class="absolute inset-0 flex items-end justify-around px-2 pb-6">
+<!-- Skill 1 -->
+<div class="group flex flex-col items-center gap-2 w-12 h-full justify-end relative">
+<!-- Target Bar (Ghost) -->
+<div class="w-full bg-slate-100 dark:bg-slate-800 rounded-t-md absolute bottom-0" style="height: 80%;"></div>
+<!-- Current Bar -->
+<div class="w-full bg-green-500 rounded-t-md relative z-10 transition-all hover:bg-green-600 cursor-pointer" style="height: 85%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap z-20 pointer-events-none transition-opacity">
+                                                    Match! (85%)
+                                                </div>
+</div>
+<span class="absolute -bottom-8 text-[11px] font-bold text-slate-600 dark:text-slate-400 text-center leading-tight">Strategic Thinking</span>
+</div>
+<!-- Skill 2 -->
+<div class="group flex flex-col items-center gap-2 w-12 h-full justify-end relative">
+<div class="w-full bg-slate-100 dark:bg-slate-800 rounded-t-md absolute bottom-0" style="height: 90%;"></div>
+<div class="w-full bg-red-500 rounded-t-md relative z-10 transition-all hover:bg-red-600 cursor-pointer" style="height: 30%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap z-20 pointer-events-none transition-opacity">
+                                                    Gap (30/90)
+                                                </div>
+</div>
+<span class="absolute -bottom-8 text-[11px] font-bold text-slate-600 dark:text-slate-400 text-center leading-tight">Data Analysis</span>
+</div>
+<!-- Skill 3 -->
+<div class="group flex flex-col items-center gap-2 w-12 h-full justify-end relative">
+<div class="w-full bg-slate-100 dark:bg-slate-800 rounded-t-md absolute bottom-0" style="height: 75%;"></div>
+<div class="w-full bg-yellow-500 rounded-t-md relative z-10 transition-all hover:bg-yellow-600 cursor-pointer" style="height: 50%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap z-20 pointer-events-none transition-opacity">
+                                                    Improving (50/75)
+                                                </div>
+</div>
+<span class="absolute -bottom-8 text-[11px] font-bold text-slate-600 dark:text-slate-400 text-center leading-tight">User Research</span>
+</div>
+<!-- Skill 4 -->
+<div class="group flex flex-col items-center gap-2 w-12 h-full justify-end relative">
+<div class="w-full bg-slate-100 dark:bg-slate-800 rounded-t-md absolute bottom-0" style="height: 70%;"></div>
+<div class="w-full bg-green-500 rounded-t-md relative z-10 transition-all hover:bg-green-600 cursor-pointer" style="height: 75%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap z-20 pointer-events-none transition-opacity">
+                                                    Exceeds (75/70)
+                                                </div>
+</div>
+<span class="absolute -bottom-8 text-[11px] font-bold text-slate-600 dark:text-slate-400 text-center leading-tight">Agile</span>
+</div>
+<!-- Skill 5 -->
+<div class="group flex flex-col items-center gap-2 w-12 h-full justify-end relative">
+<div class="w-full bg-slate-100 dark:bg-slate-800 rounded-t-md absolute bottom-0" style="height: 85%;"></div>
+<div class="w-full bg-primary rounded-t-md relative z-10 transition-all hover:bg-blue-600 cursor-pointer" style="height: 60%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap z-20 pointer-events-none transition-opacity">
+                                                    Good (60/85)
+                                                </div>
+</div>
+<span class="absolute -bottom-8 text-[11px] font-bold text-slate-600 dark:text-slate-400 text-center leading-tight">Comm.</span>
+</div>
+</div>
+</div>
+<div class="mt-12 flex items-center justify-center gap-6">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-green-500"></div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Matched</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-red-500"></div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Critical Gap</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-slate-100 dark:bg-slate-700"></div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Target Level</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Detailed Skill Breakdown List -->
+<div class="lg:col-span-5 flex flex-col gap-4">
+<div class="flex items-center justify-between pb-2">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold">Priority Gaps</h3>
+<button class="text-primary text-sm font-bold hover:underline">View All</button>
+</div>
+<!-- Gap Item 1 -->
+<div class="flex flex-col gap-3 rounded-xl border border-l-4 border-slate-200 dark:border-slate-800 border-l-red-500 bg-white dark:bg-slate-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="bg-red-50 dark:bg-red-900/20 p-2 rounded-lg text-red-600 dark:text-red-400">
+<span class="material-symbols-outlined">dataset</span>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white font-bold text-sm">Data Analysis</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Technical Skill</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-[10px] font-bold uppercase rounded-md">High Priority</span>
+</div>
+<div class="flex items-center gap-2 text-sm mt-1">
+<span class="text-slate-500 dark:text-slate-400">Current:</span>
+<span class="font-bold text-slate-900 dark:text-white">Beginner</span>
+<span class="material-symbols-outlined text-slate-400 text-sm">arrow_right_alt</span>
+<span class="text-slate-500 dark:text-slate-400">Required:</span>
+<span class="font-bold text-primary">Advanced</span>
+</div>
+</div>
+<!-- Gap Item 2 -->
+<div class="flex flex-col gap-3 rounded-xl border border-l-4 border-slate-200 dark:border-slate-800 border-l-yellow-500 bg-white dark:bg-slate-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded-lg text-yellow-600 dark:text-yellow-400">
+<span class="material-symbols-outlined">person_search</span>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white font-bold text-sm">User Research</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Core Competency</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300 text-[10px] font-bold uppercase rounded-md">Gap</span>
+</div>
+<div class="flex items-center gap-2 text-sm mt-1">
+<span class="text-slate-500 dark:text-slate-400">Current:</span>
+<span class="font-bold text-slate-900 dark:text-white">Competent</span>
+<span class="material-symbols-outlined text-slate-400 text-sm">arrow_right_alt</span>
+<span class="text-slate-500 dark:text-slate-400">Required:</span>
+<span class="font-bold text-primary">Expert</span>
+</div>
+</div>
+<!-- Matched Item 3 -->
+<div class="flex flex-col gap-3 rounded-xl border border-l-4 border-slate-200 dark:border-slate-800 border-l-green-500 bg-white dark:bg-slate-900 p-4 shadow-sm opacity-80 hover:opacity-100 transition-opacity">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="bg-green-50 dark:bg-green-900/20 p-2 rounded-lg text-green-600 dark:text-green-400">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white font-bold text-sm">Strategic Thinking</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Soft Skill</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 text-[10px] font-bold uppercase rounded-md">Matched</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-green-500 h-full rounded-full" style="width: 100%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recommendations Section -->
+<div class="flex flex-col gap-6 pt-6 border-t border-slate-200 dark:border-slate-800">
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div>
+<h2 class="text-slate-900 dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">Bridge Your Gaps</h2>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Recommended courses to acquire missing skills.</p>
+</div>
+<button class="text-primary font-bold text-sm flex items-center gap-1 hover:gap-2 transition-all">
+                                View Learning Plan <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Course Card 1 -->
+<div class="group flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden hover:shadow-lg transition-shadow">
+<div class="h-32 bg-slate-200 dark:bg-slate-800 bg-cover bg-center relative" data-alt="Abstract blue data visualization pattern" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDRcVF3gEwc0O7isJsL4kAh2EmIvHUfVlrCjZirjzRFcleJJp5aeTo6YpNVJYsH4XSUZzcwHXBtAdKTiyXD4W45oCIsxOx1TuPbcaUi8ASep2scczNPuINHhBitkahvQdTyQyVXqleOJ-hajpeh8eyGkn0V1sTeKIhi3ZnS5IKRwenyZC5TB-YPTVFf1fd0w5DoNZxxgTRHrbxIftUwpImFT67h5_DDO1JR070K76XFy3WB7N5ot5wodpf_VaqUaJP44dcY2CzM-RA");'>
+<div class="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 px-2 py-1 rounded text-[10px] font-bold text-slate-900 dark:text-white shadow-sm">
+                                        Top Rated
+                                    </div>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="text-[10px] font-bold uppercase tracking-wider text-red-500 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded">Fixes Gap</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Coursera</span>
+</div>
+<h3 class="text-slate-900 dark:text-white font-bold text-lg leading-tight mb-1 group-hover:text-primary transition-colors">Google Data Analytics</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-2">Learn the foundations of data analysis, including SQL, R, and Tableau.</p>
+</div>
+<div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+<div class="flex items-center text-slate-500 dark:text-slate-400 text-xs gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 6 months
+                                        </div>
+<button class="text-primary text-sm font-bold">Start Learning</button>
+</div>
+</div>
+</div>
+<!-- Course Card 2 -->
+<div class="group flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden hover:shadow-lg transition-shadow">
+<div class="h-32 bg-slate-200 dark:bg-slate-800 bg-cover bg-center relative" data-alt="Person writing on glass wall doing research" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAW3JCFEVCMOAvF-D-bH09IQtVShFqA8e0B90ugj-CWZjPvr4Nm17DBxTz1_5ra-WdWevlM0M5DrSAhRf-XZlK2hAWDFFQCuc24es1ljduMdrk6DpuzKjdg7Rp8w6SqQx_Y0HmyXdtbCbjQYQFTZncTslrxP0RIokPupJJbWxYgBcvfJATtWAbA7hDhQJSMSgAYW5Pu4OEXfjGihgJcAoJAhavuCDwR5ZPIjtFKMpCFkmN6Nglgd3DUgtzZALKqXelhMC6SyZpoDCg");'>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="text-[10px] font-bold uppercase tracking-wider text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-0.5 rounded">Improvement</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Udemy</span>
+</div>
+<h3 class="text-slate-900 dark:text-white font-bold text-lg leading-tight mb-1 group-hover:text-primary transition-colors">UX Research Masterclass</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-2">Master user interviews, usability testing, and persona creation.</p>
+</div>
+<div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+<div class="flex items-center text-slate-500 dark:text-slate-400 text-xs gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 12 hours
+                                        </div>
+<button class="text-primary text-sm font-bold">Start Learning</button>
+</div>
+</div>
+</div>
+<!-- Course Card 3 -->
+<div class="group flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden hover:shadow-lg transition-shadow">
+<div class="h-32 bg-slate-200 dark:bg-slate-800 bg-cover bg-center relative" data-alt="Laptop with code on screen" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD-JH0rNH8f9Sg3actu0CBKYhuWdWU_Vc9Oq07j4SmbaQImb7SA0NLlMzv9PNyoXKLxL7nfnChinstXfkKLQI-tM6Ga-zT1OL7KfQ24IER6Al6HjlVt9wXZCNdmn2SB5pUfS3qyUqhAFjtLwGncOueitfu0phLp_gmeoiEBHrrm29jLp6piCjtk_PQmTnmdujc9XmSLWkUQkT4RE0loQy54e11XPhnl2LwsWq6PMLTQicVLft_4jl5abt7hEWI3ZpxRdQzm7k1wSrc");'>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="text-[10px] font-bold uppercase tracking-wider text-primary bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded">Elective</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Codecademy</span>
+</div>
+<h3 class="text-slate-900 dark:text-white font-bold text-lg leading-tight mb-1 group-hover:text-primary transition-colors">Intermediate Python</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-2">Deepen your coding skills for automation and data scripts.</p>
+</div>
+<div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+<div class="flex items-center text-slate-500 dark:text-slate-400 text-xs gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 4 weeks
+                                        </div>
+<button class="text-primary text-sm font-bold">Start Learning</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html><!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Skill Gap Analyzer - CareerAI</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Noto+Sans:wght@300..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white overflow-x-hidden antialiased selection:bg-primary/20 selection:text-primary">
+<div class="relative flex h-auto min-h-screen w-full flex-col">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 lg:px-10 py-3">
+<div class="flex items-center gap-4 text-slate-900 dark:text-white">
+<div class="size-8 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">token</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">CareerAI</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Dashboard</a>
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Career Paths</a>
+<a class="text-slate-900 dark:text-white text-sm font-bold leading-normal" href="#">Skill Analyzer</a>
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Learning Plan</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden sm:flex h-10 px-4 items-center justify-center rounded-lg bg-primary text-white text-sm font-bold hover:bg-blue-700 transition-colors">
+<span class="truncate">Profile</span>
+</button>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border border-slate-200 dark:border-slate-700" data-alt="User profile avatar image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCvqZU5Sd2Xk6AfzHII15Q0jkhSmw8ohSADZpVwNpNnuZhgCfmyDWqGI62OX1AYTaOifUBNq3UsskyG5NekYnEbZEuo8w1ilKI5KHW0TgT9EX298Auvu6P7QMWh_3LUKf2gmHF76ICmJAOHU0R3TW63ROjBJV_AbdI2Jvhu1ki1pJXDb0Nd79d9oeHVP_XAearMDjpnKs0O5KP5RsczpWiIyGkx_NK__Lk-g-lJfUPyYEI2_GlPzrt_5Wj3IFCZR4TA0ayb70G1JbE");'></div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="layout-container flex h-full grow flex-col">
+<div class="px-4 md:px-10 lg:px-40 flex flex-1 justify-center py-8">
+<div class="layout-content-container flex flex-col w-full max-w-[1024px] flex-1 gap-8">
+<!-- Page Header & Actions -->
+<div class="flex flex-wrap items-end justify-between gap-4">
+<div class="flex min-w-72 flex-col gap-2">
+<h1 class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-tight">Skill Gap Analysis</h1>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal max-w-2xl">
+                                Detailed comparison between your current profile and the requirements for <span class="font-bold text-primary">Product Manager</span>.
+                            </p>
+</div>
+<div class="flex gap-3">
+<button class="group flex h-10 px-4 items-center gap-2 justify-center rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-bold transition-all">
+<span class="material-symbols-outlined text-[20px]">print</span>
+<span class="truncate">Export Report</span>
+</button>
+<button class="flex h-10 px-4 items-center gap-2 justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+<span class="truncate">Change Target</span>
+</button>
+</div>
+</div>
+<!-- AI Insight Box -->
+<div class="bg-gradient-to-r from-primary/10 to-transparent rounded-xl border border-primary/20 p-6 flex flex-col md:flex-row gap-5 items-start">
+<div class="bg-white dark:bg-slate-900 p-2 rounded-lg shadow-sm text-primary shrink-0">
+<span class="material-symbols-outlined text-3xl">auto_awesome</span>
+</div>
+<div class="flex-1">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">AI Career Insight</h3>
+<p class="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base">
+                                You're exceptionally strong in <span class="font-bold text-slate-900 dark:text-white">Strategic Thinking</span> and <span class="font-bold text-slate-900 dark:text-white">Agile Methodologies</span>, which puts you in the top 15% of candidates. To reach your Product Manager goal within 3 months, focus your efforts on technical data skills—specifically <span class="font-bold text-slate-900 dark:text-white">SQL</span> and <span class="font-bold text-slate-900 dark:text-white">Data Analysis</span>.
+                            </p>
+</div>
+<button class="text-primary text-sm font-bold hover:underline whitespace-nowrap self-start md:self-center">
+                            View Roadmap →
+                        </button>
+</div>
+<!-- Key Stats Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[20px]">target</span>
+<p class="text-sm font-medium uppercase tracking-wider">Target Role</p>
+</div>
+<p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">Product Manager</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[20px]">donut_large</span>
+<p class="text-sm font-medium uppercase tracking-wider">Match Score</p>
+</div>
+<div class="flex items-center gap-2">
+<p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">65%</p>
+<span class="inline-flex items-center rounded-full bg-yellow-100 dark:bg-yellow-900/30 px-2 py-0.5 text-xs font-bold text-yellow-700 dark:text-yellow-500">
+                                    Intermediate
+                                </span>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[20px]">timelapse</span>
+<p class="text-sm font-medium uppercase tracking-wider">Time to Bridge</p>
+</div>
+<p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">3 Months</p>
+</div>
+</div>
+<!-- Charts & Skill Lists Split -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left: Visual Chart -->
+<div class="lg:col-span-7 flex flex-col gap-4">
+<div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+<div class="mb-6">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold">Skill Proficiency Comparison</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Your proficiency vs. Industry Standard</p>
+</div>
+<div class="relative h-[280px] w-full mt-4">
+<!-- Chart Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between text-xs text-slate-400 dark:text-slate-600">
+<div class="border-b border-dashed border-slate-200 dark:border-slate-800 w-full h-0"></div>
+<div class="border-b border-dashed border-slate-200 dark:border-slate-800 w-full h-0"></div>
+<div class="border-b border-dashed border-slate-200 dark:border-slate-800 w-full h-0"></div>
+<div class="border-b border-dashed border-slate-200 dark:border-slate-800 w-full h-0"></div>
+<div class="border-b border-dashed border-slate-200 dark:border-slate-800 w-full h-0"></div>
+</div>
+<!-- Bars Container -->
+<div class="absolute inset-0 flex items-end justify-around px-2 pb-6">
+<!-- Skill 1 -->
+<div class="group flex flex-col items-center gap-2 w-12 h-full justify-end relative">
+<!-- Target Bar (Ghost) -->
+<div class="w-full bg-slate-100 dark:bg-slate-800 rounded-t-md absolute bottom-0" style="height: 80%;"></div>
+<!-- Current Bar -->
+<div class="w-full bg-green-500 rounded-t-md relative z-10 transition-all hover:bg-green-600 cursor-pointer" style="height: 85%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap z-20 pointer-events-none transition-opacity">
+                                                    Match! (85%)
+                                                </div>
+</div>
+<span class="absolute -bottom-8 text-[11px] font-bold text-slate-600 dark:text-slate-400 text-center leading-tight">Strategic Thinking</span>
+</div>
+<!-- Skill 2 -->
+<div class="group flex flex-col items-center gap-2 w-12 h-full justify-end relative">
+<div class="w-full bg-slate-100 dark:bg-slate-800 rounded-t-md absolute bottom-0" style="height: 90%;"></div>
+<div class="w-full bg-red-500 rounded-t-md relative z-10 transition-all hover:bg-red-600 cursor-pointer" style="height: 30%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap z-20 pointer-events-none transition-opacity">
+                                                    Gap (30/90)
+                                                </div>
+</div>
+<span class="absolute -bottom-8 text-[11px] font-bold text-slate-600 dark:text-slate-400 text-center leading-tight">Data Analysis</span>
+</div>
+<!-- Skill 3 -->
+<div class="group flex flex-col items-center gap-2 w-12 h-full justify-end relative">
+<div class="w-full bg-slate-100 dark:bg-slate-800 rounded-t-md absolute bottom-0" style="height: 75%;"></div>
+<div class="w-full bg-yellow-500 rounded-t-md relative z-10 transition-all hover:bg-yellow-600 cursor-pointer" style="height: 50%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap z-20 pointer-events-none transition-opacity">
+                                                    Improving (50/75)
+                                                </div>
+</div>
+<span class="absolute -bottom-8 text-[11px] font-bold text-slate-600 dark:text-slate-400 text-center leading-tight">User Research</span>
+</div>
+<!-- Skill 4 -->
+<div class="group flex flex-col items-center gap-2 w-12 h-full justify-end relative">
+<div class="w-full bg-slate-100 dark:bg-slate-800 rounded-t-md absolute bottom-0" style="height: 70%;"></div>
+<div class="w-full bg-green-500 rounded-t-md relative z-10 transition-all hover:bg-green-600 cursor-pointer" style="height: 75%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap z-20 pointer-events-none transition-opacity">
+                                                    Exceeds (75/70)
+                                                </div>
+</div>
+<span class="absolute -bottom-8 text-[11px] font-bold text-slate-600 dark:text-slate-400 text-center leading-tight">Agile</span>
+</div>
+<!-- Skill 5 -->
+<div class="group flex flex-col items-center gap-2 w-12 h-full justify-end relative">
+<div class="w-full bg-slate-100 dark:bg-slate-800 rounded-t-md absolute bottom-0" style="height: 85%;"></div>
+<div class="w-full bg-primary rounded-t-md relative z-10 transition-all hover:bg-blue-600 cursor-pointer" style="height: 60%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap z-20 pointer-events-none transition-opacity">
+                                                    Good (60/85)
+                                                </div>
+</div>
+<span class="absolute -bottom-8 text-[11px] font-bold text-slate-600 dark:text-slate-400 text-center leading-tight">Comm.</span>
+</div>
+</div>
+</div>
+<div class="mt-12 flex items-center justify-center gap-6">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-green-500"></div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Matched</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-red-500"></div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Critical Gap</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-slate-100 dark:bg-slate-700"></div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Target Level</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Detailed Skill Breakdown List -->
+<div class="lg:col-span-5 flex flex-col gap-4">
+<div class="flex items-center justify-between pb-2">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold">Priority Gaps</h3>
+<button class="text-primary text-sm font-bold hover:underline">View All</button>
+</div>
+<!-- Gap Item 1 -->
+<div class="flex flex-col gap-3 rounded-xl border border-l-4 border-slate-200 dark:border-slate-800 border-l-red-500 bg-white dark:bg-slate-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="bg-red-50 dark:bg-red-900/20 p-2 rounded-lg text-red-600 dark:text-red-400">
+<span class="material-symbols-outlined">dataset</span>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white font-bold text-sm">Data Analysis</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Technical Skill</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-[10px] font-bold uppercase rounded-md">High Priority</span>
+</div>
+<div class="flex items-center gap-2 text-sm mt-1">
+<span class="text-slate-500 dark:text-slate-400">Current:</span>
+<span class="font-bold text-slate-900 dark:text-white">Beginner</span>
+<span class="material-symbols-outlined text-slate-400 text-sm">arrow_right_alt</span>
+<span class="text-slate-500 dark:text-slate-400">Required:</span>
+<span class="font-bold text-primary">Advanced</span>
+</div>
+</div>
+<!-- Gap Item 2 -->
+<div class="flex flex-col gap-3 rounded-xl border border-l-4 border-slate-200 dark:border-slate-800 border-l-yellow-500 bg-white dark:bg-slate-900 p-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded-lg text-yellow-600 dark:text-yellow-400">
+<span class="material-symbols-outlined">person_search</span>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white font-bold text-sm">User Research</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Core Competency</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300 text-[10px] font-bold uppercase rounded-md">Gap</span>
+</div>
+<div class="flex items-center gap-2 text-sm mt-1">
+<span class="text-slate-500 dark:text-slate-400">Current:</span>
+<span class="font-bold text-slate-900 dark:text-white">Competent</span>
+<span class="material-symbols-outlined text-slate-400 text-sm">arrow_right_alt</span>
+<span class="text-slate-500 dark:text-slate-400">Required:</span>
+<span class="font-bold text-primary">Expert</span>
+</div>
+</div>
+<!-- Matched Item 3 -->
+<div class="flex flex-col gap-3 rounded-xl border border-l-4 border-slate-200 dark:border-slate-800 border-l-green-500 bg-white dark:bg-slate-900 p-4 shadow-sm opacity-80 hover:opacity-100 transition-opacity">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="bg-green-50 dark:bg-green-900/20 p-2 rounded-lg text-green-600 dark:text-green-400">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white font-bold text-sm">Strategic Thinking</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Soft Skill</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 text-[10px] font-bold uppercase rounded-md">Matched</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-green-500 h-full rounded-full" style="width: 100%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recommendations Section -->
+<div class="flex flex-col gap-6 pt-6 border-t border-slate-200 dark:border-slate-800">
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div>
+<h2 class="text-slate-900 dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">Bridge Your Gaps</h2>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Recommended courses to acquire missing skills.</p>
+</div>
+<button class="text-primary font-bold text-sm flex items-center gap-1 hover:gap-2 transition-all">
+                                View Learning Plan <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Course Card 1 -->
+<div class="group flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden hover:shadow-lg transition-shadow">
+<div class="h-32 bg-slate-200 dark:bg-slate-800 bg-cover bg-center relative" data-alt="Abstract blue data visualization pattern" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDRcVF3gEwc0O7isJsL4kAh2EmIvHUfVlrCjZirjzRFcleJJp5aeTo6YpNVJYsH4XSUZzcwHXBtAdKTiyXD4W45oCIsxOx1TuPbcaUi8ASep2scczNPuINHhBitkahvQdTyQyVXqleOJ-hajpeh8eyGkn0V1sTeKIhi3ZnS5IKRwenyZC5TB-YPTVFf1fd0w5DoNZxxgTRHrbxIftUwpImFT67h5_DDO1JR070K76XFy3WB7N5ot5wodpf_VaqUaJP44dcY2CzM-RA");'>
+<div class="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 px-2 py-1 rounded text-[10px] font-bold text-slate-900 dark:text-white shadow-sm">
+                                        Top Rated
+                                    </div>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="text-[10px] font-bold uppercase tracking-wider text-red-500 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded">Fixes Gap</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Coursera</span>
+</div>
+<h3 class="text-slate-900 dark:text-white font-bold text-lg leading-tight mb-1 group-hover:text-primary transition-colors">Google Data Analytics</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-2">Learn the foundations of data analysis, including SQL, R, and Tableau.</p>
+</div>
+<div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+<div class="flex items-center text-slate-500 dark:text-slate-400 text-xs gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 6 months
+                                        </div>
+<button class="text-primary text-sm font-bold">Start Learning</button>
+</div>
+</div>
+</div>
+<!-- Course Card 2 -->
+<div class="group flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden hover:shadow-lg transition-shadow">
+<div class="h-32 bg-slate-200 dark:bg-slate-800 bg-cover bg-center relative" data-alt="Person writing on glass wall doing research" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAW3JCFEVCMOAvF-D-bH09IQtVShFqA8e0B90ugj-CWZjPvr4Nm17DBxTz1_5ra-WdWevlM0M5DrSAhRf-XZlK2hAWDFFQCuc24es1ljduMdrk6DpuzKjdg7Rp8w6SqQx_Y0HmyXdtbCbjQYQFTZncTslrxP0RIokPupJJbWxYgBcvfJATtWAbA7hDhQJSMSgAYW5Pu4OEXfjGihgJcAoJAhavuCDwR5ZPIjtFKMpCFkmN6Nglgd3DUgtzZALKqXelhMC6SyZpoDCg");'>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="text-[10px] font-bold uppercase tracking-wider text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-0.5 rounded">Improvement</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Udemy</span>
+</div>
+<h3 class="text-slate-900 dark:text-white font-bold text-lg leading-tight mb-1 group-hover:text-primary transition-colors">UX Research Masterclass</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-2">Master user interviews, usability testing, and persona creation.</p>
+</div>
+<div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+<div class="flex items-center text-slate-500 dark:text-slate-400 text-xs gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 12 hours
+                                        </div>
+<button class="text-primary text-sm font-bold">Start Learning</button>
+</div>
+</div>
+</div>
+<!-- Course Card 3 -->
+<div class="group flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden hover:shadow-lg transition-shadow">
+<div class="h-32 bg-slate-200 dark:bg-slate-800 bg-cover bg-center relative" data-alt="Laptop with code on screen" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD-JH0rNH8f9Sg3actu0CBKYhuWdWU_Vc9Oq07j4SmbaQImb7SA0NLlMzv9PNyoXKLxL7nfnChinstXfkKLQI-tM6Ga-zT1OL7KfQ24IER6Al6HjlVt9wXZCNdmn2SB5pUfS3qyUqhAFjtLwGncOueitfu0phLp_gmeoiEBHrrm29jLp6piCjtk_PQmTnmdujc9XmSLWkUQkT4RE0loQy54e11XPhnl2LwsWq6PMLTQicVLft_4jl5abt7hEWI3ZpxRdQzm7k1wSrc");'>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="text-[10px] font-bold uppercase tracking-wider text-primary bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded">Elective</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">Codecademy</span>
+</div>
+<h3 class="text-slate-900 dark:text-white font-bold text-lg leading-tight mb-1 group-hover:text-primary transition-colors">Intermediate Python</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-2">Deepen your coding skills for automation and data scripts.</p>
+</div>
+<div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+<div class="flex items-center text-slate-500 dark:text-slate-400 text-xs gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 4 weeks
+                                        </div>
+<button class="text-primary text-sm font-bold">Start Learning</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

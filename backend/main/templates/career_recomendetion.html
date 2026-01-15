@@ -90,9 +90,8 @@ html{
 </div>
 <div class="hidden md:flex flex-1 justify-end gap-8">
 <div class="flex items-center gap-9">
-<a class="text-[#111318] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Dashboard</a>
-<a class="text-[#111318] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Skill Analyzer</a>
-<a class="text-[#111318] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Career Library</a>
+<a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Dashboard</a>
+<a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="{% url 'career_analysis:gap_analyzer' %}">Skill Gap Analyzer</a>
 </div>
 <a href="{% url 'accounts:logout' %}" >
 <button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors" type="submit">
@@ -432,14 +431,24 @@ name="specialization" id="specialization" onchange="updatePlaceholders()" requir
 <div class="mb-4">
     <p class="text-xs font-bold uppercase mb-2">Required Skills</p>
     <div class="flex flex-wrap gap-2">
-        {% for skill in career.skills_list %}
+        {% for skill in career.required_skills_list %}
+        <span class="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-700">
+            {{ skill }}
+        </span>
+        {% endfor %}
+    </div>
+</div> 
+
+<div class="mb-4">
+    <p class="text-xs font-bold uppercase mb-2">Soft Skills</p>
+    <div class="flex flex-wrap gap-2">
+        {% for skill in career.soft_skills_list %}
         <span class="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-700">
             {{ skill }}
         </span>
         {% endfor %}
     </div>
 </div>
-
         <!-- GROWTH TEXT -->
         <div class="mb-5">
             <p class="text-xs font-bold uppercase mb-1">Future Growth</p>
@@ -474,15 +483,31 @@ name="specialization" id="specialization" onchange="updatePlaceholders()" requir
 {% endfor %}
 {% endif %}
 
+<div id="savedCareersSection"
+     class="mt-4 bg-primary/5 rounded-xl p-5 border border-primary/10
+            {% if not saved_career %}hidden{% endif %}">
 
-<div id="savedCareersSection" class="mt-4 bg-primary/5 rounded-xl p-5 border border-primary/10 hidden">
-<h4 class="font-bold text-sm text-[#111318] dark:text-white mb-3">Saved Careers</h4>
-<div class="flex flex-col gap-3">
-<div id="savedCareersList">
+    <h4 class="font-bold text-sm mb-3">Saved Career</h4>
 
+    <div id="savedCareersList" class="space-y-2">
+        {% if saved_career %}
+        <div class="flex items-center gap-3 bg-white dark:bg-[#1a202c]
+                    p-3 rounded-lg shadow-sm border">
+            <div class="size-8 rounded bg-gray-100 dark:bg-gray-700
+                        flex items-center justify-center">
+                <span class="material-symbols-outlined">
+                    {{ saved_career.career_icon|default:"work" }}
+                </span>
+            </div>
+            <p class="font-bold text-sm">
+                {{ saved_career.career_name }}
+            </p>
+        </div>
+        {% endif %}
+    </div>
 </div>
-</div>
-</div>
+
+
 </div>
 </div>
 </div>
@@ -590,81 +615,87 @@ function closeModal() {
 }
 
 </script>-->
-
-<!--career save button-->
+<!-- Career Save Button Script -->
 <script>
 function saveCareerUI(careerName, icon) {
     const section = document.getElementById("savedCareersSection");
     const list = document.getElementById("savedCareersList");
 
-    // show section
     section.classList.remove("hidden");
-
     list.innerHTML = "";
 
-    // create card
     const div = document.createElement("div");
-    div.dataset.career = careerName;
     div.className =
-     "flex items-center gap-3 bg-white dark:bg-[#1a202c] p-2 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer hover:shadow-md transition-shadow";
+        "flex items-center gap-3 bg-white dark:bg-[#1a202c] p-2 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700";
 
     div.innerHTML = `
-    <div class="size-8 rounded bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-500">
-        <span class="material-symbols-outlined text-sm">${icon}</span>
+       <button
+  class="w-full flex items-center gap-3
+         bg-white dark:bg-[#1a202c]
+         p-2 rounded-lg shadow-sm
+         border border-gray-100 dark:border-gray-700
+         hover:shadow-md transition-shadow
+         text-left hover:text-primary">
+
+    <!-- Icon -->
+    <div class="size-8 rounded bg-gray-100 dark:bg-gray-700
+                flex items-center justify-center">
+        <span class="material-symbols-outlined text-sm">
+            ${icon}
+        </span>
     </div>
 
+    <!-- Career name -->
     <div class="flex-1 ml-3">
         <p class="text-sm font-bold text-[#111318] dark:text-white">
             ${careerName}
         </p>
     </div>
 
-    <button class="ml-auto px-2 text-gray-400 hover:text-primary">
-        <span class="material-symbols-outlined text-lg">arrow_forward</span>
-    </button>
-`;
+    <!-- Arrow -->
+     <div class="size-8 
+                flex items-center justify-center">
+    <span class="material-symbols-outlined text-lg ">
+        arrow_forward
+    </span></div>
+</button>
 
-    // Attach onclick to the button
+    `;
+
     const button = div.querySelector("button");
-    button.onclick = function(e) {
-        e.stopPropagation(); // prevent triggering card click
 
-        // 🔥 Save to DB and redirect
+    button.onclick = function (e) {
+        e.stopPropagation();
+
         fetch("{% url 'career_analysis:save_career' %}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
                 "X-CSRFToken": "{{ csrf_token }}"
             },
-            body: "career_name=" + encodeURIComponent(careerName)
+            body: "career_name=" + encodeURIComponent(careerName) +
+            "&career_icon=" + encodeURIComponent(icon)
         })
         .then(res => res.json())
         .then(data => {
-            console.log(data); // debug
-
             if (data.status === "exists") {
                 alert("Career already saved!");
                 return;
             }
 
             if (data.status === "success") {
-                if (data.redirect_url) {
-                    window.location.href = data.redirect_url; //  redirect works now
-                } else {
-                    alert("Redirect URL missing!");
-                }
+                window.location.href = data.redirect_url;
                 return;
             }
 
-            alert("Error saving career");
+            alert("Something went wrong");
         })
-        .catch(err => {
-            console.error("Save career failed", err);
-        });
+        .catch(err => console.error(err));
     };
 
     list.appendChild(div);
-    div.scrollIntoView({ behavior: "smooth", block: "end" });
+
+     section.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 </script>
 
