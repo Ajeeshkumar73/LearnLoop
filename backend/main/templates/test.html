@@ -79,6 +79,10 @@
                             </p>
 </div>
 <div class="flex gap-3">
+<button class="group flex h-10 px-4 items-center gap-2 justify-center rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-bold transition-all">
+<span class="material-symbols-outlined text-[20px]">print</span>
+<span class="truncate">Export Report</span>
+</button>
 <a href="{% url 'career_analysis:career_recom' %}"><button class="flex h-10 px-4 items-center gap-2 justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-sm font-bold transition-colors">
 <span class="material-symbols-outlined text-[20px]">edit</span>
 <span class="truncate">Change Target</span>
@@ -278,156 +282,61 @@
 <!-- Recommendations Section -->
 <div id="roadmapSection" class="hidden mt-10">
   <div class="flex flex-col gap-6 pt-6 border-t border-slate-200 dark:border-slate-800">
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div>
+<h2 class="text-slate-900 dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">Bridge Your Gaps</h2>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Recommended courses to acquire missing skills.</p>
+</div>
+<button class="text-primary font-bold text-sm flex items-center gap-1 hover:gap-2 transition-all">
+                                View Learning Plan <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+{% for roadmap in roadmaps %}
+<div class="rounded-xl border p-5 bg-white dark:bg-slate-900 mb-6">
 
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <div>
-        <h2 class="text-slate-900 dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">Bridge Your Gaps</h2>
-        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Recommended courses and videos to acquire missing skills.</p>
-      </div>
-    </div>
+  <h3 class="font-bold text-lg">
+    {{ roadmap.skill }}
+  </h3>
 
-    {% for roadmap in roadmaps %}
-    <div class="rounded-xl border border-slate-200 dark:border-slate-700 p-5 bg-white dark:bg-slate-900 mb-6 shadow-sm">
+  <!-- Progress Bar -->
+  <div class="w-full bg-slate-200 rounded-full h-2 mt-2">
+    <div class="bg-primary h-2 rounded-full"
+         style="width: {{ roadmap.percent }}%"></div>
+  </div>
 
-      <!-- Skill Header -->
-      <div class="flex items-center gap-3 mb-3">
-        <div class="p-2 rounded-lg bg-primary/10 text-primary">
-          <span class="material-symbols-outlined text-xl">{{ roadmap.type|lower|default:"dataset" }}</span>
-        </div>
-        <div>
-          <h3 class="font-bold text-lg text-slate-900 dark:text-white">{{ roadmap.skill }}</h3>
-          <p class="text-xs text-slate-500">{{ roadmap.type }}</p>
-        </div>
-      </div>
+  <p class="text-xs mt-1 text-slate-500">
+    {{ roadmap.completed }} / {{ roadmap.total }} weeks completed
+  </p>
 
-      <!-- Progress Bar -->
-      <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-2">
-        <div class="bg-primary h-2 rounded-full transition-all duration-500"
-             style="width: {{ roadmap.percent }}%"></div>
-      </div>
-      <p class="text-xs mt-1 text-slate-500">
-        {{ roadmap.completed }} / {{ roadmap.total }} weeks completed ({{ roadmap.percent }}%)
-      </p>
+  {% for step in roadmap.roadmap %}
+  <div class="mt-4 p-4 rounded-lg border">
 
-      <!-- Weekly Steps -->
-      {% for step in roadmap.roadmap %}
-      <div class="mt-5 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+    <div class="flex items-center justify-between">
+      <h4 class="font-semibold">
+        Week {{ forloop.counter }} – {{ step.goal }}
+      </h4>
 
-        <!-- Week Header Row -->
-        <div class="flex items-start justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary text-white text-xs font-bold shrink-0">
-              {{ forloop.counter }}
-            </span>
-            <div>
-              <h4 class="font-bold text-sm text-slate-900 dark:text-white">
-                Week {{ forloop.counter }} — {{ step.goal }}
-              </h4>
-            </div>
-          </div>
-          <!-- Progress Checkbox -->
-          <input type="checkbox"
-            {% if forloop.counter in roadmap.completed_weeks %}checked{% endif %}
-            onclick="toggleWeek('{{ roadmap.skill }}', {{ forloop.counter }})"
-            class="w-5 h-5 accent-primary cursor-pointer shrink-0 mt-1">
-        </div>
-
-        <!-- How to learn -->
-        <p class="text-sm text-slate-600 dark:text-slate-300 mt-3 leading-relaxed pl-9">
-          {{ step.how }}
-        </p>
-
-        <!-- 🎬 VIDEO & RESOURCE LINKS -->
-        {% if step.resources %}
-        <div class="mt-4 pl-9">
-          <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-1">
-            <span class="material-symbols-outlined text-sm text-primary">play_circle</span>
-            Study Resources
-          </p>
-          <div class="flex flex-col gap-2">
-            {% for resource in step.resources %}
-            <a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer"
-               class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700
-                      bg-white dark:bg-slate-900 hover:border-primary hover:shadow-sm
-                      transition-all group">
-
-              <!-- Icon based on platform -->
-              <div class="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center
-                          {% if 'youtube' in resource.url or 'youtu.be' in resource.url %}
-                            bg-red-100 dark:bg-red-900/30 text-red-600
-                          {% elif 'coursera' in resource.url %}
-                            bg-blue-100 dark:bg-blue-900/30 text-blue-600
-                          {% elif 'udemy' in resource.url %}
-                            bg-purple-100 dark:bg-purple-900/30 text-purple-600
-                          {% elif 'freecodecamp' in resource.url %}
-                            bg-green-100 dark:bg-green-900/30 text-green-600
-                          {% elif 'linkedin' in resource.url %}
-                            bg-sky-100 dark:bg-sky-900/30 text-sky-600
-                          {% else %}
-                            bg-slate-100 dark:bg-slate-800 text-slate-600
-                          {% endif %}">
-                <span class="material-symbols-outlined text-lg">
-                  {% if 'youtube' in resource.url or 'youtu.be' in resource.url %}
-                    play_circle
-                  {% elif 'coursera' in resource.url or 'udemy' in resource.url or 'linkedin' in resource.url %}
-                    school
-                  {% elif 'github' in resource.url %}
-                    code
-                  {% else %}
-                    open_in_new
-                  {% endif %}
-                </span>
-              </div>
-
-              <!-- Resource Title -->
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary truncate transition-colors">
-                  {{ resource.title }}
-                </p>
-                <p class="text-xs text-slate-400 truncate">{{ resource.url }}</p>
-              </div>
-
-              <!-- External link arrow -->
-              <span class="material-symbols-outlined text-slate-400 group-hover:text-primary text-sm shrink-0 transition-colors">
-                arrow_outward
-              </span>
-            </a>
-            {% endfor %}
-          </div>
-        </div>
-        {% else %}
-        <!-- Fallback when no resources are provided -->
-        <div class="mt-3 pl-9">
-          <p class="text-xs text-slate-400 italic">No resources listed for this week. Search YouTube or Coursera for "{{ step.goal }}".</p>
-        </div>
+      <!-- ✅ SAFE CHECKBOX -->
+      <input type="checkbox"
+        {% if forloop.counter in roadmap.completed_weeks %}
+          checked
         {% endif %}
-
-        <!-- 🏋️ Practice Task -->
-        {% if step.practice %}
-        <div class="mt-4 pl-9 flex items-start gap-2 p-3 rounded-lg bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800">
-          <span class="material-symbols-outlined text-green-600 text-lg shrink-0 mt-0.5">task_alt</span>
-          <div>
-            <p class="text-xs font-bold uppercase text-green-700 dark:text-green-400 mb-1">Practice Task</p>
-            <p class="text-sm text-green-800 dark:text-green-300 leading-relaxed">{{ step.practice }}</p>
-          </div>
-        </div>
-        {% endif %}
-
-      </div>
-      {% empty %}
-      <p class="text-slate-500 text-sm mt-4">No roadmap steps available.</p>
-      {% endfor %}
-
+        onclick="toggleWeek('{{ roadmap.skill }}', {{ forloop.counter }})"
+        class="w-5 h-5 accent-primary cursor-pointer">
     </div>
-    {% empty %}
-    <div class="rounded-xl border border-slate-200 dark:border-slate-700 p-8 bg-white dark:bg-slate-900 text-center">
-      <span class="material-symbols-outlined text-4xl text-slate-300">school</span>
-      <p class="text-slate-500 mt-2">No roadmaps generated yet. All your skills may already be matched!</p>
-    </div>
-    {% endfor %}
+
+    <p class="text-sm text-slate-600 mt-2">
+      {{ step.how }}
+    </p>
 
   </div>
+  {% endfor %}
+
 </div>
+{% endfor %}
+
+</div>
+
 
 </main>
 </div>

@@ -504,8 +504,6 @@ STRUCTURE (DO NOT CHANGE):
 DO NOT add explanations or text outside JSON.
 """
 
-import json
-
 def generate_skill_roadmap(skill_name, skill_type):
     prompt = build_roadmap_prompt(skill_name, skill_type)
 
