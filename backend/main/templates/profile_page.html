@@ -370,10 +370,8 @@
                                     <div class="view-content">
                                         <p
                                             class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 font-medium min-h-[44px] flex items-center">
-                                            {% if profile.target_role %}<span class="text-primary font-bold">{{
-                                                profile.target_role }}</span>
-                                            {% elif saved_career %}<span class="text-primary font-bold">{{
-                                                saved_career.career_name }}</span>
+                                            {% if profile.target_role %}<span class="text-primary font-bold">{{ profile.target_role }}</span>
+                                            {% elif saved_career %}<span class="text-primary font-bold">{{ saved_career.career_name }}</span>
                                             {% else %}<span class="text-slate-400 italic">Not set</span>{% endif %}
                                         </p>
                                     </div>
@@ -431,8 +429,7 @@
                                         <p
                                             class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white min-h-[44px] flex items-center">
                                             {% if profile.linkedin_url %}<a href="{{ profile.linkedin_url }}"
-                                                target="_blank" class="text-primary hover:underline truncate">{{
-                                                profile.linkedin_url }}</a>
+                                                target="_blank" class="text-primary hover:underline truncate">{{ profile.linkedin_url }}</a>
                                             {% else %}<span class="text-slate-400 italic">Not provided</span>{% endif %}
                                         </p>
                                     </div>
@@ -451,8 +448,7 @@
                                         <p
                                             class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white min-h-[44px] flex items-center">
                                             {% if profile.github_url %}<a href="{{ profile.github_url }}"
-                                                target="_blank" class="text-primary hover:underline truncate">{{
-                                                profile.github_url }}</a>
+                                                target="_blank" class="text-primary hover:underline truncate">{{ profile.github_url }}</a>
                                             {% else %}<span class="text-slate-400 italic">Not provided</span>{% endif %}
                                         </p>
                                     </div>
@@ -488,8 +484,7 @@
                                         {% if profile.current_skills %}
                                         {% for skill in profile.current_skills_display %}
                                         <span
-                                            class="skill-tag px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-medium border border-primary/20">{{
-                                            skill }}</span>
+                                            class="skill-tag px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-medium border border-primary/20">{{ skill }}</span>
                                         {% endfor %}
                                         {% endif %}
 
@@ -557,12 +552,9 @@
                                             {% if profile.certifications %}
                                             {% for cert in profile.certifications %}
                                             <span
-                                                class="px-2 py-1 bg-white dark:bg-slate-700 rounded border border-slate-200 dark:border-slate-600 text-xs">{{
-                                                cert }}</span>
+                                                class="px-2 py-1 bg-white dark:bg-slate-700 rounded border border-slate-200 dark:border-slate-600 text-xs">{{ cert }}</span>
                                             {% endfor %}
-                                            {% else %}
-                                            <span class="text-slate-400 italic">None provided</span>
-                                            {% endif %}
+                                            {% else %}<span class="text-slate-400 italic">None provided</span>{% endif %}
                                         </div>
                                     </div>
                                     <div class="edit-content hidden">
@@ -583,12 +575,9 @@
                                             {% if profile.achievements %}
                                             {% for ach in profile.achievements %}
                                             <span
-                                                class="px-2 py-1 bg-white dark:bg-slate-700 rounded border border-slate-200 dark:border-slate-600 text-xs">{{
-                                                ach }}</span>
+                                                class="px-2 py-1 bg-white dark:bg-slate-700 rounded border border-slate-200 dark:border-slate-600 text-xs">{{ ach }}</span>
                                             {% endfor %}
-                                            {% else %}
-                                            <span class="text-slate-400 italic">None provided</span>
-                                            {% endif %}
+                                            {% else %}<span class="text-slate-400 italic">None provided</span>{% endif %}
                                         </div>
                                     </div>
                                     <div class="edit-content hidden">
@@ -665,8 +654,7 @@
                                         <div class="flex items-center gap-2 text-sm">
                                             <span
                                                 class="material-symbols-outlined text-sm text-green-500">check_circle</span>
-                                            <span class="text-slate-700 dark:text-slate-300">Email: {{ user_email
-                                                }}</span>
+                                            <span class="text-slate-700 dark:text-slate-300">Email: {{ user_email }}</span>
                                         </div>
                                         <div class="flex items-center gap-2 text-sm">
                                             <span
@@ -694,8 +682,7 @@
                                                 {% if profile.current_skills %}check_circle{% else %}warning{% endif %}
                                             </span>
                                             <span class="text-slate-700 dark:text-slate-300">
-                                                Skills: {% if profile.current_skills %}Added{% else %}Add skills for
-                                                better resume{% endif %}
+                                                Skills: {% if profile.current_skills %}Added{% else %}Add skills for better resume{% endif %}
                                             </span>
                                         </div>
                                     </div>
