@@ -1,358 +1,399 @@
 <!DOCTYPE html>
 
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Skill Gap Analyzer - CareerAI</title>
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Noto+Sans:wght@300..800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<!-- Tailwind Configuration -->
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#135bec",
-                        "background-light": "#f6f6f8",
-                        "background-dark": "#101622",
-                    },
-                    fontFamily: {
-                        "display": ["Manrope", "sans-serif"],
-                        "body": ["Noto Sans", "sans-serif"],
-                    },
-                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
-                },
-            },
-        }
-    </script>
-    <style>
-  #skillListContainer::-webkit-scrollbar {
-    width: 6px;
-  }
-  #skillListContainer::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0.2);
-    border-radius: 3px;
-  }
-</style>
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Skill Gap Analyzer - CareerAI</title>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Noto+Sans:wght@300..800&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- Tailwind Configuration -->
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#135bec",
+            "background-light": "#f6f6f8",
+            "background-dark": "#101622",
+          },
+          fontFamily: {
+            "display": ["Manrope", "sans-serif"],
+            "body": ["Noto Sans", "sans-serif"],
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+        },
+      },
+    }
+  </script>
+  <style>
+    #skillListContainer::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #skillListContainer::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+    }
+  </style>
 
 </head>
-<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white overflow-x-hidden antialiased selection:bg-primary/20 selection:text-primary">
-<div class="relative flex h-auto min-h-screen w-full flex-col">
-<!-- Top Navigation -->
-<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 lg:px-10 py-3">
-<div class="flex items-center gap-4 text-slate-900 dark:text-white">
-<div class="size-8 text-primary flex items-center justify-center">
-</div>
-<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Learn Loop</h2>
-</div>
-<div class="flex flex-1 justify-end gap-8">
-<div class="hidden md:flex items-center gap-9">
-<a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Dashboard</a>
-<a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Learning Plan</a>
-<a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Profile</a>
-</div>
-<a href="{% url 'accounts:logout' %}" >
-<button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors" type="submit">
-<span class="truncate">Log Out</span>
-</button>
-</a>
-<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border border-slate-200 dark:border-slate-700" data-alt="User profile avatar image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCvqZU5Sd2Xk6AfzHII15Q0jkhSmw8ohSADZpVwNpNnuZhgCfmyDWqGI62OX1AYTaOifUBNq3UsskyG5NekYnEbZEuo8w1ilKI5KHW0TgT9EX298Auvu6P7QMWh_3LUKf2gmHF76ICmJAOHU0R3TW63ROjBJV_AbdI2Jvhu1ki1pJXDb0Nd79d9oeHVP_XAearMDjpnKs0O5KP5RsczpWiIyGkx_NK__Lk-g-lJfUPyYEI2_GlPzrt_5Wj3IFCZR4TA0ayb70G1JbE");'></div>
-</div>
-</header>
-<!-- Main Content -->
-<main class="layout-container flex h-full grow flex-col">
-<div class="px-4 md:px-10 lg:px-40 flex flex-1 justify-center py-8">
-<div class="layout-content-container flex flex-col w-full max-w-[1024px] flex-1 gap-8">
-<!-- Page Header & Actions -->
-<div class="flex flex-wrap items-end justify-between gap-4">
-<div class="flex min-w-72 flex-col gap-2">
-<h1 class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-tight">Skill Gap Analysis</h1>
-<p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal max-w-2xl">
-                                Detailed comparison between your current profile and the requirements for <span class="font-bold text-primary">{{ career_name }}</span>.
-                            </p>
-</div>
-<div class="flex gap-3">
-<a href="{% url 'career_analysis:career_recom' %}"><button class="flex h-10 px-4 items-center gap-2 justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-sm font-bold transition-colors">
-<span class="material-symbols-outlined text-[20px]">edit</span>
-<span class="truncate">Change Target</span>
-</button></a>
-</div>
-</div>
-<!-- AI Insight Box -->
-<div class="bg-gradient-to-r from-primary/10 to-transparent rounded-xl border border-primary/20 p-6 flex flex-col md:flex-row gap-5 items-start">
-<div class="bg-white dark:bg-slate-900 p-2 rounded-lg shadow-sm text-primary shrink-0">
-  <span class="material-symbols-outlined text-3xl">auto_awesome</span>
-</div>
-<div class="flex-1">
-<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">AI Career Insight</h3>
-<p class="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base">
-    You excel in <span class="font-bold text-slate-900 dark:text-white">key professional skills</span> and <span class="font-bold text-slate-900 dark:text-white">soft skills</span>, placing you among top candidates. To reach your career goal within 3 months, focus on strengthening the most relevant <span class="font-bold text-slate-900 dark:text-white">technical and soft skills</span>.
-</p>
 
-</div>
-<button onclick="showRoadmap()" class="text-primary text-sm font-bold hover:underline whitespace-nowrap self-start md:self-center">
-                            View Roadmap →
-                        </button>
-</div>
-<!-- Key Stats Grid -->
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-<div class="flex flex-col gap-2 rounded-xl p-6 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
-<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
-<span class="material-symbols-outlined text-[20px]">target</span>
-<p class="text-sm font-medium uppercase tracking-wider">Target Role</p>
-</div>
-<div class="flex items-center gap-2">
-    <span class="material-symbols-outlined text-2xl">
-        {{ career_icon }}
-    </span>
-    <p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">
-        {{ career_name }}
-    </p>
-</div>
-
-</div>
-<div class="flex flex-col gap-2 rounded-xl p-6 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
-<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
-<span class="material-symbols-outlined text-[20px]">donut_large</span>
-<p class="text-sm font-medium uppercase tracking-wider">Match Score</p>
-</div>
-<div class="flex items-center gap-2">
-<p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">{{ match_percent }}%</p>
-<span class="inline-flex items-center rounded-full bg-yellow-100 dark:bg-yellow-900/30 px-2 py-0.5 text-xs font-bold text-yellow-700 dark:text-yellow-500">
-                                    {{ fit }}
-                                </span>
-</div>
-</div>
-<div class="flex flex-col gap-2 rounded-xl p-6 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
-<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
-<span class="material-symbols-outlined text-[20px]">timelapse</span>
-<p class="text-sm font-medium uppercase tracking-wider">Time to Bridge</p>
-</div>
-<p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">3 Months</p>
-</div>
-</div>
-
-<!-- ================= SKILL ANALYSIS SECTION ================= -->
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-  <!-- ================= LEFT: CHART ================= -->
-  <div class="lg:col-span-7">
-    <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
-
-      <div class="mb-6">
-        <h3 class="text-lg font-bold text-slate-900 dark:text-white">
-          Skill Proficiency Comparison
-        </h3>
-        <p class="text-sm text-slate-500 dark:text-slate-400">
-          Your proficiency vs Industry standard
-        </p>
-      </div>
-
-      <div class="relative h-[280px] w-full mt-4 pb-12">
-
-        <!-- Grid Lines -->
-        <div class="absolute inset-0 flex flex-col justify-between">
-          {% for i in "12345" %}
-          <div class="border-b border-dashed border-slate-200 dark:border-slate-800"></div>
-          {% endfor %}
+<body
+  class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white overflow-x-hidden antialiased selection:bg-primary/20 selection:text-primary">
+  <div class="relative flex h-auto min-h-screen w-full flex-col">
+    <!-- Top Navigation -->
+    <header
+      class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 lg:px-10 py-3">
+      <div class="flex items-center gap-4 text-slate-900 dark:text-white">
+        <div class="size-8 text-primary flex items-center justify-center">
         </div>
-
-        <!-- Bars -->
-        <div class="absolute inset-0 flex items-end justify-around px-4 pb-6">
-
-          <!-- Skill -->
-          {% for skill in chart_skills %}
-          <div class="group flex flex-col items-center w-12 h-full justify-end relative">
-
-            <!-- Target -->
-            <div class="absolute bottom-0 w-full bg-slate-100 dark:bg-slate-800 rounded-t-md"
-                 style="height: {{ skill.target }}%;">
+        <h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Learn Loop</h2>
+      </div>
+      <div class="flex flex-1 justify-end gap-8">
+        <div class="hidden md:flex items-center gap-9">
+          <a class="text-primary text-sm font-bold border-b-2 border-primary pb-0.5"
+            href="{% url 'career_analysis:gap_analyzer' %}">Dashboard</a>
+          <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+            href="{% url 'career_analysis:roadmap_page' %}">Roadmap</a>
+          <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+            href="{% url 'career_analysis:job_analyzer' %}">Job Analyzer</a>
+          <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+            href="{% url 'career_analysis:profile' %}">Profile</a>
+        </div>
+        <a href="{% url 'accounts:logout' %}">
+          <button
+            class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors"
+            type="submit">
+            <span class="truncate">Log Out</span>
+          </button>
+        </a>
+        <div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border border-slate-200 dark:border-slate-700"
+          data-alt="User profile avatar image"
+          style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCvqZU5Sd2Xk6AfzHII15Q0jkhSmw8ohSADZpVwNpNnuZhgCfmyDWqGI62OX1AYTaOifUBNq3UsskyG5NekYnEbZEuo8w1ilKI5KHW0TgT9EX298Auvu6P7QMWh_3LUKf2gmHF76ICmJAOHU0R3TW63ROjBJV_AbdI2Jvhu1ki1pJXDb0Nd79d9oeHVP_XAearMDjpnKs0O5KP5RsczpWiIyGkx_NK__Lk-g-lJfUPyYEI2_GlPzrt_5Wj3IFCZR4TA0ayb70G1JbE");'>
+        </div>
+      </div>
+    </header>
+    <!-- Main Content -->
+    <main class="layout-container flex h-full grow flex-col">
+      <div class="px-4 md:px-10 lg:px-40 flex flex-1 justify-center py-8">
+        <div class="layout-content-container flex flex-col w-full max-w-[1024px] flex-1 gap-8">
+          <!-- Page Header & Actions -->
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <div class="flex min-w-72 flex-col gap-2">
+              <h1 class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-tight">
+                Skill Gap Analysis</h1>
+              <p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal max-w-2xl">
+                Detailed comparison between your current profile and the requirements for <span
+                  class="font-bold text-primary">{{ career_name }}</span>.
+              </p>
             </div>
+            <div class="flex gap-3">
+              <a href="{% url 'career_analysis:career_recom' %}"><button
+                  class="flex h-10 px-4 items-center gap-2 justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white text-sm font-bold transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">edit</span>
+                  <span class="truncate">Change Target</span>
+                </button></a>
+            </div>
+          </div>
+          <!-- AI Insight Box -->
+          <div
+            class="bg-gradient-to-r from-primary/10 to-transparent rounded-xl border border-primary/20 p-6 flex flex-col md:flex-row gap-5 items-start">
+            <div class="bg-white dark:bg-slate-900 p-2 rounded-lg shadow-sm text-primary shrink-0">
+              <span class="material-symbols-outlined text-3xl">auto_awesome</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">AI Career Insight</h3>
+              <p class="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base">
+                You excel in <span class="font-bold text-slate-900 dark:text-white">key professional skills</span> and
+                <span class="font-bold text-slate-900 dark:text-white">soft skills</span>, placing you among top
+                candidates. To reach your career goal within 3 months, focus on strengthening the most relevant <span
+                  class="font-bold text-slate-900 dark:text-white">technical and soft skills</span>.
+              </p>
 
-            <!-- Current -->
-            <div class="relative z-10 w-full rounded-t-md cursor-pointer transition-all
+            </div>
+            <a href="{% url 'career_analysis:roadmap_page' %}"
+              class="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap self-start md:self-center shadow-md">
+              <span class="material-symbols-outlined text-lg">route</span>
+              View Roadmap →
+            </a>
+          </div>
+          <!-- Key Stats Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div
+              class="flex flex-col gap-2 rounded-xl p-6 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+              <div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                <span class="material-symbols-outlined text-[20px]">target</span>
+                <p class="text-sm font-medium uppercase tracking-wider">Target Role</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-2xl">
+                  {{ career_icon }}
+                </span>
+                <p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">
+                  {{ career_name }}
+                </p>
+              </div>
+
+            </div>
+            <div
+              class="flex flex-col gap-2 rounded-xl p-6 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+              <div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                <span class="material-symbols-outlined text-[20px]">donut_large</span>
+                <p class="text-sm font-medium uppercase tracking-wider">Match Score</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">{{ match_percent }}%</p>
+                <span
+                  class="inline-flex items-center rounded-full bg-yellow-100 dark:bg-yellow-900/30 px-2 py-0.5 text-xs font-bold text-yellow-700 dark:text-yellow-500">
+                  {{ fit }}
+                </span>
+              </div>
+            </div>
+            <div
+              class="flex flex-col gap-2 rounded-xl p-6 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+              <div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                <span class="material-symbols-outlined text-[20px]">timelapse</span>
+                <p class="text-sm font-medium uppercase tracking-wider">Time to Bridge</p>
+              </div>
+              <p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">{{ custom_duration }}W</p>
+            </div>
+          </div>
+
+          <!-- ================= SKILL ANALYSIS SECTION ================= -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <!-- ================= LEFT: CHART ================= -->
+            <div class="lg:col-span-7">
+              <div
+                class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+
+                <div class="mb-6">
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">
+                    Skill Proficiency Comparison
+                  </h3>
+                  <p class="text-sm text-slate-500 dark:text-slate-400">
+                    Your proficiency vs Industry standard
+                  </p>
+                </div>
+
+                <div class="relative h-[280px] w-full mt-4 pb-12">
+
+                  <!-- Grid Lines -->
+                  <div class="absolute inset-0 flex flex-col justify-between">
+                    {% for i in "12345" %}
+                    <div class="border-b border-dashed border-slate-200 dark:border-slate-800"></div>
+                    {% endfor %}
+                  </div>
+
+                  <!-- Bars -->
+                  <div class="absolute inset-0 flex items-end justify-around px-4 pb-6">
+
+                    <!-- Skill -->
+                    {% for skill in chart_skills %}
+                    <div class="group flex flex-col items-center w-12 h-full justify-end relative">
+
+                      <!-- Target -->
+                      <div class="absolute bottom-0 w-full bg-slate-100 dark:bg-slate-800 rounded-t-md"
+                        style="height: {{ skill.target }}%;">
+                      </div>
+
+                      <!-- Current -->
+                      <div class="relative z-10 w-full rounded-t-md cursor-pointer transition-all
                         {% if skill.status == 'matched' %}bg-green-500
                         {% elif skill.status == 'gap' %}bg-red-500
-                        {% else %}bg-yellow-500{% endif %}"
-                 style="height: {{ skill.current }}%;">
+                        {% else %}bg-yellow-500{% endif %}" style="height: {{ skill.current }}%;">
 
-              <div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2
+                        <div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2
                           bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-                {{ skill.label }} ({{ skill.current }} / {{ skill.target }})
+                          {{ skill.label }} ({{ skill.current }} / {{ skill.target }})
+                        </div>
+                      </div>
+
+                      <span
+                        class="absolute -bottom-8 text-[11px] font-bold text-slate-600 dark:text-slate-400 text-center">
+                        {{ skill.name }}
+                      </span>
+                    </div>
+                    {% endfor %}
+
+                  </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="mt-12 flex justify-center gap-6 text-xs">
+                  <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 bg-green-500 rounded-full"></span> Matched
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 bg-yellow-500 rounded-full"></span> Improving
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 bg-red-500 rounded-full"></span> Gap
+                  </div>
+                </div>
+
               </div>
             </div>
 
-            <span class="absolute -bottom-8 text-[11px] font-bold text-slate-600 dark:text-slate-400 text-center">
-              {{ skill.name }}
-            </span>
-          </div>
-          {% endfor %}
+            <!-- ================= RIGHT: SKILL LIST ================= -->
+            <div class="lg:col-span-5 flex flex-col gap-4">
 
-        </div>
-      </div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">
+                  Skill Breakdown
+                </h3>
+                <button id="viewAllBtn" onclick="showAllSkills()"
+                  class="text-primary text-sm font-bold hover:underline">
+                  View All
+                </button>
+              </div>
 
-      <!-- Legend -->
-      <div class="mt-12 flex justify-center gap-6 text-xs">
-        <div class="flex items-center gap-2">
-          <span class="w-3 h-3 bg-green-500 rounded-full"></span> Matched
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="w-3 h-3 bg-yellow-500 rounded-full"></span> Improving
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="w-3 h-3 bg-red-500 rounded-full"></span> Gap
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ================= RIGHT: SKILL LIST ================= -->
-  <div class="lg:col-span-5 flex flex-col gap-4">
-
-    <div class="flex items-center justify-between">
-      <h3 class="text-lg font-bold text-slate-900 dark:text-white">
-        Skill Breakdown
-      </h3>
-      <button id="viewAllBtn" onclick="showAllSkills()"
-              class="text-primary text-sm font-bold hover:underline">
-        View All
-      </button>
-    </div>
-
-    <!-- Skill Items -->
-<!-- Vertical Scroll Container -->
-<div id="skillListContainer" class="flex flex-col gap-4 max-h-[calc(4*128px)] overflow-hidden transition-all duration-500">
-  {% for skill in skills %}
-  <div class="skill-item flex flex-col gap-3 rounded-xl border border-l-4 p-4 shadow-sm bg-white dark:bg-slate-900
+              <!-- Skill Items -->
+              <!-- Vertical Scroll Container -->
+              <div id="skillListContainer"
+                class="flex flex-col gap-4 max-h-[calc(4*128px)] overflow-hidden transition-all duration-500">
+                {% for skill in skills %}
+                <div class="skill-item flex flex-col gap-3 rounded-xl border border-l-4 p-4 shadow-sm bg-white dark:bg-slate-900
               {% if skill.status == 'gap' %}border-l-red-500
               {% elif skill.status == 'improving' %}border-l-yellow-500
               {% else %}border-l-green-500{% endif %}">
-      <div class="flex justify-between items-start">
-        <div class="flex items-center gap-3">
-          <div class="p-2 rounded-lg
+                  <div class="flex justify-between items-start">
+                    <div class="flex items-center gap-3">
+                      <div class="p-2 rounded-lg
               {% if skill.status == 'gap' %}bg-red-50 text-red-600
               {% elif skill.status == 'improving' %}bg-yellow-50 text-yellow-600
               {% else %}bg-green-50 text-green-600{% endif %}">
-            <span class="material-symbols-outlined">{{ skill.icon }}</span>
-          </div>
-          <div>
-            <p class="font-bold text-sm text-slate-900 dark:text-white">
-              {{ skill.name }}
-            </p>
-            <p class="text-xs text-slate-500">{{ skill.type }}</p>
-          </div>
-        </div>
-        <span class="text-[10px] font-bold uppercase px-2 py-1 rounded
+                        <span class="material-symbols-outlined">{{ skill.icon }}</span>
+                      </div>
+                      <div>
+                        <p class="font-bold text-sm text-slate-900 dark:text-white">
+                          {{ skill.name }}
+                        </p>
+                        <p class="text-xs text-slate-500">{{ skill.type }}</p>
+                      </div>
+                    </div>
+                    <span class="text-[10px] font-bold uppercase px-2 py-1 rounded
             {% if skill.status == 'gap' %}bg-red-100 text-red-700
             {% elif skill.status == 'improving' %}bg-yellow-100 text-yellow-700
             {% else %}bg-green-100 text-green-700{% endif %}">
-          {{ skill.status }}
-        </span>
-      </div>
+                      {{ skill.status }}
+                    </span>
+                  </div>
 
-      <div class="flex items-center gap-2 text-sm">
-        <span class="text-slate-500">Current:</span>
-        <span class="font-bold">{{ skill.current }}</span>
+                  <div class="flex items-center gap-2 text-sm">
+                    <span class="text-slate-500">Current:</span>
+                    <span class="font-bold">{{ skill.current }}</span>
 
-        {% if skill.status != "matched" %}
-        <span class="material-symbols-outlined text-sm">arrow_right_alt</span>
-        <span class="text-slate-500">Required:</span>
-        <span class="font-bold text-primary">{{ skill.required }}</span>
-        {% endif %}
-      </div>
-    </div>
-    {% endfor %}
+                    {% if skill.status != "matched" %}
+                    <span class="material-symbols-outlined text-sm">arrow_right_alt</span>
+                    <span class="text-slate-500">Required:</span>
+                    <span class="font-bold text-primary">{{ skill.required }}</span>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endfor %}
 
-</div>
-  </div>
-</div>
-
-<!-- Recommendations Section -->
-<div id="roadmapSection" class="hidden mt-10">
-  <div class="flex flex-col gap-6 pt-6 border-t border-slate-200 dark:border-slate-800">
-
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <div>
-        <h2 class="text-slate-900 dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">Bridge Your Gaps</h2>
-        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Recommended courses and videos to acquire missing skills.</p>
-      </div>
-    </div>
-
-    {% for roadmap in roadmaps %}
-    <div class="rounded-xl border border-slate-200 dark:border-slate-700 p-5 bg-white dark:bg-slate-900 mb-6 shadow-sm">
-
-      <!-- Skill Header -->
-      <div class="flex items-center gap-3 mb-3">
-        <div class="p-2 rounded-lg bg-primary/10 text-primary">
-          <span class="material-symbols-outlined text-xl">{{ roadmap.type|lower|default:"dataset" }}</span>
-        </div>
-        <div>
-          <h3 class="font-bold text-lg text-slate-900 dark:text-white">{{ roadmap.skill }}</h3>
-          <p class="text-xs text-slate-500">{{ roadmap.type }}</p>
-        </div>
-      </div>
-
-      <!-- Progress Bar -->
-      <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-2">
-        <div class="bg-primary h-2 rounded-full transition-all duration-500"
-             style="width: {{ roadmap.percent }}%"></div>
-      </div>
-      <p class="text-xs mt-1 text-slate-500">
-        {{ roadmap.completed }} / {{ roadmap.total }} weeks completed ({{ roadmap.percent }}%)
-      </p>
-
-      <!-- Weekly Steps -->
-      {% for step in roadmap.roadmap %}
-      <div class="mt-5 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
-
-        <!-- Week Header Row -->
-        <div class="flex items-start justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary text-white text-xs font-bold shrink-0">
-              {{ forloop.counter }}
-            </span>
-            <div>
-              <h4 class="font-bold text-sm text-slate-900 dark:text-white">
-                Week {{ forloop.counter }} — {{ step.goal }}
-              </h4>
+              </div>
             </div>
           </div>
-          <!-- Progress Checkbox -->
-          <input type="checkbox"
-            {% if forloop.counter in roadmap.completed_weeks %}checked{% endif %}
-            onclick="toggleWeek('{{ roadmap.skill }}', {{ forloop.counter }})"
-            class="w-5 h-5 accent-primary cursor-pointer shrink-0 mt-1">
-        </div>
 
-        <!-- How to learn -->
-        <p class="text-sm text-slate-600 dark:text-slate-300 mt-3 leading-relaxed pl-9">
-          {{ step.how }}
-        </p>
+          <!-- Recommendations Section -->
+          <div id="roadmapSection" class="hidden mt-10">
+            <div class="flex flex-col gap-6 pt-6 border-t border-slate-200 dark:border-slate-800">
 
-        <!-- 🎬 VIDEO & RESOURCE LINKS -->
-        {% if step.resources %}
-        <div class="mt-4 pl-9">
-          <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-1">
-            <span class="material-symbols-outlined text-sm text-primary">play_circle</span>
-            Study Resources
-          </p>
-          <div class="flex flex-col gap-2">
-            {% for resource in step.resources %}
-            <a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer"
-               class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700
+              <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h2 class="text-slate-900 dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">
+                    Bridge Your Gaps</h2>
+                  <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Recommended courses and videos to acquire
+                    missing skills.</p>
+                </div>
+              </div>
+
+              {% for roadmap in roadmaps %}
+              <div
+                class="rounded-xl border border-slate-200 dark:border-slate-700 p-5 bg-white dark:bg-slate-900 mb-6 shadow-sm">
+
+                <!-- Skill Header -->
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="p-2 rounded-lg bg-primary/10 text-primary">
+                    <span class="material-symbols-outlined text-xl">{{ roadmap.type|lower|default:"dataset" }}</span>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-lg text-slate-900 dark:text-white">{{ roadmap.skill }}</h3>
+                    <p class="text-xs text-slate-500">{{ roadmap.type }}</p>
+                  </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-2">
+                  <div class="bg-primary h-2 rounded-full transition-all duration-500"
+                    style="width: {{ roadmap.percent }}%"></div>
+                </div>
+                <p class="text-xs mt-1 text-slate-500">
+                  {{ roadmap.completed }} / {{ roadmap.total }} weeks completed ({{ roadmap.percent }}%)
+                </p>
+
+                <!-- Weekly Steps -->
+                {% for step in roadmap.roadmap %}
+                <div
+                  class="mt-5 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+
+                  <!-- Week Header Row -->
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary text-white text-xs font-bold shrink-0">
+                        {{ forloop.counter }}
+                      </span>
+                      <div>
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-white">
+                          Week {{ forloop.counter }} — {{ step.goal }}
+                        </h4>
+                      </div>
+                    </div>
+                    <!-- Progress Checkbox -->
+                    <input type="checkbox" {% if forloop.counter in roadmap.completed_weeks %}checked{% endif %}
+                      onclick="toggleWeek('{{ roadmap.skill }}', {{ forloop.counter }})"
+                      class="w-5 h-5 accent-primary cursor-pointer shrink-0 mt-1">
+                  </div>
+
+                  <!-- How to learn -->
+                  <p class="text-sm text-slate-600 dark:text-slate-300 mt-3 leading-relaxed pl-9">
+                    {{ step.how }}
+                  </p>
+
+                  <!-- 🎬 VIDEO & RESOURCE LINKS -->
+                  {% if step.resources %}
+                  <div class="mt-4 pl-9">
+                    <p
+                      class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-1">
+                      <span class="material-symbols-outlined text-sm text-primary">play_circle</span>
+                      Study Resources
+                    </p>
+                    <div class="flex flex-col gap-2">
+                      {% for resource in step.resources %}
+                      <a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700
                       bg-white dark:bg-slate-900 hover:border-primary hover:shadow-sm
                       transition-all group">
 
-              <!-- Icon based on platform -->
-              <div class="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center
+                        <!-- Icon based on platform -->
+                        <div class="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center
                           {% if 'youtube' in resource.url or 'youtu.be' in resource.url %}
                             bg-red-100 dark:bg-red-900/30 text-red-600
                           {% elif 'coursera' in resource.url %}
@@ -366,152 +407,160 @@
                           {% else %}
                             bg-slate-100 dark:bg-slate-800 text-slate-600
                           {% endif %}">
-                <span class="material-symbols-outlined text-lg">
-                  {% if 'youtube' in resource.url or 'youtu.be' in resource.url %}
-                    play_circle
-                  {% elif 'coursera' in resource.url or 'udemy' in resource.url or 'linkedin' in resource.url %}
-                    school
-                  {% elif 'github' in resource.url %}
-                    code
+                          <span class="material-symbols-outlined text-lg">
+                            {% if 'youtube' in resource.url or 'youtu.be' in resource.url %}
+                            play_circle
+                            {% elif 'coursera' in resource.url or 'udemy' in resource.url or 'linkedin' in resource.url
+                            %}
+                            school
+                            {% elif 'github' in resource.url %}
+                            code
+                            {% else %}
+                            open_in_new
+                            {% endif %}
+                          </span>
+                        </div>
+
+                        <!-- Resource Title -->
+                        <div class="flex-1 min-w-0">
+                          <p
+                            class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary truncate transition-colors">
+                            {{ resource.title }}
+                          </p>
+                          <p class="text-xs text-slate-400 truncate">{{ resource.url }}</p>
+                        </div>
+
+                        <!-- External link arrow -->
+                        <span
+                          class="material-symbols-outlined text-slate-400 group-hover:text-primary text-sm shrink-0 transition-colors">
+                          arrow_outward
+                        </span>
+                      </a>
+                      {% endfor %}
+                    </div>
+                  </div>
                   {% else %}
-                    open_in_new
+                  <!-- Fallback when no resources are provided -->
+                  <div class="mt-3 pl-9">
+                    <p class="text-xs text-slate-400 italic">No resources listed for this week. Search YouTube or
+                      Coursera for "{{ step.goal }}".</p>
+                  </div>
                   {% endif %}
-                </span>
+
+                  <!-- 🏋️ Practice Task -->
+                  {% if step.practice %}
+                  <div
+                    class="mt-4 pl-9 flex items-start gap-2 p-3 rounded-lg bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800">
+                    <span class="material-symbols-outlined text-green-600 text-lg shrink-0 mt-0.5">task_alt</span>
+                    <div>
+                      <p class="text-xs font-bold uppercase text-green-700 dark:text-green-400 mb-1">Practice Task</p>
+                      <p class="text-sm text-green-800 dark:text-green-300 leading-relaxed">{{ step.practice }}</p>
+                    </div>
+                  </div>
+                  {% endif %}
+
+                </div>
+                {% empty %}
+                <p class="text-slate-500 text-sm mt-4">No roadmap steps available.</p>
+                {% endfor %}
+
               </div>
-
-              <!-- Resource Title -->
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary truncate transition-colors">
-                  {{ resource.title }}
-                </p>
-                <p class="text-xs text-slate-400 truncate">{{ resource.url }}</p>
+              {% empty %}
+              <div
+                class="rounded-xl border border-slate-200 dark:border-slate-700 p-8 bg-white dark:bg-slate-900 text-center">
+                <span class="material-symbols-outlined text-4xl text-slate-300">school</span>
+                <p class="text-slate-500 mt-2">No roadmaps generated yet. All your skills may already be matched!</p>
               </div>
+              {% endfor %}
 
-              <!-- External link arrow -->
-              <span class="material-symbols-outlined text-slate-400 group-hover:text-primary text-sm shrink-0 transition-colors">
-                arrow_outward
-              </span>
-            </a>
-            {% endfor %}
+            </div>
           </div>
-        </div>
-        {% else %}
-        <!-- Fallback when no resources are provided -->
-        <div class="mt-3 pl-9">
-          <p class="text-xs text-slate-400 italic">No resources listed for this week. Search YouTube or Coursera for "{{ step.goal }}".</p>
-        </div>
-        {% endif %}
 
-        <!-- 🏋️ Practice Task -->
-        {% if step.practice %}
-        <div class="mt-4 pl-9 flex items-start gap-2 p-3 rounded-lg bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800">
-          <span class="material-symbols-outlined text-green-600 text-lg shrink-0 mt-0.5">task_alt</span>
-          <div>
-            <p class="text-xs font-bold uppercase text-green-700 dark:text-green-400 mb-1">Practice Task</p>
-            <p class="text-sm text-green-800 dark:text-green-300 leading-relaxed">{{ step.practice }}</p>
-          </div>
-        </div>
-        {% endif %}
-
-      </div>
-      {% empty %}
-      <p class="text-slate-500 text-sm mt-4">No roadmap steps available.</p>
-      {% endfor %}
-
-    </div>
-    {% empty %}
-    <div class="rounded-xl border border-slate-200 dark:border-slate-700 p-8 bg-white dark:bg-slate-900 text-center">
-      <span class="material-symbols-outlined text-4xl text-slate-300">school</span>
-      <p class="text-slate-500 mt-2">No roadmaps generated yet. All your skills may already be matched!</p>
-    </div>
-    {% endfor %}
-
+    </main>
   </div>
-</div>
 
-</main>
-</div>
+  <script>
+    let scrollIndex = 0;
+    const cardsPerView = 4;
+    let scrollActivated = false;
 
-<script>
-let scrollIndex = 0;
-const cardsPerView = 4;
-let scrollActivated = false;
+    function toggleSkills() {
+      const container = document.getElementById('skillListContainer');
+      const cards = document.querySelectorAll('#skillList .skill-item');
 
-function toggleSkills() {
-  const container = document.getElementById('skillListContainer');
-  const cards = document.querySelectorAll('#skillList .skill-item');
+      if (cards.length === 0) return;
 
-  if(cards.length === 0) return;
+      const cardHeight = cards[0].offsetHeight + 16; // card + gap
 
-  const cardHeight = cards[0].offsetHeight + 16; // card + gap
+      // Activate scroll only once
+      if (!scrollActivated) {
+        container.classList.remove('overflow-y-hidden');
+        container.classList.add('overflow-y-auto');
+        scrollActivated = true;
+      }
 
-  // Activate scroll only once
-  if(!scrollActivated){
-    container.classList.remove('overflow-y-hidden');
-    container.classList.add('overflow-y-auto');
-    scrollActivated = true;
-  }
+      // Scroll by 4 cards
+      const scrollAmount = cardsPerView * cardHeight;
+      container.scrollBy({ top: scrollAmount, behavior: 'smooth' });
 
-  // Scroll by 4 cards
-  const scrollAmount = cardsPerView * cardHeight;
-  container.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+      scrollIndex++;
 
-  scrollIndex++;
+      // Reset scroll when reach bottom
+      if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
+        setTimeout(() => container.scrollTo({ top: 0, behavior: 'smooth' }), 500);
+        scrollIndex = 0;
+      }
+    }
+  </script>
+  <script>
+    function showAllSkills() {
+      const container = document.getElementById('skillListContainer');
+      const btn = document.getElementById('viewAllBtn');
 
-  // Reset scroll when reach bottom
-  if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
-    setTimeout(() => container.scrollTo({ top: 0, behavior: 'smooth' }), 500);
-    scrollIndex = 0;
-  }
-}
-</script>
-<script>
-function showAllSkills() {
-  const container = document.getElementById('skillListContainer');
-  const btn = document.getElementById('viewAllBtn');
+      // Make container scrollable
+      container.classList.remove('overflow-hidden');
+      container.classList.add('overflow-y-auto');
 
-  // Make container scrollable
-  container.classList.remove('overflow-hidden');
-  container.classList.add('overflow-y-auto');
+      // Set max-height to show all scrollable content if needed
+      container.style.maxHeight = "500px"; // adjust to desired scroll height
 
-  // Set max-height to show all scrollable content if needed
-  container.style.maxHeight = "500px"; // adjust to desired scroll height
+      // Hide the button
+      btn.style.display = "none";
+    }
+  </script>
 
-  // Hide the button
-  btn.style.display = "none";
-}
-</script>
+  <!--roadmap-->
+  <script>
+    function showRoadmap() {
+      const section = document.getElementById("roadmapSection");
+      // Show section
+      section.classList.remove("hidden");
 
-<!--roadmap-->
-<script>
-function showRoadmap() {
-  const section = document.getElementById("roadmapSection");
-  // Show section
-  section.classList.remove("hidden");
+      // Smooth scroll
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  </script>
 
-  // Smooth scroll
-  section.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
-}
-</script>
-
-<!--track-->
-<script>
-function toggleWeek(skill, week) {
-  fetch("{% url 'career_analysis:toggle_week_progress' %}", {
-    method: "POST",
-    headers: {
-      "X-CSRFToken": "{{ csrf_token }}",
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: `skill=${skill}&week=${week}`
-  });
-}
-</script>
+  <!--track-->
+  <script>
+    function toggleWeek(skill, week) {
+      fetch("{% url 'career_analysis:toggle_week_progress' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `skill=${skill}&week=${week}`
+      });
+    }
+  </script>
 
 
 
 
-</body></html>
+</body>
+
+</html>

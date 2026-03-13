@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>My Profile - LearnLoop</title>
+    <meta name="description" content="Complete your profile, manage skills, and generate a professional resume." />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Noto+Sans:wght@300..800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "accent": "#6366f1",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dark .glass-card {
+            background: rgba(15, 23, 42, 0.85);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .profile-gradient {
+            background: linear-gradient(135deg, #135bec 0%, #6366f1 50%, #8b5cf6 100%);
+        }
+
+        .input-field {
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            box-shadow: 0 0 0 3px rgba(19, 91, 236, 0.1);
+        }
+
+        .edit-mode .view-content {
+            display: none;
+        }
+
+        .edit-mode .edit-content {
+            display: block;
+        }
+
+        .view-mode .view-content {
+            display: block;
+        }
+
+        .view-mode .edit-content {
+            display: none;
+        }
+
+        .skill-tag {
+            transition: all 0.2s ease;
+        }
+
+        .skill-tag:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .toast {
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.5s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body
+    class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white overflow-x-hidden antialiased">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-4 right-4 z-[100] hidden">
+        <div
+            class="toast bg-green-500 text-white px-5 py-3 rounded-lg shadow-lg flex items-center gap-2 font-bold text-sm">
+            <span class="material-symbols-outlined text-lg">check_circle</span>
+            <span id="toastMsg">Profile updated successfully!</span>
+        </div>
+    </div>
+
+    <div class="relative flex h-auto min-h-screen w-full flex-col">
+
+        <!-- Top Navigation -->
+        <header
+            class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 lg:px-10 py-3">
+            <div class="flex items-center gap-4 text-slate-900 dark:text-white">
+                <div class="size-8 text-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-2xl">school</span>
+                </div>
+                <h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Learn
+                    Loop</h2>
+            </div>
+            <div class="flex flex-1 justify-end gap-8">
+                <div class="hidden md:flex items-center gap-9">
+                    <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+                        href="{% url 'career_analysis:roadmap_page' %}">Roadmap</a>
+                    <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+                        href="{% url 'career_analysis:job_analyzer' %}">Job Analyzer</a>
+                    <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+                        href="{% url 'career_analysis:profile' %}">Profile</a>
+                    <a class="text-primary text-sm font-bold border-b-2 border-primary pb-0.5"
+                        href="{% url 'career_analysis:profile' %}">Profile</a>
+                </div>
+                <a href="{% url 'accounts:logout' %}">
+                    <button
+                        class="flex cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold hover:bg-blue-700 transition-colors">
+                        <span class="truncate">Log Out</span>
+                    </button>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="layout-container flex h-full grow flex-col">
+            <div class="px-4 md:px-10 lg:px-32 flex flex-1 justify-center py-8">
+                <div class="flex flex-col w-full max-w-[1000px] flex-1 gap-8">
+
+                    <!-- Profile Header Card -->
+                    <div
+                        class="animate-in glass-card rounded-2xl overflow-hidden shadow-lg border border-slate-100 dark:border-slate-700">
+                        <!-- Banner -->
+                        <div class="profile-gradient h-36 md:h-44 relative">
+                            <div class="absolute inset-0 bg-black/10"></div>
+                            <div
+                                class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/30 to-transparent">
+                            </div>
+                        </div>
+
+                        <!-- Profile Info -->
+                        <div class="relative px-6 md:px-8 pb-6">
+                            <!-- Avatar -->
+                            <div class="absolute -top-14 left-6 md:left-8">
+                                <div class="w-28 h-28 rounded-2xl bg-white dark:bg-slate-900 p-1 shadow-xl">
+                                    <div
+                                        class="w-full h-full rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white text-4xl font-black overflow-hidden">
+                                        {% if profile.profile_pic %}<img src="{{ profile.profile_pic }}" alt="Profile"
+                                            class="w-full h-full object-cover">
+                                        {% elif profile.full_name %}{{ profile.full_name|first|upper }}{% else %}?{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-16 md:pt-18 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                                <div>
+                                    <h1 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white">
+                                        {% if profile.full_name %}{{ profile.full_name }}{% else %}Complete Your
+                                        Profile{% endif %}
+                                    </h1>
+                                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">{{ user_email }}</p>
+                                    {% if profile.current_occupation %}
+                                    <p class="text-slate-600 dark:text-slate-300 text-sm mt-1 flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-sm">work</span>
+                                        {{ profile.current_occupation }}
+                                    </p>
+                                    {% endif %}
+                                    {% if profile.location %}
+                                    <p class="text-slate-500 text-sm mt-1 flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-sm">location_on</span>
+                                        {{ profile.location }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                                <div class="flex gap-3">
+                                    <button id="editToggle" onclick="toggleEditMode()"
+                                        class="flex h-10 px-5 items-center gap-2 rounded-lg bg-primary text-white text-sm font-bold hover:bg-blue-700 transition-all shadow-md hover:shadow-lg">
+                                        <span class="material-symbols-outlined text-lg">edit</span>
+                                        <span id="editBtnText">Edit Profile</span>
+                                    </button>
+                                    <a href="{% url 'career_analysis:generate_resume' %}" target="_blank"
+                                        class="flex h-10 px-5 items-center gap-2 rounded-lg bg-gradient-to-r from-accent to-purple-600 text-white text-sm font-bold hover:opacity-90 transition-all shadow-md hover:shadow-lg">
+                                        <span class="material-symbols-outlined text-lg">description</span>
+                                        Generate Resume
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Form -->
+                    <form id="profileForm" class="view-mode" onsubmit="return false;">
+                        {% csrf_token %}
+
+                        <!-- Personal Information -->
+                        <div class="animate-in glass-card rounded-xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm mb-6"
+                            style="animation-delay: 0.1s">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="p-2 rounded-lg bg-primary/10 text-primary">
+                                    <span class="material-symbols-outlined">person</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-lg text-slate-900 dark:text-white">Personal Information
+                                    </h3>
+                                    <p class="text-xs text-slate-500">Basic details for your profile and resume</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <!-- Full Name -->
+                                <div>
+                                    <label
+                                        class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">Full
+                                        Name</label>
+                                    <div class="view-content">
+                                        <p
+                                            class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium min-h-[44px] flex items-center">
+                                            {% if profile.full_name %}{{ profile.full_name }}{% else %}<span
+                                                class="text-slate-400 italic">Not provided</span>{% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="edit-content hidden">
+                                        <input type="text" name="full_name" value="{{ profile.full_name }}"
+                                            class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                            placeholder="Enter your full name">
+                                    </div>
+                                </div>
+
+                                <!-- Profile Picture URL -->
+                                <div>
+                                    <label
+                                        class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">Profile
+                                        Image URL</label>
+                                    <div class="view-content">
+                                        <p
+                                            class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium min-h-[44px] flex items-center truncate">
+                                            {% if profile.profile_pic %}{{ profile.profile_pic }}{% else %}<span
+                                                class="text-slate-400 italic">No image URL set</span>{% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="edit-content hidden">
+                                        <div class="flex flex-col gap-2">
+                                            <input type="url" id="profilePicInput" name="profile_pic"
+                                                value="{{ profile.profile_pic }}"
+                                                class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                                placeholder="https://example.com/photo.jpg">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-slate-500">Or</span>
+                                                <button type="button"
+                                                    onclick="document.getElementById('fileUpload').click()"
+                                                    class="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+                                                    <span class="material-symbols-outlined text-sm">upload</span>
+                                                    Upload from computer
+                                                </button>
+                                                <input type="file" id="fileUpload" class="hidden" accept="image/*"
+                                                    onchange="handleFileUpload(this)">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-5">
+                                <label class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">Bio /
+                                    About</label>
+                                <div class="view-content">
+                                    <p
+                                        class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white min-h-[80px]">
+                                        {% if profile.bio %}{{ profile.bio }}{% else %}<span
+                                            class="text-slate-400 italic">Tell us about yourself...</span>{% endif %}
+                                    </p>
+                                </div>
+                                <div class="edit-content hidden">
+                                    <textarea name="bio" rows="3"
+                                        class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none"
+                                        placeholder="Brief description about yourself...">{{ profile.bio }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Career & Education -->
+                        <div class="animate-in glass-card rounded-xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm mb-6"
+                            style="animation-delay: 0.2s">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="p-2 rounded-lg bg-accent/10 text-accent">
+                                    <span class="material-symbols-outlined">work</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-lg text-slate-900 dark:text-white">Career & Education</h3>
+                                    <p class="text-xs text-slate-500">Your career details and qualifications</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <!-- Current Occupation -->
+                                <div>
+                                    <label
+                                        class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">Current
+                                        Occupation</label>
+                                    <div class="view-content">
+                                        <p
+                                            class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium min-h-[44px] flex items-center">
+                                            {% if profile.current_occupation %}{{ profile.current_occupation }}{% else %}<span class="text-slate-400 italic">Not provided</span>{% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="edit-content hidden">
+                                        <input type="text" name="current_occupation"
+                                            value="{{ profile.current_occupation }}"
+                                            class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                            placeholder="e.g. Student, Software Developer">
+                                    </div>
+                                </div>
+
+                                <!-- Target Role -->
+                                <div>
+                                    <label
+                                        class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">Target
+                                        Career</label>
+                                    <div class="view-content">
+                                        <p
+                                            class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 font-medium min-h-[44px] flex items-center">
+                                            {% if profile.target_role %}<span class="text-primary font-bold">{{
+                                                profile.target_role }}</span>
+                                            {% elif saved_career %}<span class="text-primary font-bold">{{
+                                                saved_career.career_name }}</span>
+                                            {% else %}<span class="text-slate-400 italic">Not set</span>{% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="edit-content hidden">
+                                        <input type="text" name="target_role"
+                                            value="{% if profile.target_role %}{{ profile.target_role }}{% elif saved_career %}{{ saved_career.career_name }}{% endif %}"
+                                            class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                            placeholder="Your target career role">
+                                    </div>
+                                </div>
+
+                                <!-- Education -->
+                                <div>
+                                    <label
+                                        class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">Education</label>
+                                    <div class="view-content">
+                                        <p
+                                            class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium min-h-[44px] flex items-center">
+                                            {% if profile.education %}{{ profile.education }}{% else %}<span
+                                                class="text-slate-400 italic">Not provided</span>{% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="edit-content hidden">
+                                        <input type="text" name="education" value="{{ profile.education }}"
+                                            class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                            placeholder="e.g. B.Tech, MCA">
+                                    </div>
+                                </div>
+
+                                <!-- Specialization -->
+                                <div>
+                                    <label
+                                        class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">Specialization</label>
+                                    <div class="view-content">
+                                        <p
+                                            class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium min-h-[44px] flex items-center">
+                                            {% if profile.specialization %}{{ profile.specialization }}{% else %}<span
+                                                class="text-slate-400 italic">Not provided</span>{% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="edit-content hidden">
+                                        <input type="text" name="specialization" value="{{ profile.specialization }}"
+                                            class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                            placeholder="e.g. Computer Science, Data Science">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+                                <div>
+                                    <label
+                                        class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">LinkedIn
+                                        URL</label>
+                                    <div class="view-content">
+                                        <p
+                                            class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white min-h-[44px] flex items-center">
+                                            {% if profile.linkedin_url %}<a href="{{ profile.linkedin_url }}"
+                                                target="_blank" class="text-primary hover:underline truncate">{{
+                                                profile.linkedin_url }}</a>
+                                            {% else %}<span class="text-slate-400 italic">Not provided</span>{% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="edit-content hidden">
+                                        <input type="url" name="linkedin_url"
+                                            value="{% if profile.linkedin_url %}{{ profile.linkedin_url }}{% endif %}"
+                                            class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                            placeholder="https://linkedin.com/in/yourname">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label
+                                        class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">GitHub
+                                        URL</label>
+                                    <div class="view-content">
+                                        <p
+                                            class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white min-h-[44px] flex items-center">
+                                            {% if profile.github_url %}<a href="{{ profile.github_url }}"
+                                                target="_blank" class="text-primary hover:underline truncate">{{
+                                                profile.github_url }}</a>
+                                            {% else %}<span class="text-slate-400 italic">Not provided</span>{% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="edit-content hidden">
+                                        <input type="url" name="github_url"
+                                            value="{% if profile.github_url %}{{ profile.github_url }}{% endif %}"
+                                            class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                            placeholder="https://github.com/yourusername">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Skills Section -->
+                        <div class="animate-in glass-card rounded-xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm mb-6"
+                            style="animation-delay: 0.3s">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="p-2 rounded-lg bg-green-500/10 text-green-600">
+                                    <span class="material-symbols-outlined">psychology</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-lg text-slate-900 dark:text-white">Skills</h3>
+                                    <p class="text-xs text-slate-500">Your skillset including completed roadmap skills
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">Current
+                                    Skills</label>
+                                <div class="view-content">
+                                    <div class="flex flex-wrap gap-2">
+                                        {% if profile.current_skills %}
+                                        {% for skill in profile.current_skills_display %}
+                                        <span
+                                            class="skill-tag px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-medium border border-primary/20">{{
+                                            skill }}</span>
+                                        {% endfor %}
+                                        {% endif %}
+
+                                        {% if profile.current_skills and not profile.current_skills_display %}
+                                        <p
+                                            class="text-sm text-slate-700 dark:text-slate-300 p-3 rounded-lg bg-slate-50 dark:bg-slate-800 w-full">
+                                            {{ profile.current_skills }}</p>
+                                        {% endif %}
+
+                                        {% if not profile.current_skills %}<p
+                                            class="text-slate-400 italic text-sm p-3 rounded-lg bg-slate-50 dark:bg-slate-800 w-full">
+                                            No skills added yet</p>{% endif %}
+                                    </div>
+                                </div>
+                                <div class="edit-content hidden">
+                                    <input type="text" name="current_skills" value="{{ profile.current_skills }}"
+                                        class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                        placeholder="Python, JavaScript, SQL (comma separated)">
+                                    <p class="text-xs text-slate-400 mt-1">Separate skills with commas</p>
+                                </div>
+                            </div>
+
+                            {% if completed_skills %}
+                            <div>
+                                <label
+                                    class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-green-500 text-sm">verified</span>
+                                    Completed from Roadmap
+                                </label>
+                                <div class="flex flex-wrap gap-2">
+                                    {% for skill in completed_skills %}
+                                    <span
+                                        class="skill-tag px-3 py-1.5 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm font-medium border border-green-200 dark:border-green-800 flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-sm">check_circle</span>
+                                        {{ skill }}
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Additional Details -->
+                        <div class="animate-in glass-card rounded-xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm mb-6"
+                            style="animation-delay: 0.35s">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="p-2 rounded-lg bg-orange-400/10 text-orange-600">
+                                    <span class="material-symbols-outlined">stars</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-lg text-slate-900 dark:text-white">Professional Honors &
+                                        More</h3>
+                                    <p class="text-xs text-slate-500">Additional details for your resume</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-5">
+                                <!-- Certifications -->
+                                <div>
+                                    <label
+                                        class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">Certifications</label>
+                                    <div class="view-content">
+                                        <div
+                                            class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white min-h-[44px] flex flex-wrap gap-2">
+                                            {% if profile.certifications %}
+                                            {% for cert in profile.certifications %}
+                                            <span
+                                                class="px-2 py-1 bg-white dark:bg-slate-700 rounded border border-slate-200 dark:border-slate-600 text-xs">{{
+                                                cert }}</span>
+                                            {% endfor %}
+                                            {% else %}
+                                            <span class="text-slate-400 italic">None provided</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="edit-content hidden">
+                                        <textarea name="certifications" rows="2"
+                                            class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                            placeholder="e.g. CORE JAVA - Excubate - 2020, Cloud Computing - NPTEL (separate with commas)">{{ profile.certifications|join:", " }}</textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Achievements -->
+                                <div>
+                                    <label
+                                        class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">Achievements
+                                        and Awards</label>
+                                    <div class="view-content">
+                                        <div
+                                            class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white min-h-[44px] flex flex-wrap gap-2">
+                                            {% if profile.achievements %}
+                                            {% for ach in profile.achievements %}
+                                            <span
+                                                class="px-2 py-1 bg-white dark:bg-slate-700 rounded border border-slate-200 dark:border-slate-600 text-xs">{{
+                                                ach }}</span>
+                                            {% endfor %}
+                                            {% else %}
+                                            <span class="text-slate-400 italic">None provided</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="edit-content hidden">
+                                        <textarea name="achievements" rows="2"
+                                            class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                            placeholder="e.g. 1st Place - Hackathon, Best Student Award (separate with commas)">{{ profile.achievements|join:", " }}</textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Hobbies -->
+                                <div>
+                                    <label
+                                        class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">Hobbies</label>
+                                    <div class="view-content">
+                                        <p
+                                            class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white min-h-[44px] flex items-center">
+                                            {% if profile.hobbies %}{{ profile.hobbies|join:", " }}{% else %}<span
+                                                class="text-slate-400 italic">None provided</span>{% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="edit-content hidden">
+                                        <input type="text" name="hobbies" value="{{ profile.hobbies|join:', ' }}"
+                                            class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                            placeholder="e.g. Sketching, Music, Watching Movies (separate with commas)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Save Button (edit mode only) -->
+                        <div class="edit-content hidden animate-in mb-8">
+                            <button type="button" onclick="saveProfile()"
+                                class="w-full flex items-center justify-center gap-2 h-12 px-6 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-bold text-base shadow-lg hover:shadow-xl transition-all active:scale-[0.98]">
+                                <span class="material-symbols-outlined">save</span>
+                                Save Profile
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Resume Builder Section -->
+                    <div class="animate-in glass-card rounded-xl overflow-hidden border border-slate-100 dark:border-slate-700 shadow-sm"
+                        style="animation-delay: 0.4s">
+                        <div
+                            class="bg-gradient-to-r from-accent/10 to-purple-500/10 p-6 border-b border-slate-100 dark:border-slate-800">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 rounded-lg bg-accent/10 text-accent">
+                                    <span class="material-symbols-outlined">description</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-lg text-slate-900 dark:text-white">Resume Builder</h3>
+                                    <p class="text-xs text-slate-500">Generate a professional resume from your profile
+                                        data</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6">
+                            <div class="flex flex-col md:flex-row gap-6 items-start">
+                                <!-- Resume Preview Info -->
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-3">Your Resume Will
+                                        Include:</h4>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center gap-2 text-sm">
+                                            <span
+                                                class="material-symbols-outlined text-sm {% if profile.full_name %}text-green-500{% else %}text-red-400{% endif %}">
+                                                {% if profile.full_name %}check_circle{% else %}cancel{% endif %}
+                                            </span>
+                                            <span
+                                                class="{% if profile.full_name %}text-slate-700 dark:text-slate-300{% else %}text-red-400{% endif %}">
+                                                Name: {% if profile.full_name %}{{ profile.full_name }}{% else %}Missing{% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center gap-2 text-sm">
+                                            <span
+                                                class="material-symbols-outlined text-sm text-green-500">check_circle</span>
+                                            <span class="text-slate-700 dark:text-slate-300">Email: {{ user_email
+                                                }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 text-sm">
+                                            <span
+                                                class="material-symbols-outlined text-sm {% if profile.phone %}text-green-500{% else %}text-red-400{% endif %}">
+                                                {% if profile.phone %}check_circle{% else %}cancel{% endif %}
+                                            </span>
+                                            <span
+                                                class="{% if profile.phone %}text-slate-700 dark:text-slate-300{% else %}text-red-400{% endif %}">
+                                                Phone: {% if profile.phone %}{{ profile.phone }}{% else %}Missing{% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center gap-2 text-sm">
+                                            <span
+                                                class="material-symbols-outlined text-sm {% if profile.education %}text-green-500{% else %}text-red-400{% endif %}">
+                                                {% if profile.education %}check_circle{% else %}cancel{% endif %}
+                                            </span>
+                                            <span
+                                                class="{% if profile.education %}text-slate-700 dark:text-slate-300{% else %}text-red-400{% endif %}">
+                                                Education: {% if profile.education %}{{ profile.education }}{% else %}Missing{% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center gap-2 text-sm">
+                                            <span
+                                                class="material-symbols-outlined text-sm {% if profile.current_skills %}text-green-500{% else %}text-yellow-500{% endif %}">
+                                                {% if profile.current_skills %}check_circle{% else %}warning{% endif %}
+                                            </span>
+                                            <span class="text-slate-700 dark:text-slate-300">
+                                                Skills: {% if profile.current_skills %}Added{% else %}Add skills for
+                                                better resume{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Generate Button -->
+                                <div class="flex flex-col items-center gap-3">
+                                    <a href="{% url 'career_analysis:generate_resume' %}" target="_blank"
+                                        class="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-accent to-purple-600 text-white rounded-xl font-bold text-base shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]">
+                                        <span class="material-symbols-outlined text-2xl">download</span>
+                                        Generate Resume
+                                    </a>
+                                    <p class="text-xs text-slate-400">Opens in new tab • Print to PDF</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        let isEditMode = false;
+
+        function handleFileUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profilePicInput').value = e.target.result;
+                    showToast("Photo ready to save!");
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function toggleEditMode() {
+            const form = document.getElementById('profileForm');
+            const btn = document.getElementById('editBtnText');
+            isEditMode = !isEditMode;
+            if (isEditMode) {
+                form.classList.remove('view-mode');
+                form.classList.add('edit-mode');
+                btn.textContent = 'Cancel';
+            } else {
+                form.classList.remove('edit-mode');
+                form.classList.add('view-mode');
+                btn.textContent = 'Edit Profile';
+            }
+        }
+
+        function saveProfile() {
+            const form = document.getElementById('profileForm');
+            const formData = new FormData(form);
+            fetch("{% url 'career_analysis:update_profile' %}", {
+                method: "POST",
+                headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        showToast("Profile updated successfully!");
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        showToast("Error updating profile", true);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    showToast("Network error", true);
+                });
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toastMsg');
+            const inner = toast.querySelector('div');
+            msg.textContent = message;
+            if (isError) {
+                inner.classList.remove('bg-green-500');
+                inner.classList.add('bg-red-500');
+            } else {
+                inner.classList.remove('bg-red-500');
+                inner.classList.add('bg-green-500');
+            }
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+    </script>
+</body>
+
+</html>

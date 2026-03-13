@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Job Description Analyzer - LearnLoop</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Noto+Sans:wght@300..800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .roadmap-connector {
+            position: relative;
+        }
+
+        .roadmap-connector::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 40px;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #135bec, #6366f1);
+            opacity: 0.2;
+        }
+
+        .week-card {
+            transition: all 0.3s ease;
+        }
+
+        .week-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(19, 91, 236, 0.08);
+        }
+    </style>
+</head>
+
+<body
+    class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white overflow-x-hidden antialiased">
+    <div class="relative flex h-auto min-h-screen w-full flex-col">
+        <!-- Top Navigation -->
+        <header
+            class="sticky top-0 z-50 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 lg:px-10 py-3">
+            <div class="flex items-center gap-4">
+                <h2 class="text-lg font-bold">Learn Loop</h2>
+            </div>
+            <div class="flex flex-1 justify-end gap-8">
+                <div class="hidden md:flex items-center gap-9">
+                    <a class="text-slate-600 dark:text-gray-300 hover:text-primary transition-colors text-sm font-medium"
+                        href="{% url 'career_analysis:gap_analyzer' %}">Dashboard</a>
+                    <a class="text-slate-600 dark:text-gray-300 hover:text-primary transition-colors text-sm font-medium"
+                        href="{% url 'career_analysis:roadmap_page' %}">Roadmap</a>
+                    <a class="text-primary text-sm font-bold border-b-2 border-primary pb-0.5"
+                        href="{% url 'career_analysis:job_analyzer' %}">Job Analyzer</a>
+                    <a class="text-slate-600 dark:text-gray-300 hover:text-primary transition-colors text-sm font-medium"
+                        href="{% url 'career_analysis:profile' %}">Profile</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="layout-container flex h-full grow flex-col py-8">
+            <div class="px-4 md:px-10 lg:px-40 flex flex-col gap-8 max-w-[1200px] mx-auto w-full">
+                <!-- Header -->
+                <div class="flex flex-col gap-2">
+                    <h1 class="text-3xl md:text-4xl font-black leading-tight tracking-tight">Job Description Analyzer
+                    </h1>
+                    <p class="text-slate-500 dark:text-slate-400 text-lg">
+                        Paste a job description to extract required skills and compare them with your profile.
+                    </p>
+                </div>
+
+                <!-- Input Section -->
+                <div
+                    class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xl shadow-primary/5">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="flex flex-col gap-4">
+                            <label for="job_description"
+                                class="text-sm font-bold text-slate-700 dark:text-slate-300">Paste Job Description
+                                Here</label>
+                            <textarea id="job_description" name="job_description" rows="8"
+                                class="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-slate-900 dark:text-white"
+                                placeholder="Copy and paste the full job description from LinkedIn, Indeed, etc...">{{ jd_text }}</textarea>
+                            <button type="submit"
+                                class="flex items-center justify-center gap-2 bg-primary hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-primary/20 self-end">
+                                <span class="material-symbols-outlined">analytics</span>
+                                Analyze Now
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                {% if analysis %}
+                <!-- Results Section -->
+                <div class="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+                    <!-- Summary Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div
+                            class="bg-gradient-to-br from-primary/10 to-transparent rounded-2xl border border-primary/20 p-6 flex items-center gap-5">
+                            <div class="bg-primary text-white p-3 rounded-xl shadow-lg shadow-primary/20">
+                                <span class="material-symbols-outlined text-3xl">match_word</span>
+                            </div>
+                            <div>
+                                <p
+                                    class="text-sm text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">
+                                    Match Score</p>
+                                <p class="text-3xl font-black text-primary">{{ analysis.match_score }}%</p>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col justify-center">
+                            <p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Technical Gaps</p>
+                            <p class="text-2xl font-bold">{{ analysis.tech_gap|length }}</p>
+                        </div>
+                        <div
+                            class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col justify-center">
+                            <p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Soft Skill Gaps</p>
+                            <p class="text-2xl font-bold">{{ analysis.soft_gap|length }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Skill Comparison -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Technical Skills -->
+                        <div
+                            class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+                            <div class="flex items-center gap-3 mb-6">
+                                <span class="material-symbols-outlined text-primary">terminal</span>
+                                <h3 class="text-xl font-bold">Technical Skills</h3>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                {% for skill in analysis.tech_matched %}
+                                <span
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm font-bold border border-green-200 dark:border-green-800/50">
+                                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                                    {{ skill }}
+                                </span>
+                                {% endfor %}
+                                {% for skill in analysis.tech_gap %}
+                                <span
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-sm font-bold border border-red-200 dark:border-red-800/50">
+                                    <span class="material-symbols-outlined text-sm">warning</span>
+                                    {{ skill }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Soft Skills -->
+                        <div
+                            class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+                            <div class="flex items-center gap-3 mb-6">
+                                <span class="material-symbols-outlined text-primary">psychology</span>
+                                <h3 class="text-xl font-bold">Soft Skills</h3>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                {% for skill in analysis.soft_matched %}
+                                <span
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm font-bold border border-green-200 dark:border-green-800/50">
+                                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                                    {{ skill }}
+                                </span>
+                                {% endfor %}
+                                {% for skill in analysis.soft_gap %}
+                                <span
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-sm font-bold border border-red-200 dark:border-red-800/50">
+                                    <span class="material-symbols-outlined text-sm">warning</span>
+                                    {{ skill }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Roadmap Generation Section -->
+                    {% if analysis.tech_gap or analysis.soft_gap %}
+                    <div
+                        class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-3xl border border-slate-200 dark:border-slate-800 p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl shadow-slate-200/50 dark:shadow-none mb-4">
+                        <div class="flex flex-col gap-1">
+                            <h3 class="text-3xl font-black leading-tight">Bridge the Gap</h3>
+                            <p class="text-slate-500 dark:text-slate-400 text-base max-w-xl">
+                                We've identified {{ analysis.tech_gap|length|add:analysis.soft_gap|length }} missing
+                                skills for this role. Generate a personalized roadmap to acquire these skills and boost
+                                your chances!
+                            </p>
+                        </div>
+                        <button id="generateBtn" onclick="generateRoadmaps()"
+                            class="bg-primary hover:bg-blue-600 text-white font-bold py-4 px-10 rounded-2xl transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 whitespace-nowrap min-w-[240px]">
+                            <span class="material-symbols-outlined" id="genBtnIcon">auto_awesome</span>
+                            <span id="genBtnText">Generate Roadmaps</span>
+                        </button>
+                    </div>
+
+                    <div id="roadmapResults" class="hidden flex flex-col gap-6 mb-12">
+                        <h2 class="text-2xl font-black text-slate-900 dark:text-white mt-4 ml-2">Your Personalized
+                            Roadmaps</h2>
+                        <div id="roadmapContainer" class="flex flex-col gap-8">
+                            <!-- AJAX content will go here -->
+                            <div class="flex items-center justify-center p-20" id="loadingState">
+                                <div class="flex flex-col items-center gap-4">
+                                    <div
+                                        class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin">
+                                    </div>
+                                    <p class="text-slate-500 animate-pulse">AI is crafting your roadmaps...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Generate Tailored Resume Section -->
+                    <div
+                        class="bg-slate-900 text-white rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
+                        <div class="relative z-10">
+                            <h3 class="text-2xl font-bold mb-2">Ready to Apply?</h3>
+                            <p class="text-slate-400 max-w-lg">
+                                we have analyzed your profile against this job. Now, generate a professional resume
+                                tailored specifically to this job description!
+                            </p>
+                        </div>
+                        <form action="{% url 'career_analysis:generate_resume' %}" method="POST" class="relative z-10">
+                            {% csrf_token %}
+                            <input type="hidden" name="job_description" value="{{ jd_text }}">
+                            <button type="submit"
+                                class="bg-primary hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-xl shadow-primary/30 flex items-center gap-2 whitespace-nowrap">
+                                <span class="material-symbols-outlined">description</span>
+                                Generate Tailored Resume
+                            </button>
+                        </form>
+                        <!-- Decorative circle -->
+                        <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-primary/20 rounded-full blur-3xl"></div>
+                    </div>
+
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function generateRoadmaps() {
+            const btn = document.getElementById('generateBtn');
+            const btnText = document.getElementById('genBtnText');
+            const btnIcon = document.getElementById('genBtnIcon');
+            const resultsSection = document.getElementById('roadmapResults');
+            const container = document.getElementById('roadmapContainer');
+            const loading = document.getElementById('loadingState');
+
+            btn.disabled = true;
+            btnText.innerText = 'Generating...';
+            btnIcon.classList.add('animate-spin');
+            btnIcon.innerText = 'sync';
+
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+            const gaps = [
+                {% for skill in analysis.tech_gap %} { name: "{{ skill }}", type: "Technical Skill" }, {% endfor %}
+        {% for skill in analysis.soft_gap %} { name: "{{ skill }}", type: "Soft Skill" }, {% endfor %}
+            ].slice(0, 3); // Limit to top 3
+
+        container.innerHTML = '';
+
+        for (const skill of gaps) {
+            try {
+                const response = await fetch(`/career-analysis/get-skill-roadmap/?skill=${encodeURIComponent(skill.name)}&type=${encodeURIComponent(skill.type)}`);
+                const data = await response.json();
+                renderRoadmap(data, container);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        loading.classList.add('hidden');
+        btnIcon.classList.remove('animate-spin');
+        btnIcon.innerText = 'check_circle';
+        btnText.innerText = 'Roadmaps Generated';
+        }
+
+        function renderRoadmap(data, container) {
+            const div = document.createElement('div');
+            div.className = 'animate-in roadmap-connector mb-2';
+
+            let roadmapHtml = `
+                <div class="glass-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden mb-4">
+                    <div class="bg-gradient-to-r from-primary/5 to-accent/5 p-5 border-b border-slate-100 dark:border-slate-800">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white shadow-lg">
+                                <span class="material-symbols-outlined">${data.type === 'Soft Skill' ? 'psychology' : 'terminal'}</span>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-slate-900 dark:text-white">${data.skill}</h3>
+                                <div class="flex items-center gap-2 mt-0.5">
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 font-bold uppercase tracking-wider text-slate-500">${data.type}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-5 space-y-4">
+            `;
+
+            data.roadmap.forEach((week, index) => {
+                roadmapHtml += `
+                    <div class="week-card rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/50 p-4">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-br from-primary to-accent text-white text-[10px] font-bold shrink-0 shadow-md">
+                                ${index + 1}
+                            </span>
+                            <h4 class="font-bold text-sm text-slate-900 dark:text-white">Week ${index + 1} — ${week.goal}</h4>
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed ml-10 mb-4">${week.how}</p>
+                        
+                        <div class="ml-10 space-y-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                ${week.resources.map(res => `
+                                    <a href="${res.url}" target="_blank" class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-primary transition-all group">
+                                        <span class="material-symbols-outlined text-sm text-primary">play_circle</span>
+                                        <span class="text-xs font-medium text-slate-700 dark:text-slate-200 truncate group-hover:text-primary">${res.title}</span>
+                                    </a>
+                                `).join('')}
+                            </div>
+                            
+                            <div class="flex items-start gap-2 p-3 rounded-lg bg-green-50/50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/20">
+                                <span class="material-symbols-outlined text-green-600 text-sm mt-0.5">task_alt</span>
+                                <p class="text-xs text-green-800 dark:text-green-300 leading-relaxed"><span class="font-bold">Practice:</span> ${week.practice}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            roadmapHtml += `</div></div>`;
+            div.innerHTML = roadmapHtml;
+            container.appendChild(div);
+        }
+    </script>
+</body>
+
+</html>

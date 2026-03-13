@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>{{ profile.full_name|default:"Resume" }} - Professional Resume</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --accent: #2563eb;
+            --text-secondary: #4b5563;
+            --border: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: var(--primary);
+            background: #f0f2f5;
+            line-height: 1.5;
+            padding: 40px 0;
+        }
+
+        .resume {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 25mm 20mm;
+            position: relative;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+
+            .resume {
+                margin: 0;
+                box-shadow: none;
+                width: 100%;
+                min-height: auto;
+                padding: 10mm 15mm;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            /* Page break for printing */
+            .page-break {
+                page-break-before: always;
+            }
+        }
+
+        /* Header */
+        .resume-header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 15px;
+        }
+
+        .name {
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .location {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .contact-info {
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 5px;
+        }
+
+        .contact-info a {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--primary);
+            margin-bottom: 10px;
+            border-bottom: 1.5px solid var(--primary);
+            padding-bottom: 4px;
+        }
+
+        .content-item {
+            margin-bottom: 12px;
+        }
+
+        /* Education Table Style */
+        .edu-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        .edu-table td {
+            padding: 8px 12px;
+            border: 1px dotted #ccc;
+            vertical-align: top;
+        }
+
+        .edu-main {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .edu-sub {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .edu-date {
+            text-align: right;
+            font-size: 13px;
+            width: 100px;
+        }
+
+        /* Projects Section */
+        .project-item {
+            margin-bottom: 15px;
+        }
+
+        .project-title {
+            font-weight: 900;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+        }
+
+        .project-title::before {
+            content: "•";
+        }
+
+        .project-tech {
+            font-size: 13px;
+            font-weight: 700;
+            margin: 3px 0;
+            color: var(--primary);
+        }
+
+        .project-desc {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            text-align: justify;
+        }
+
+        /* Skills */
+        .skills-content {
+            font-size: 14px;
+        }
+
+        .skill-row {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            margin-bottom: 5px;
+        }
+
+        .skill-label {
+            font-weight: 700;
+        }
+
+        /* Generic List Section */
+        .list-item {
+            display: flex;
+            gap: 10px;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .list-item::before {
+            content: "•";
+            font-weight: bold;
+        }
+
+        /* UTILS */
+        .text-justify {
+            text-align: justify;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        /* Print Button Bar */
+        .print-bar {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="resume">
+        <!-- Header -->
+        <header class="resume-header">
+            <h1 class="name">{{ profile.full_name|default:"YOUR NAME" }}</h1>
+            {% if profile.location %}
+            <div class="location">{{ profile.location }}</div>
+            {% endif %}
+
+            <div class="contact-info">
+                {% if profile.phone %}
+                <span>Phone: {{ profile.phone }}</span>
+                {% endif %}
+
+                <span>Email: <a href="mailto:{{ user_email }}">{{ user_email }}</a></span>
+
+                {% if profile.linkedin_url %}
+                <span>LinkedIn: <a href="{{ profile.linkedin_url }}" target="_blank">View Profile</a></span>
+                {% endif %}
+
+                {% if profile.github_url %}
+                <span>GitHub: <a href="{{ profile.github_url }}" target="_blank">View Profile</a></span>
+                {% endif %}
+            </div>
+        </header>
+
+        <!-- Objective Section -->
+        <section class="section">
+            <h2 class="section-title">Professional Summary</h2>
+            <p class="text-justify" style="font-size: 13.5px;">
+                {% if tailored_summary %}
+                {{ tailored_summary }}
+                {% elif profile.bio %}
+                {{ profile.bio }}
+                {% else %}
+                A dedicated professional with a strong background in {{ profile.specialization|default:profile.current_occupation|default:"technology" }}, seeking to leverage skills and experience in a challenging role as a {{ profile.target_role|default:"Software Professional" }}.
+                {% endif %}
+            </p>
+        </section>
+
+        <!-- Education Section -->
+        <section class="section">
+            <h2 class="section-title">Education</h2>
+            <table class="edu-table">
+                {% if profile.education_list %}
+                {% for edu in profile.education_list %}
+                <tr>
+                    <td class="edu-main">
+                        {{ edu.degree }}
+                        <div class="edu-sub">{{ edu.institution }}</div>
+                    </td>
+                    <td class="edu-date">{{ edu.year }}</td>
+                </tr>
+                {% endfor %}
+                {% elif profile.education %}
+                <tr>
+                    <td class="edu-main">
+                        {{ profile.education }}
+                        {% if profile.specialization %}
+                        <div class="edu-sub">{{ profile.specialization }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="edu-date">Present</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td class="edu-main">
+                        Education details not provided
+                    </td>
+                    <td class="edu-date">-</td>
+                </tr>
+                {% endif %}
+            </table>
+        </section>
+
+        <!-- Skills Section -->
+        <section class="section">
+            <h2 class="section-title">Skills</h2>
+            <div class="skills-content">
+                {% if expert_skills %}
+                <div class="skill-row">
+                    <span class="skill-label">Expert Skills:</span>
+                    <span>{{ expert_skills|join:", " }}</span>
+                </div>
+                {% endif %}
+                
+                {% if intermediate_skills %}
+                <div class="skill-row">
+                    <span class="skill-label">Intermediate Skills:</span>
+                    <span>{{ intermediate_skills|join:", " }}</span>
+                </div>
+                {% endif %}
+
+                {% if completed_skills %}
+                <div class="skill-row">
+                    <span class="skill-label">Roadmap Competencies:</span>
+                    <span>{{ completed_skills|join:", " }}</span>
+                </div>
+                {% endif %}
+
+                {% if not expert_skills and not intermediate_skills and not completed_skills %}
+                <div class="skill-row">
+                    <span class="skill-label">Skills:</span>
+                    <span>{{ profile.current_skills|default:"No skills listed yet" }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        {% if profile.projects %}
+        <section class="section">
+            <h2 class="section-title">Projects</h2>
+            {% for proj in profile.projects %}
+            <div class="project-item">
+                <h3 class="project-title">{{ proj.title }}</h3>
+                {% if proj.tech %}<div class="project-tech">Technologies: {{ proj.tech }}</div>{% endif %}
+                <p class="project-desc">{{ proj.description }}</p>
+            </div>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        <!-- Certifications Section -->
+        {% if profile.certifications %}
+        <section class="section">
+            <h2 class="section-title">Certifications</h2>
+            {% for cert in profile.certifications %}
+            <div class="list-item">{{ cert }}</div>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        <!-- Achievements Section -->
+        {% if profile.achievements %}
+        <section class="section">
+            <h2 class="section-title">Achievements and Awards</h2>
+            {% for ach in profile.achievements %}
+            <div class="list-item">{{ ach }}</div>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        <!-- Hobbies Section -->
+        {% if profile.hobbies %}
+        <section class="section">
+            <h2 class="section-title">Hobbies</h2>
+            {% for hobby in profile.hobbies %}
+            <div class="list-item">{{ hobby }}</div>
+            {% endfor %}
+        </section>
+        {% endif %}
+    </div>
+
+    <!-- Actions Bar -->
+    <div class="print-bar no-print">
+        <a href="{% url 'career_analysis:profile' %}" class="action-btn back-btn">
+            <span>← Back to Profile</span>
+        </a>
+        <button class="action-btn" onclick="window.print()">
+            <span>🖨️ Print / Save PDF</span>
+        </button>
+    </div>
+
+</body>
+
+</html>

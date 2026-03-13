@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Learning Roadmap - LearnLoop</title>
+    <meta name="description"
+        content="Your personalized learning roadmap with free courses, videos, and resources to bridge your skill gaps." />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Noto+Sans:wght@300..800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "accent": "#6366f1",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dark .glass-card {
+            background: rgba(15, 23, 42, 0.85);
+        }
+
+        .roadmap-connector {
+            position: relative;
+        }
+
+        .roadmap-connector::before {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 48px;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #135bec, #6366f1);
+            opacity: 0.3;
+        }
+
+        .skill-checkbox:checked+.skill-label {
+            background: linear-gradient(135deg, #135bec10, #6366f115);
+            border-color: #135bec;
+        }
+
+        .week-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .week-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(19, 91, 236, 0.12);
+        }
+
+        .resource-link {
+            transition: all 0.2s ease;
+        }
+
+        .resource-link:hover {
+            transform: translateX(4px);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .progress-ring {
+            transition: stroke-dashoffset 0.5s ease;
+        }
+
+        .duration-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #135bec;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(19, 91, 236, 0.3);
+        }
+
+        .duration-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #135bec;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+
+<body
+    class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white overflow-x-hidden antialiased">
+    <div class="relative flex h-auto min-h-screen w-full flex-col">
+
+        <!-- Top Navigation -->
+        <header
+            class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 lg:px-10 py-3">
+            <div class="flex items-center gap-4 text-slate-900 dark:text-white">
+                <div class="size-8 text-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-2xl">school</span>
+                </div>
+                <h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Learn
+                    Loop</h2>
+            </div>
+            <div class="flex flex-1 justify-end gap-8">
+                <div class="hidden md:flex items-center gap-9">
+                    <a class="text-slate-600 dark:text-gray-300 hover:text-primary transition-colors text-sm font-medium"
+                        href="{% url 'career_analysis:gap_analyzer' %}">Dashboard</a>
+                    <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+                        href="{% url 'career_analysis:roadmap_page' %}">Roadmap</a>
+                    <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+                        href="{% url 'career_analysis:job_analyzer' %}">Job Analyzer</a>
+                    <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+                        href="{% url 'career_analysis:profile' %}">Profile</a>
+                </div>
+                <a href="{% url 'accounts:logout' %}">
+                    <button
+                        class="flex cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold hover:bg-blue-700 transition-colors">
+                        <span class="truncate">Log Out</span>
+                    </button>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="layout-container flex h-full grow flex-col">
+            <div class="px-4 md:px-10 lg:px-32 flex flex-1 justify-center py-8">
+                <div class="flex flex-col w-full max-w-[1100px] flex-1 gap-8">
+
+                    <!-- Page Header -->
+                    <div class="animate-in flex flex-col gap-4">
+                        <div class="flex flex-wrap items-end justify-between gap-4">
+                            <div class="flex min-w-72 flex-col gap-2">
+                                <div
+                                    class="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-primary">
+                                    <span class="material-symbols-outlined text-sm">route</span>
+                                    Learning Roadmap
+                                </div>
+                                <h1 class="text-3xl md:text-4xl font-black leading-tight tracking-tight">
+                                    Your Path to <span
+                                        class="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{{
+                                        career_name }}</span>
+                                </h1>
+                                <p class="text-slate-500 dark:text-slate-400 text-base max-w-2xl">
+                                    Follow this structured learning plan with free resources, videos, and hands-on
+                                    projects. Complete sections to build your skill set.
+                                </p>
+                            </div>
+                            <a href="{% url 'career_analysis:gap_analyzer' %}">
+                                <button
+                                    class="flex h-10 px-4 items-center gap-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-900 dark:text-white text-sm font-bold transition-colors">
+                                    <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+                                    Back to Analysis
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Stats Overview -->
+                    <div class="animate-in grid grid-cols-1 sm:grid-cols-4 gap-4" style="animation-delay: 0.1s">
+                        <div class="glass-card rounded-xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm">
+                            <div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 mb-2">
+                                <span class="material-symbols-outlined text-[18px]">target</span>
+                                <p class="text-xs font-bold uppercase tracking-wider">Target</p>
+                            </div>
+                            <p class="text-xl font-black text-slate-900 dark:text-white">{{ career_name }}</p>
+                        </div>
+                        <div class="glass-card rounded-xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm">
+                            <div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 mb-2">
+                                <span class="material-symbols-outlined text-[18px]">warning</span>
+                                <p class="text-xs font-bold uppercase tracking-wider">Skill Gaps</p>
+                            </div>
+                            <p class="text-3xl font-black text-red-500">{{ total_gap }}</p>
+                        </div>
+                        <div class="glass-card rounded-xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm">
+                            <div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 mb-2">
+                                <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                                <p class="text-xs font-bold uppercase tracking-wider">Completed</p>
+                            </div>
+                            <p class="text-3xl font-black text-green-500">{{ total_completed }}</p>
+                        </div>
+                        <div class="glass-card rounded-xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm">
+                            <div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 mb-2">
+                                <span class="material-symbols-outlined text-[18px]">schedule</span>
+                                <p class="text-xs font-bold uppercase tracking-wider">Duration</p>
+                            </div>
+                            <p class="text-3xl font-black text-primary" id="durationDisplay">{{ custom_duration }}W</p>
+                        </div>
+                    </div>
+
+                    <!-- Custom Duration Control -->
+                    <div class="animate-in glass-card rounded-xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm"
+                        style="animation-delay: 0.2s">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 rounded-lg bg-primary/10 text-primary">
+                                    <span class="material-symbols-outlined">tune</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-slate-900 dark:text-white">Customize Duration</h3>
+                                    <p class="text-xs text-slate-500">Adjust weeks per skill based on your availability
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 w-full sm:w-auto">
+                                <span class="text-sm font-medium text-slate-500">2W</span>
+                                <input type="range" min="2" max="12" value="{{ custom_duration }}"
+                                    class="duration-slider w-48 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                                    id="durationSlider" oninput="updateDurationLabel(this.value)">
+                                <span class="text-sm font-medium text-slate-500">12W</span>
+                                <button onclick="applyDuration()"
+                                    class="px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition-colors">
+                                    Apply
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Roadmap Skills -->
+                    {% for roadmap in roadmaps %}
+                    <div class="animate-in roadmap-connector" style="animation-delay: {{ forloop.counter0 }}00ms">
+
+                        <!-- Skill Header Card -->
+                        <div
+                            class="glass-card rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+
+                            <!-- Skill Title Bar -->
+                            <div
+                                class="bg-gradient-to-r from-primary/5 to-accent/5 p-5 border-b border-slate-100 dark:border-slate-800">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white shadow-lg">
+                                            <span class="material-symbols-outlined">
+                                                {% if roadmap.type == "Soft Skill" %}psychology{% else %}code{% endif %}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-bold text-lg text-slate-900 dark:text-white">{{ roadmap.skill }}</h3>
+                                            <div class="flex items-center gap-2 mt-1">
+                                                <span
+                                                    class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 font-medium">{{ roadmap.type }}</span>
+                                                <span
+                                                    class="text-xs px-2 py-0.5 rounded-full 
+                                {% if roadmap.skill_status == 'gap' %}bg-red-100 text-red-700{% else %}bg-yellow-100 text-yellow-700{% endif %} font-bold uppercase">
+                                                    {{ roadmap.skill_status }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Completion Checkbox -->
+                                    <div class="flex items-center gap-3">
+                                        <!-- Progress -->
+                                        <div class="text-right hidden sm:block">
+                                            <p class="text-xs text-slate-500">Progress</p>
+                                            <p class="font-bold text-sm text-primary">{{ roadmap.percent }}%</p>
+                                        </div>
+                                        <!-- Mark as learned -->
+                                        <label class="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg border-2 transition-all
+                        {% if roadmap.is_completed_skill %}
+                            border-green-500 bg-green-50 dark:bg-green-900/20
+                        {% else %}
+                            border-slate-200 dark:border-slate-700 hover:border-primary
+                        {% endif %}">
+                                            <input type="checkbox"
+                                                class="skill-checkbox w-5 h-5 accent-green-500 cursor-pointer"
+                                                data-skill="{{ roadmap.skill }}" data-type="{{ roadmap.type }}" {% if roadmap.is_completed_skill %}checked{% endif %}
+                                                onchange="toggleSkillCompletion(this)">
+                                            <span
+                                                class="text-sm font-bold {% if roadmap.is_completed_skill %}text-green-600{% else %}text-slate-600 dark:text-slate-300{% endif %}">
+                                                {% if roadmap.is_completed_skill %}Learned ✓{% else %}Mark Learned{% endif %}
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Progress Bar -->
+                                <div class="mt-4 w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                                    <div class="bg-gradient-to-r from-primary to-accent h-2 rounded-full transition-all duration-700"
+                                        style="width: {{ roadmap.percent }}%"></div>
+                                </div>
+                                <p class="text-xs mt-1 text-slate-500">{{ roadmap.completed }} / {{ roadmap.total }}
+                                    weeks completed</p>
+                            </div>
+
+                            <!-- Weekly Steps -->
+                            <div class="p-5 space-y-4">
+                                {% for step in roadmap.roadmap %}
+                                <div
+                                    class="week-card rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/50 overflow-hidden">
+
+                                    <!-- Week Header -->
+                                    <div class="flex items-start justify-between p-4 pb-3">
+                                        <div class="flex items-center gap-3">
+                                            <span
+                                                class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent text-white text-xs font-bold shrink-0 shadow-md">
+                                                {{ forloop.counter }}
+                                            </span>
+                                            <div>
+                                                <h4 class="font-bold text-sm text-slate-900 dark:text-white">
+                                                    Week {{ forloop.counter }} — {{ step.goal }}
+                                                </h4>
+                                            </div>
+                                        </div>
+                                        <input type="checkbox" {% if forloop.counter in roadmap.completed_weeks %}checked{% endif %}
+                                            onclick="toggleWeek('{{ roadmap.skill }}', {{ forloop.counter }})"
+                                            class="w-5 h-5 accent-primary cursor-pointer shrink-0 mt-1 rounded">
+                                    </div>
+
+                                    <!-- How to learn -->
+                                    <div class="px-4 pb-3">
+                                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pl-11">
+                                            {{ step.how }}
+                                        </p>
+                                    </div>
+
+                                    <!-- Resources -->
+                                    {% if step.resources %}
+                                    <div class="px-4 pb-3 pl-[60px]">
+                                        <p
+                                            class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
+                                            <span
+                                                class="material-symbols-outlined text-sm text-primary">play_circle</span>
+                                            Free Resources & Videos
+                                        </p>
+                                        <div class="grid gap-2">
+                                            {% for resource in step.resources %}
+                                            <a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer"
+                                                class="resource-link flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-primary hover:shadow-md transition-all group">
+
+                                                <div class="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center
+                                {% if 'youtube' in resource.url %}bg-red-100 dark:bg-red-900/30 text-red-600
+                                {% elif 'coursera' in resource.url %}bg-blue-100 dark:bg-blue-900/30 text-blue-600
+                                {% elif 'udemy' in resource.url %}bg-purple-100 dark:bg-purple-900/30 text-purple-600
+                                {% elif 'freecodecamp' in resource.url %}bg-green-100 dark:bg-green-900/30 text-green-600
+                                {% elif 'geeksforgeeks' in resource.url %}bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600
+                                {% elif 'w3schools' in resource.url %}bg-teal-100 dark:bg-teal-900/30 text-teal-600
+                                {% else %}bg-slate-100 dark:bg-slate-800 text-slate-600{% endif %}">
+                                                    <span class="material-symbols-outlined text-lg">
+                                                        {% if 'youtube' in resource.url %}play_circle
+                                                        {% elif 'coursera' in resource.url or 'udemy' in resource.url %}school
+                                                        {% elif 'github' in resource.url %}code
+                                                        {% elif 'geeksforgeeks' in resource.url or 'w3schools' in resource.url %}menu_book
+                                                        {% else %}open_in_new{% endif %}
+                                                    </span>
+                                                </div>
+
+                                                <div class="flex-1 min-w-0">
+                                                    <p
+                                                        class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary truncate transition-colors">
+                                                        {{ resource.title }}
+                                                    </p>
+                                                    <p class="text-xs text-slate-400 truncate mt-0.5">
+                                                        {% if 'youtube' in resource.url %}YouTube
+                                                        {% elif 'coursera' in resource.url %}Coursera
+                                                        {% elif 'udemy' in resource.url %}Udemy
+                                                        {% elif 'freecodecamp' in resource.url %}freeCodeCamp
+                                                        {% elif 'geeksforgeeks' in resource.url %}GeeksforGeeks
+                                                        {% elif 'w3schools' in resource.url %}W3Schools
+                                                        {% else %}Web Resource{% endif %}
+                                                        • Free
+                                                    </p>
+                                                </div>
+
+                                                <span
+                                                    class="material-symbols-outlined text-slate-400 group-hover:text-primary text-sm shrink-0 transition-colors">
+                                                    arrow_outward
+                                                </span>
+                                            </a>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="px-4 pb-3 pl-[60px]">
+                                        <p class="text-xs text-slate-400 italic">Search YouTube or Coursera for "{{ step.goal }}".</p>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- Practice Task -->
+                                    {% if step.practice %}
+                                    <div class="px-4 pb-4 pl-[60px]">
+                                        <div
+                                            class="flex items-start gap-2 p-3 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 border border-green-200 dark:border-green-800">
+                                            <span
+                                                class="material-symbols-outlined text-green-600 text-lg shrink-0 mt-0.5">task_alt</span>
+                                            <div>
+                                                <p
+                                                    class="text-xs font-bold uppercase text-green-700 dark:text-green-400 mb-1">
+                                                    🏋️ Practice Task</p>
+                                                <p class="text-sm text-green-800 dark:text-green-300 leading-relaxed">{{ step.practice }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                </div>
+                                {% empty %}
+                                <p class="text-slate-500 text-sm text-center py-4">No roadmap steps available for this
+                                    skill.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="glass-card rounded-xl border border-slate-200 dark:border-slate-700 p-12 text-center">
+                        <span class="material-symbols-outlined text-6xl text-slate-300 mb-4">celebration</span>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">All Skills Matched!</h3>
+                        <p class="text-slate-500">Great job! You already have all the required skills for this career.
+                        </p>
+                    </div>
+                    {% endfor %}
+
+                    <!-- Submit Completed Skills Summary -->
+                    {% if roadmaps %}
+                    <div class="animate-in glass-card rounded-xl border border-primary/20 p-6 shadow-sm bg-gradient-to-r from-primary/5 to-accent/5"
+                        style="animation-delay: 0.5s">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 rounded-lg bg-primary/10 text-primary">
+                                <span class="material-symbols-outlined">inventory</span>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Completed Skills Summary
+                                </h3>
+                                <p class="text-xs text-slate-500">Skills you've marked as learned are automatically
+                                    added to your profile</p>
+                            </div>
+                        </div>
+
+                        <div id="completedSkillsList" class="flex flex-wrap gap-2 mb-4">
+                            {% for skill_name in completed_skill_names %}
+                            <span
+                                class="px-3 py-1.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm font-medium flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">check_circle</span>
+                                {{ skill_name }}
+                            </span>
+                            {% empty %}
+                            <p class="text-sm text-slate-400 italic">No skills completed yet. Check the boxes above as
+                                you learn!</p>
+                            {% endfor %}
+                        </div>
+
+                        <a href="{% url 'career_analysis:profile' %}"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-lg font-bold text-sm hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg">
+                            <span class="material-symbols-outlined text-lg">person</span>
+                            View Profile & Build Resume
+                        </a>
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        function updateDurationLabel(val) {
+            document.getElementById('durationDisplay').textContent = val + 'W';
+        }
+
+        function applyDuration() {
+            const val = document.getElementById('durationSlider').value;
+            const url = new URL(window.location.href);
+            url.searchParams.set('duration', val);
+            window.location.href = url.toString();
+        }
+
+        function toggleWeek(skill, week) {
+            fetch("{% url 'career_analysis:toggle_week_progress' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `skill=${encodeURIComponent(skill)}&week=${week}`
+            });
+        }
+
+        function toggleSkillCompletion(checkbox) {
+            const skill = checkbox.dataset.skill;
+            const type = checkbox.dataset.type;
+            const action = checkbox.checked ? "add" : "remove";
+            const label = checkbox.closest('label');
+            const labelText = label.querySelector('span:last-child');
+
+            fetch("{% url 'career_analysis:add_completed_skill' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `skill_name=${encodeURIComponent(skill)}&skill_type=${encodeURIComponent(type)}&action=${action}`
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "added" || data.status === "already_exists") {
+                        label.classList.remove('border-slate-200', 'dark:border-slate-700', 'hover:border-primary');
+                        label.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20');
+                        labelText.textContent = 'Learned ✓';
+                        labelText.classList.remove('text-slate-600', 'dark:text-slate-300');
+                        labelText.classList.add('text-green-600');
+
+                        // Add to summary
+                        const list = document.getElementById('completedSkillsList');
+                        const empty = list.querySelector('p.italic');
+                        if (empty) empty.remove();
+
+                        const span = document.createElement('span');
+                        span.className = 'px-3 py-1.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm font-medium flex items-center gap-1';
+                        span.innerHTML = `<span class="material-symbols-outlined text-sm">check_circle</span>${skill}`;
+                        span.dataset.skill = skill;
+                        list.appendChild(span);
+                    } else if (data.status === "removed") {
+                        label.classList.add('border-slate-200', 'dark:border-slate-700', 'hover:border-primary');
+                        label.classList.remove('border-green-500', 'bg-green-50', 'dark:bg-green-900/20');
+                        labelText.textContent = 'Mark Learned';
+                        labelText.classList.add('text-slate-600', 'dark:text-slate-300');
+                        labelText.classList.remove('text-green-600');
+
+                        // Remove from summary
+                        const list = document.getElementById('completedSkillsList');
+                        const items = list.querySelectorAll(`span[data-skill="${skill}"]`);
+                        items.forEach(el => el.remove());
+                    }
+                });
+        }
+    </script>
+
+</body>
+
+</html>
