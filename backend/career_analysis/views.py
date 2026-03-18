@@ -1254,3 +1254,383 @@ def mentor_dashboard(request):
     }
     
     return render(request, 'mentor_dashboard.html', {'user': user, 'stats': stats})
+
+
+# =====================================================
+# NEW: TOPIC QUIZ GENERATOR
+# =====================================================
+
+def generate_topic_quiz(request):
+    """
+    AJAX endpoint: generate 5 MCQ quiz questions for a given skill topic.
+    GET params: skill, topic (week goal), week (number)
+    Returns JSON: { questions: [ {q, options:[a,b,c,d], answer} ] }
+    """
+    skill = request.GET.get("skill", "")
+    topic = request.GET.get("topic", "")
+    week  = request.GET.get("week", "1")
+
+    if not skill or not topic:
+        return JsonResponse({"error": "Missing skill or topic"}, status=400)
+
+    prompt = f"""
+You are an expert online learning assessment designer.
+
+Generate EXACTLY 5 multiple-choice quiz questions to test knowledge on:
+Skill: "{skill}"
+Topic / Week Goal: "{topic}" (Week {week})
+
+RULES:
+- Each question must test a specific concept from the topic.
+- Each question must have exactly 4 options (A, B, C, D).
+- Only ONE option is correct.
+- Questions should range from basic recall to comprehension.
+- Return ONLY valid JSON, no markdown, no extra text.
+
+JSON FORMAT:
+{{
+  "questions": [
+    {{
+      "q": "Question text here?",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "answer": 0
+    }}
+  ]
+}}
+
+Where "answer" is the 0-based index of the correct option.
+"""
+
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {"role": "system", "content": "You are a quiz generator. Respond with ONLY valid JSON."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.4,
+            max_tokens=1500
+        )
+        content = response.choices[0].message.content.strip()
+        data = extract_json_from_text(content)
+        if data and isinstance(data, dict) and "questions" in data:
+            return JsonResponse(data)
+    except Exception as e:
+        print("❌ Quiz generation error:", e)
+
+    # Fallback static questions if AI fails
+    fallback = {
+        "questions": [
+            {
+                "q": f"What is the primary goal when learning '{topic}'?",
+                "options": [
+                    "Understanding the core concepts",
+                    "Memorizing all syntax",
+                    "Building the most complex project immediately",
+                    "Skipping fundamentals"
+                ],
+                "answer": 0
+            },
+            {
+                "q": f"Which approach is best for mastering '{skill}'?",
+                "options": [
+                    "Theory only",
+                    "Practice only",
+                    "Theory + hands-on practice",
+                    "Watching videos passively"
+                ],
+                "answer": 2
+            },
+            {
+                "q": f"When starting '{topic}', what should you do first?",
+                "options": [
+                    "Dive into advanced concepts",
+                    "Understand the basics and prerequisites",
+                    "Copy existing code without understanding",
+                    "Skip documentation"
+                ],
+                "answer": 1
+            },
+            {
+                "q": f"How can you verify you've learned '{topic}' effectively?",
+                "options": [
+                    "By completing a practice project",
+                    "By reading one article",
+                    "By telling others about it",
+                    "By watching one video"
+                ],
+                "answer": 0
+            },
+            {
+                "q": f"What is considered a key skill within '{skill}'?",
+                "options": [
+                    "Avoiding documentation",
+                    "Understanding the weekly topic deeply",
+                    "Rushing to the next topic",
+                    "Using only one learning resource"
+                ],
+                "answer": 1
+            }
+        ]
+    }
+    return JsonResponse(fallback)
+
+
+# =====================================================
+# STRUCTURED TOPIC NOTES GENERATOR
+# =====================================================
+
+import requests as http_requests
+
+def generate_topic_notes(request):
+    """
+    AJAX endpoint: generate structured study notes for a topic using Groq AI.
+    GET params: skill, topic
+    Returns: { notes: "formatted text with all 8 sections" }
+    """
+    skill = request.GET.get("skill", "")
+    topic = request.GET.get("topic", "")
+
+    if not skill or not topic:
+        return JsonResponse({"error": "Missing skill or topic"}, status=400)
+
+    prompt = f"""
+You are an expert programming tutor.
+
+Create structured study notes for the topic: "{topic}" in the context of skill: "{skill}"
+
+Follow this exact format:
+
+1. 📌 Definition:
+- Simple and clear definition
+
+2. 📖 Explanation:
+- Explain in beginner-friendly language
+
+3. 🧾 Syntax (if applicable):
+- Provide code syntax
+
+4. 💡 Example:
+- Give 1-2 simple examples with code
+
+5. 🎯 Use Cases:
+- Real-world applications (3 bullet points)
+
+6. ⚠️ Common Mistakes:
+- List 3 common beginner errors
+
+7. 🔑 Key Points:
+- 4-5 important takeaways (bullet points)
+
+8. ❓ Interview Questions:
+- 2-3 basic questions with answers
+
+9. 📝 Hands-on Practice:
+- A small coding exercise or task to apply the concept
+
+10. 🔗 Further Reading:
+- Suggest 2-3 topics for further exploration
+
+Keep the explanation:
+- Simple
+- Structured
+- Easy to understand
+- Suitable for beginners
+
+Limit response to 350-450 words for depth.
+"""
+
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": "You are an expert programming tutor. Format your response clearly with the numbered sections exactly as requested."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.3,
+            max_tokens=900
+        )
+        notes_text = response.choices[0].message.content.strip()
+        return JsonResponse({"notes": notes_text, "skill": skill, "topic": topic})
+    except Exception as e:
+        print("❌ Notes generation error:", e)
+        return JsonResponse({"error": "Notes generation failed", "notes": None}, status=500)
+
+
+# =====================================================
+# COURSE FETCHER (Udemy + Free Courses via RapidAPI)
+# =====================================================
+
+def get_topic_courses(request):
+    """
+    AJAX endpoint: fetch real courses from Udemy & Free Courses APIs via RapidAPI.
+    GET params: skill, topic
+    Returns: { courses: [ {title, url, source, thumbnail, rating} ] }
+    """
+    skill  = request.GET.get("skill", "")
+    topic  = request.GET.get("topic", "")
+    query  = f"{skill} {topic}".strip() if skill else topic
+
+    RAPIDAPI_KEY = "d537a45854msh06ca00f67d656cap167833jsnbe39a9b16d0b"
+    courses = []
+
+    # ── 0. CURATED VETTING LAYER (ONLY FOR PRIMARY SKILL) ────────────────────
+    # User requested to ONLY verify/curate the FIRST skill in the roadmap.
+    is_first = request.GET.get("is_first", "false").lower() == "true"
+    curated_matches = []
+    
+    if is_first:
+        low_query = query.lower()
+        # PYTHON CURATION (First Skill)
+        if "python" in low_query:
+            if any(x in low_query for x in ["syntax", "data type", "variable", "beginner", "intro"]):
+                curated_matches.append({
+                    "title": "Python for Beginners - Learn Python in 1 Hour (Mosh)",
+                    "url": "https://youtu.be/kqtD5dpn9C8",
+                    "source": "Programming with Mosh", 
+                    "thumbnail": "https://img.youtube.com/vi/kqtD5dpn9C8/maxresdefault.jpg", 
+                    "rating": "4.9", "price": "Best (Vetted)"
+                })
+            
+            if any(x in low_query for x in ["function", "control flow", "logic"]):
+                curated_matches.append({
+                    "title": "Python Functions for Beginners (Dave Gray 2023 Deep Dive)",
+                    "url": "https://youtu.be/8996b6UPVOk",
+                    "source": "Dave Gray", 
+                    "thumbnail": "https://img.youtube.com/vi/8996b6UPVOk/maxresdefault.jpg",
+                    "rating": "4.8", "price": "Best (Vetted)"
+                })
+            
+            if any(x in low_query for x in ["data structure", "list", "tuple", "dictionary", "dict", "structure", "set"]):
+                curated_matches.append({
+                    "title": "Python Lists, Tuples, and Sets Explained (Corey Schafer)",
+                    "url": "https://youtu.be/W8KRzmhcLUk",
+                    "source": "Corey Schafer", 
+                    "thumbnail": "https://img.youtube.com/vi/W8KRzmhcLUk/maxresdefault.jpg",
+                    "rating": "5.0", "price": "Best (Vetted)"
+                })
+            
+            if any(x in low_query for x in ["module", "package", "library", "import"]):
+                curated_matches.append({
+                    "title": "Python Modules: How to Import and Create Them (Corey Schafer)",
+                    "url": "https://youtu.be/CqvZ3vGoGs0",
+                    "source": "Corey Schafer", 
+                    "thumbnail": "https://img.youtube.com/vi/CqvZ3vGoGs0/maxresdefault.jpg",
+                    "rating": "4.9", "price": "Best (Vetted)"
+                })
+
+            if any(x in low_query for x in ["oop", "class", "object"]):
+                curated_matches.append({
+                    "title": "Python OOP Tutorial: Classes and Instances (Corey Schafer)",
+                    "url": "https://youtu.be/ZDa-Z5JzLYM",
+                    "source": "Corey Schafer", 
+                    "thumbnail": "https://img.youtube.com/vi/ZDa-Z5JzLYM/maxresdefault.jpg",
+                    "rating": "5.0", "price": "Best (Vetted)"
+                })
+
+            if any(x in low_query for x in ["file", "input", "output", "read", "write"]):
+                curated_matches.append({
+                    "title": "Python File Objects: Reading and Writing to Files (Corey Schafer)",
+                    "url": "https://youtu.be/VegS5SRatps",
+                    "source": "Corey Schafer", 
+                    "thumbnail": "https://img.youtube.com/vi/VegS5SRatps/maxresdefault.jpg",
+                    "rating": "4.9", "price": "Best (Vetted)"
+                })
+
+    # Add curated matches first
+    courses.extend(curated_matches)
+
+    # ── 1. Try Paid-Udemy-for-free API ──────────────────────────────────────
+    try:
+        resp = http_requests.get(
+            "https://paid-udemy-course-for-free.p.rapidapi.com/",
+            headers={
+                "x-rapidapi-key":  RAPIDAPI_KEY,
+                "x-rapidapi-host": "paid-udemy-course-for-free.p.rapidapi.com",
+            },
+            params={"keyword": query},
+            timeout=6,
+        )
+        if resp.status_code == 200:
+            data = resp.json()
+            # Response may be a list or dict containing a list
+            items = data if isinstance(data, list) else data.get("courses", data.get("data", data.get("results", [])))
+            for item in (items or [])[:4]:
+                title = (item.get("title") or item.get("name") or item.get("course_title") or "")[:80]
+                url   = item.get("url") or item.get("link") or item.get("coupon_url") or ""
+                if title and url:
+                    if not url.startswith("http"):
+                        url = "https://www.udemy.com" + url
+                    courses.append({
+                        "title":     title,
+                        "url":       url,
+                        "source":    "Udemy",
+                        "thumbnail": item.get("image", item.get("thumbnail", item.get("img", ""))),
+                        "rating":    item.get("rating", item.get("avg_rating", "")),
+                        "price":     "Free (Coupon)",
+                    })
+    except Exception as e:
+        print(f"⚠️ Udemy API error: {e}")
+
+    # ── 2. Try Free Courses Online API ───────────────────────────────────────
+    if len(courses) < 4:
+        try:
+            resp2 = http_requests.get(
+                "https://free-courses-online-api.p.rapidapi.com/courses",
+                headers={
+                    "x-rapidapi-key":  RAPIDAPI_KEY,
+                    "x-rapidapi-host": "free-courses-online-api.p.rapidapi.com",
+                },
+                params={"query": query},
+                timeout=6,
+            )
+            if resp2.status_code == 200:
+                data2 = resp2.json()
+                items2 = data2 if isinstance(data2, list) else data2.get("courses", data2.get("data", data2.get("results", [])))
+                for item in (items2 or [])[:4]:
+                    title = (item.get("title") or item.get("name") or item.get("course_title") or "")[:80]
+                    url   = item.get("url") or item.get("link") or item.get("course_url") or ""
+                    platform = item.get("platform", item.get("source", "Free Course"))
+                    if title and url:
+                        courses.append({
+                            "title":     title,
+                            "url":       url,
+                            "source":    platform,
+                            "thumbnail": item.get("image", item.get("thumbnail", "")),
+                            "rating":    item.get("rating", ""),
+                            "price":     "Free",
+                        })
+        except Exception as e:
+            print(f"⚠️ Free Courses API error: {e}")
+
+    # ── 3. Fallback: YouTube + Coursera search links ──────────────────────────
+    if not courses:
+        encoded = query.replace(" ", "+")
+        courses = [
+            {
+                "title":     f"YouTube: {topic} Tutorial",
+                "url":       f"https://www.youtube.com/results?search_query={encoded}+tutorial",
+                "source":    "YouTube",
+                "thumbnail": "",
+                "rating":    "",
+                "price":     "Free",
+            },
+            {
+                "title":     f"Coursera: {skill} Course",
+                "url":       f"https://www.coursera.org/search?query={encoded}",
+                "source":    "Coursera",
+                "thumbnail": "",
+                "rating":    "",
+                "price":     "Free Audit",
+            },
+            {
+                "title":     f"freeCodeCamp: {topic} Guide",
+                "url":       f"https://www.freecodecamp.org/news/search/?query={encoded}",
+                "source":    "freeCodeCamp",
+                "thumbnail": "",
+                "rating":    "",
+                "price":     "Free",
+            },
+        ]
+
+    return JsonResponse({"courses": courses[:6], "query": query})

@@ -3,7 +3,7 @@ from .views import (
     career_recom, save_career, gap_analyzer, reset_saved_careers,
     toggle_week_progress, roadmap_page, add_completed_skill,
     profile_page, update_profile, generate_resume, job_analyzer,
-    get_skill_roadmap
+    get_skill_roadmap, generate_topic_quiz, generate_topic_notes, get_topic_courses
 )
 
 app_name = "career_analysis"
@@ -23,4 +23,7 @@ urlpatterns = [
     path("generate-resume/", generate_resume, name="generate_resume"),
     path("job-analyzer/", job_analyzer, name="job_analyzer"),
     path("get-skill-roadmap/", get_skill_roadmap, name="get_skill_roadmap"),
+    path("generate-topic-quiz/", generate_topic_quiz, name="generate_topic_quiz"),
+    path("generate-topic-notes/", generate_topic_notes, name="generate_topic_notes"),
+    path("get-topic-courses/", get_topic_courses, name="get_topic_courses"),
 ]
