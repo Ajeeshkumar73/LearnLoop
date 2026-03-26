@@ -22,7 +22,7 @@
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Times New Roman', Times, serif;
             color: var(--primary);
             background: #f0f2f5;
             line-height: 1.5;
@@ -260,10 +260,10 @@
 
 <body>
 
-    <div class="resume">
+    <div class="resume" id="resume-container">
         <!-- Header -->
         <header class="resume-header">
-            <h1 class="name">{{ profile.full_name|default:"YOUR NAME" }}</h1>
+            <h1 class="name">{{ profile.custom_name|default:profile.full_name|default:"YOUR NAME" }}</h1>
             {% if profile.location %}
             <div class="location">{{ profile.location }}</div>
             {% endif %}
@@ -303,14 +303,15 @@
         <section class="section">
             <h2 class="section-title">Education</h2>
             <table class="edu-table">
-                {% if profile.education_list %}
-                {% for edu in profile.education_list %}
+                {% if education_list %}
+                {% for edu in education_list %}
                 <tr>
                     <td class="edu-main">
-                        {{ edu.degree }}
-                        <div class="edu-sub">{{ edu.institution }}</div>
+                        {% if edu.course %}{{ edu.course }}{% else %}{{ edu.degree }}{% endif %}
+                        <div class="edu-sub">{% if edu.college %}{{ edu.college }}{% else %}{{ edu.institution }}{% endif %}</div>
+                        <div class="edu-sub">Score: {% if edu.mark %}{{ edu.mark }}{% else %}{{ edu.cgpa }}{% endif %} | Status: {{ edu.status|default:"Completed" }}</div>
                     </td>
-                    <td class="edu-date">{{ edu.year }}</td>
+                    <td class="edu-date" style="text-align: right;">{{ edu.year }}</td>
                 </tr>
                 {% endfor %}
                 {% elif profile.education %}
@@ -321,14 +322,14 @@
                         <div class="edu-sub">{{ profile.specialization }}</div>
                         {% endif %}
                     </td>
-                    <td class="edu-date">Present</td>
+                    <td class="edu-date" style="text-align: right;">Present</td>
                 </tr>
                 {% else %}
                 <tr>
                     <td class="edu-main">
                         Education details not provided
                     </td>
-                    <td class="edu-date">-</td>
+                    <td class="edu-date" style="text-align: right;">-</td>
                 </tr>
                 {% endif %}
             </table>
@@ -338,32 +339,41 @@
         <section class="section">
             <h2 class="section-title">Skills</h2>
             <div class="skills-content">
-                {% if expert_skills %}
-                <div class="skill-row">
-                    <span class="skill-label">Expert Skills:</span>
-                    <span>{{ expert_skills|join:", " }}</span>
-                </div>
-                {% endif %}
-                
-                {% if intermediate_skills %}
-                <div class="skill-row">
-                    <span class="skill-label">Intermediate Skills:</span>
-                    <span>{{ intermediate_skills|join:", " }}</span>
-                </div>
-                {% endif %}
-
-                {% if completed_skills %}
-                <div class="skill-row">
-                    <span class="skill-label">Roadmap Competencies:</span>
-                    <span>{{ completed_skills|join:", " }}</span>
-                </div>
-                {% endif %}
-
-                {% if not expert_skills and not intermediate_skills and not completed_skills %}
-                <div class="skill-row">
-                    <span class="skill-label">Skills:</span>
-                    <span>{{ profile.current_skills|default:"No skills listed yet" }}</span>
-                </div>
+                {% if categorized_skills %}
+                    {% for category, skills in categorized_skills.items %}
+                    <div class="skill-row" style="margin-bottom: 8px;">
+                        <span class="skill-label" style="min-width: 180px; display: inline-block;">{{ category }}:</span>
+                        <span>{{ skills|join:", " }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    {% if expert_skills %}
+                    <div class="skill-row">
+                        <span class="skill-label">Expert Skills:</span>
+                        <span>{{ expert_skills|join:", " }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if intermediate_skills %}
+                    <div class="skill-row">
+                        <span class="skill-label">Intermediate Skills:</span>
+                        <span>{{ intermediate_skills|join:", " }}</span>
+                    </div>
+                    {% endif %}
+    
+                    {% if completed_skills %}
+                    <div class="skill-row">
+                        <span class="skill-label">Roadmap Competencies:</span>
+                        <span>{{ completed_skills|join:", " }}</span>
+                    </div>
+                    {% endif %}
+    
+                    {% if not expert_skills and not intermediate_skills and not completed_skills %}
+                    <div class="skill-row">
+                        <span class="skill-label">Skills:</span>
+                        <span>{{ profile.current_skills|default:"No skills listed yet" }}</span>
+                    </div>
+                    {% endif %}
                 {% endif %}
             </div>
         </section>
@@ -411,6 +421,18 @@
             {% endfor %}
         </section>
         {% endif %}
+
+        <!-- Custom Sections -->
+        {% if profile.custom_sections %}
+            {% for section in profile.custom_sections %}
+            <section class="section">
+                <h2 class="section-title">{{ section.title }}</h2>
+                <div class="text-justify" style="font-size: 13px; color: var(--text-secondary); white-space: pre-line;">
+                    {{ section.content }}
+                </div>
+            </section>
+            {% endfor %}
+        {% endif %}
     </div>
 
     <!-- Actions Bar -->
@@ -419,9 +441,40 @@
             <span>← Back to Profile</span>
         </a>
         <button class="action-btn" onclick="window.print()">
-            <span>🖨️ Print / Save PDF</span>
+            <span class="material-symbols-outlined">description</span>
+            <span>Direct Download PDF</span>
+        </button>
+        <button class="action-btn" onclick="downloadAsWord()" style="background: #2b5797;">
+            <span class="material-symbols-outlined">draft</span>
+            <span>Direct Download Word</span>
         </button>
     </div>
+
+
+    <script>
+        function downloadAsWord() {
+            // A4-Specific Export with ZERO visual change to the modern styling
+            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>" +
+                           "<head><meta charset='utf-8'><title>Resume</title><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><style>" +
+                           "@page Section1 { size: 595.3pt 841.9pt; margin: 1.0in 1.0in 1.0in 1.0in; mso-header-margin: .5in; mso-footer-margin: .5in; mso-paper-source: 0; }" +
+                           "div.Section1 { page: Section1; }" +
+                           "body { font-family: 'Times New Roman', serif; }" + 
+                           document.querySelector('style').innerHTML + // Include all page styles
+                           "</style></head><body><div class='Section1'>";
+            const footer = "</div></body></html>";
+            
+            // Reverted to grab the MAIN MODERN container "without change"
+            const sourceHTML = header + document.getElementById("resume-container").innerHTML + footer;
+            
+            const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+            const fileLink = document.createElement("a");
+            document.body.appendChild(fileLink);
+            fileLink.href = source;
+            fileLink.download = 'Modern_Resume_{{ profile.full_name|default:"User" }}.doc';
+            fileLink.click();
+            document.body.removeChild(fileLink);
+        }
+    </script>
 
 </body>
 

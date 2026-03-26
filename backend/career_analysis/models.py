@@ -49,6 +49,7 @@ class SkillProgress(Document):
 class UserProfile(Document):
     user_email = EmailField(required=True, unique=True)
     full_name = StringField(default="")
+    custom_name = StringField(default="")
     phone = StringField(default="")
     current_occupation = StringField(default="")
     target_role = StringField(default="")
@@ -66,6 +67,7 @@ class UserProfile(Document):
     certifications = ListField(StringField(), default=[])
     achievements = ListField(StringField(), default=[])
     hobbies = ListField(StringField(), default=[])
+    custom_sections = ListField(DictField(), default=[])  # List of {title, content}
 
     created_at = DateTimeField(default=datetime.utcnow)
     updated_at = DateTimeField(default=datetime.utcnow)
@@ -115,4 +117,70 @@ class PasswordResetToken(Document):
     meta = {
         "collection": "password_reset_tokens",
         "indexes": ["email", "token"]
+    }
+
+class Review(Document):
+    user_email = EmailField(required=True)
+    rating = IntField(default=5)
+    review_text = StringField()
+    created_at = DateTimeField(default=datetime.utcnow)
+
+    meta = {
+        "collection": "reviews",
+        "ordering": ["-created_at"]
+    }
+
+class CommunityPost(Document):
+    user_email = EmailField(required=True)
+    author_name = StringField()
+    author_pic = StringField(default=None)
+    content = StringField(required=True)
+    target_role = StringField() # to group by career search
+    created_at = DateTimeField(default=datetime.utcnow)
+    media_url = StringField() # URL relative to media/
+    media_type = StringField() # 'image' or 'video'
+    likes_count = IntField(default=0)
+    comments_count = IntField(default=0)
+
+    meta = {
+        "collection": "community_posts",
+        "ordering": ["-created_at"],
+        "indexes": ["user_email", "target_role"]
+    }
+
+class PostLike(Document):
+    user_email = EmailField(required=True)
+    post_id = StringField(required=True)
+
+    meta = {
+        "collection": "post_likes",
+        "indexes": [
+            {"fields": ["user_email", "post_id"], "unique": True}
+        ]
+    }
+
+class PostComment(Document):
+    post_id = StringField(required=True)
+    author_email = EmailField(required=True)
+    author_name = StringField(required=True)
+    content = StringField(required=True)
+    created_at = DateTimeField(default=datetime.utcnow)
+
+    meta = {
+        "collection": "post_comments",
+        "ordering": ["created_at"],
+        "indexes": ["post_id"]
+    }
+
+class DirectMessage(Document):
+    sender_email = EmailField(required=True)
+    receiver_email = EmailField(required=True)
+    message = StringField(required=True)
+    timestamp = DateTimeField(default=datetime.utcnow)
+    is_read = IntField(default=0) # 0 = unread, 1 = read
+
+    meta = {
+        "collection": "direct_messages",
+        "ordering": ["timestamp"],
+        "indexes": ["sender_email", "receiver_email"]
     }

@@ -83,24 +83,51 @@
 <body class="font-display text-slate-900 dark:text-white overflow-x-hidden antialiased min-h-screen">
 
     <!-- ====== TOP NAV ====== -->
-    <header class="sticky top-0 z-50 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 lg:px-10 py-3">
-        <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-primary text-2xl">school</span>
-            <h2 class="text-slate-900 dark:text-white text-lg font-black tracking-tight">LearnLoop</h2>
-        </div>
-        <div class="hidden md:flex items-center gap-8">
-            <a class="text-slate-500 hover:text-primary transition-colors text-sm font-semibold" href="{% url 'career_analysis:gap_analyzer' %}">Dashboard</a>
-            <a class="text-primary text-sm font-semibold border-b-2 border-primary pb-0.5" href="{% url 'career_analysis:roadmap_page' %}">Roadmap</a>
-            <a class="text-slate-500 hover:text-primary transition-colors text-sm font-semibold" href="{% url 'career_analysis:job_analyzer' %}">Job Analyzer</a>
-            <a class="text-slate-500 hover:text-primary transition-colors text-sm font-semibold" href="{% url 'career_analysis:profile' %}">Profile</a>
-        </div>
-        <a href="{% url 'accounts:logout' %}">
-            <button class="flex items-center gap-2 rounded-lg h-9 px-4 bg-primary text-white text-sm font-bold hover:bg-blue-700 transition-colors">
-                <span class="material-symbols-outlined text-base">logout</span> Log Out
-            </button>
-        </a>
-    </header>
-
+     <header
+            class="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#101622]/90 backdrop-blur-sm border-b border-[#f0f2f4] dark:border-gray-800">
+            <div class="layout-container flex justify-center">
+                <div class="px-4 md:px-10 py-3 w-full max-w-[1280px]">
+                    <div class="flex items-center justify-between whitespace-nowrap">
+                        <div class="flex items-center gap-3 text-primary">
+                            <div class="size-8 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-3xl"></span>
+                            </div>
+                           <h2
+  class="text-[#111318] dark:text-white text-2xl font-semibold tracking-wide"
+  style="font-family: Georgia, serif; letter-spacing: 1px;">
+  LEARN LOOP
+</h2>
+                        </div>
+                        <div class="flex flex-1 justify-end gap-8">
+                            <div class="hidden md:flex items-center gap-9">
+           <a class="text-primary text-sm font-bold border-b-2 border-primary pb-0.5"
+           href="{% url 'career_analysis:roadmap_page' %}">Roadmap</a>
+           <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+             href="{% url 'career_analysis:gap_analyzer' %}">Dashboard</a>
+           <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+             href="{% url 'career_analysis:job_analyzer' %}">Job Analyzer</a>
+           <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+             href="{% url 'career_analysis:profile' %}">Profile</a>
+           <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+             href="{% url 'career_analysis:community' %}">Community</a>
+           <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors relative flex items-center justify-center size-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+             href="{% url 'career_analysis:chat' %}" title="Messages">
+             <span class="material-symbols-outlined !text-2xl">notifications</span>
+           </a>
+         </div>
+                            <a href="{% url 'accounts:logout' %}">
+                                <button
+                                    class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-blue-700 transition-colors text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                                    <span class="truncate">Log Out</span>
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    
+    
     <!-- ====== MAIN ====== -->
     <main class="max-w-5xl mx-auto px-4 md:px-8 py-10 space-y-8">
 
@@ -142,24 +169,6 @@
             </div>
         </div>
 
-        <!-- DURATION CONTROL -->
-        <div class="fade-up glass rounded-xl p-5 shadow-sm flex flex-wrap items-center justify-between gap-4" style="animation-delay:0.15s">
-            <div class="flex items-center gap-3">
-                <div class="p-2 rounded-lg bg-primary/10 text-primary"><span class="material-symbols-outlined">tune</span></div>
-                <div>
-                    <h3 class="font-bold text-slate-900 dark:text-white">Customize Duration</h3>
-                    <p class="text-xs text-slate-400">Weeks per skill based on your availability</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-3">
-                <span class="text-sm text-slate-400">2W</span>
-                <input type="range" min="2" max="12" value="{{ custom_duration }}"
-                    class="duration-slider w-36 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary"
-                    id="durationSlider" oninput="updateDurationLabel(this.value)">
-                <span class="text-sm text-slate-400">12W</span>
-                <button onclick="applyDuration()" class="px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition-colors">Apply</button>
-            </div>
-        </div>
 
         <!-- ====== ROADMAP SKILLS ====== -->
         {% for roadmap in roadmaps %}
@@ -184,28 +193,23 @@
                             </div>
                         </div>
                         <!-- Skill completion (only shown after quiz pass) -->
-                        <label class="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-xl border-2 transition-all {% if roadmap.is_completed_skill %}border-green-500 bg-green-50 dark:bg-green-900/20{% else %}border-slate-200 dark:border-slate-700 opacity-60 grayscale cursor-not-allowed{% endif %}" id="skill-label-{{ roadmap.skill|slugify }}">
-                            <input type="checkbox"
-                                class="skill-checkbox w-5 h-5 accent-green-500 cursor-pointer"
-                                data-skill="{{ roadmap.skill }}" data-type="{{ roadmap.type }}"
-                                {% if roadmap.is_completed_skill %}checked{% else %}disabled{% endif %}
-                                id="skill-check-{{ roadmap.skill|slugify }}">
+                        <div class="flex items-center gap-2 px-4 py-2 rounded-xl border-2 transition-all {% if roadmap.is_completed_skill %}border-green-500 bg-green-50 dark:bg-green-900/20{% else %}border-slate-200 dark:border-slate-700 opacity-60{% endif %}" id="skill-badge-{{ roadmap.skill|slugify }}">
                             <span class="text-sm font-bold {% if roadmap.is_completed_skill %}text-green-600{% else %}text-slate-500 dark:text-slate-400{% endif %}" id="skill-text-{{ roadmap.skill|slugify }}">
-                                {% if roadmap.is_completed_skill %}✓ Certified{% else %}Locked (Pass Test First){% endif %}
+                                {% if roadmap.is_completed_skill %}✓ Certified{% else %}In Progress{% endif %}
                             </span>
-                        </label>
+                        </div>
                     </div>
 
                     <!-- Progress bar -->
                     <div class="mt-4">
                         <div class="flex items-center justify-between text-xs text-slate-500 mb-1">
                             <span>Progress</span>
-                            <span class="font-bold text-primary">{{ roadmap.completed }}/{{ roadmap.total }} weeks</span>
+                            <span class="font-bold text-primary" id="progress-text-{{ roadmap.skill|slugify }}">{{ roadmap.completed }}/{{ roadmap.total }} weeks</span>
                         </div>
                         <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                            <div class="bg-gradient-to-r from-primary to-accent h-2 rounded-full transition-all duration-700" style="width:{{ roadmap.percent }}%"></div>
+                            <div class="bg-gradient-to-r from-primary to-accent h-2 rounded-full transition-all duration-700" id="progress-bar-{{ roadmap.skill|slugify }}" style="width:{{ roadmap.percent }}%"></div>
                         </div>
-                        <p class="text-xs text-slate-400 mt-1">{{ roadmap.percent }}% complete</p>
+                        <p class="text-xs text-slate-400 mt-1"><span id="progress-percent-{{ roadmap.skill|slugify }}">{{ roadmap.percent }}</span>% complete</p>
                     </div>
                 </div>
 
@@ -402,7 +406,7 @@
                                         Pass ≥ 3/5 to mark week as done &amp; add to profile
                                     </div>
                                     <button
-                                        onclick="startQuiz('{{ roadmap.skill }}', '{{ step.goal|escapejs }}', {{ week_num }}, '{{ roadmap.type }}')"
+                                        onclick="startQuiz('{{ roadmap.skill }}', '{{ step.goal|escapejs }}', {{ forloop.counter }}, {{ roadmap.total }}, '{{ roadmap.type }}')"
                                         class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-accent text-white text-sm font-bold rounded-xl hover:opacity-90 transition-all shadow-md">
                                         <span class="material-symbols-outlined text-base">quiz</span>
                                         Take Topic Test
@@ -505,14 +509,6 @@
 
     <!-- ====== SCRIPTS ====== -->
     <script>
-        // ── Duration control ──
-        function updateDurationLabel(v) { document.getElementById('durationDisplay').textContent = v+'W'; }
-        function applyDuration() {
-            const v = document.getElementById('durationSlider').value;
-            const u = new URL(window.location.href);
-            u.searchParams.set('duration', v);
-            window.location.href = u.toString();
-        }
 
         // ── Topic accordion ──
         function toggleTopic(id) {
@@ -525,11 +521,37 @@
         }
 
         // ── Week progress toggle ──
-        function markWeekDone(skill, week) {
+        function markWeekDone(skill, week, total) {
             fetch("{% url 'career_analysis:toggle_week_progress' %}", {
                 method: "POST",
                 headers: { "X-CSRFToken": "{{ csrf_token }}", "Content-Type": "application/x-www-form-urlencoded" },
-                body: `skill=${encodeURIComponent(skill)}&week=${week}`
+                body: `skill=${encodeURIComponent(skill)}&week=${week}&total_weeks=${total}`
+            }).then(r => r.json()).then(data => {
+                if (data.total_completed !== undefined) {
+                    const slug = skill.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+                    const txt = document.getElementById(`progress-text-${slug}`);
+                    const bar = document.getElementById(`progress-bar-${slug}`);
+                    const pct = document.getElementById(`progress-percent-${slug}`);
+                    const badge = document.getElementById(`skill-badge-${slug}`);
+                    const statusText = document.getElementById(`skill-text-${slug}`);
+
+                    if (txt) txt.textContent = `${data.total_completed}/${total} weeks`;
+                    if (pct) pct.textContent = data.percent;
+                    if (bar) bar.style.width = `${data.percent}%`;
+
+                    // Automatic Certification Badge update
+                    if (data.percent >= 100) {
+                        if (badge) {
+                            badge.classList.remove('border-slate-200');
+                            badge.classList.add('border-green-500', 'bg-green-50');
+                        }
+                        if (statusText) {
+                            statusText.textContent = '✓ Certified';
+                            statusText.className = 'text-sm font-bold text-green-600';
+                        }
+                        addToSkillsList(skill);
+                    }
+                }
             });
         }
 
@@ -580,10 +602,10 @@
         // ================================================================
         // QUIZ SYSTEM
         // ================================================================
-        let currentQuiz = { skill:'', topic:'', week:0, type:'', questions:[], answers:[] };
+        let currentQuiz = { skill:'', topic:'', week:0, total:0, type:'', questions:[], answers:[] };
 
-        function startQuiz(skill, topic, week, type) {
-            currentQuiz = { skill, topic, week, type, questions:[], answers:[] };
+        function startQuiz(skill, topic, week, total, type) {
+            currentQuiz = { skill, topic, week, total, type, questions:[], answers:[] };
 
             // Show modal in loading state
             document.getElementById('quizTitle').textContent   = `Week ${week} Test — ${skill}`;
@@ -694,37 +716,9 @@
                 resultMsg.textContent   = `Excellent! "${skill}" has been added to your profile.`;
                 retryBtn.classList.add('hidden');
 
-                // Add skill to profile via API
-                fetch("{% url 'career_analysis:add_completed_skill' %}", {
-                    method: "POST",
-                    headers: { "X-CSRFToken": "{{ csrf_token }}", "Content-Type": "application/x-www-form-urlencoded" },
-                    body: `skill_name=${encodeURIComponent(skill)}&skill_type=${encodeURIComponent(type)}&action=add`
-                }).then(r => r.json()).then(d => {
-                    if (d.status === "added" || d.status === "already_exists") {
-                        addToSkillsList(skill);
-                        // Also mark the week done
-                        markWeekDone(skill, week);
-                        
-                        // NEW: Automatically check and unlock the top-level "Complete Skill" checkbox
-                        const slug = skill.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-                        const skillCheck = document.getElementById(`skill-check-${slug}`);
-                        const skillLabel = document.getElementById(`skill-label-${slug}`);
-                        const skillText  = document.getElementById(`skill-text-${slug}`);
-                        
-                        if (skillCheck) {
-                            skillCheck.checked  = true;
-                            skillCheck.disabled = false;
-                            if (skillLabel) {
-                                skillLabel.classList.remove('border-slate-200', 'dark:border-slate-700', 'opacity-60', 'grayscale', 'cursor-not-allowed');
-                                skillLabel.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20');
-                            }
-                            if (skillText) {
-                                skillText.textContent = '✓ Certified';
-                                skillText.className   = 'text-sm font-bold text-green-600';
-                            }
-                        }
-                    }
-                });
+                // Trigger Week Completion API (which handles progress & auto-profiling)
+                markWeekDone(skill, week, currentQuiz.total);
+            } else {
             } else {
                 resultIcon.textContent  = '📚';
                 resultTitle.textContent = `${correct}/5 — Need to Review`;
@@ -929,5 +923,6 @@
     </script>
 
 
+    {% include 'ai_mentor_snippet.html' %}
 </body>
 </html>

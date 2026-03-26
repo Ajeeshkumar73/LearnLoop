@@ -91,17 +91,24 @@
 
 <body class="bg-background-light dark:bg-background-dark text-[#111318] dark:text-white">
     <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden font-display">
-        <!-- Top Navigation -->
+                <!-- Top Navigation -->
         <header
-            class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f4] dark:border-[#2a3140] bg-white dark:bg-[#1a202c] px-4 lg:px-10 py-3 shadow-sm">
-            <div class="flex items-center gap-4 text-[#111318] dark:text-white">
-                <div class="size-8 flex items-center justify-center text-primary">
-                </div>
-                <h2 class="text-[#111318] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Learn
-                    Loop</h2>
-            </div>
-            <div class="hidden md:flex flex-1 justify-end gap-8">
-                <div class="flex items-center gap-9">
+            class="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#101622]/90 backdrop-blur-sm border-b border-[#f0f2f4] dark:border-gray-800">
+            <div class="layout-container flex justify-center">
+                <div class="px-4 md:px-10 py-3 w-full max-w-[1280px]">
+                    <div class="flex items-center justify-between whitespace-nowrap">
+                        <div class="flex items-center gap-3 text-primary">
+                            <div class="size-8 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-3xl"></span>
+                            </div>
+                           <h2
+  class="text-[#111318] dark:text-white text-2xl font-semibold tracking-wide"
+  style="font-family: Georgia, serif; letter-spacing: 1px;">
+  LEARN LOOP
+</h2>
+                        </div>
+                        <div class="flex flex-1 justify-end gap-8">
+                             <div class="flex items-center gap-9">
                     <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
                         href="{% url 'career_analysis:gap_analyzer' %}">Dashboard</a>
                     <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
@@ -111,14 +118,18 @@
                     <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
                         href="{% url 'career_analysis:profile' %}">Profile</a>
                 </div>
-                <a href="{% url 'accounts:logout' %}">
-                    <button
-                        class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors"
-                        type="submit">
-                        <span class="truncate">Log Out</span>
-                    </button>
-                </a>
+                            <a href="{% url 'accounts:logout' %}">
+                                <button
+                                    class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-blue-700 transition-colors text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                                    <span class="truncate">Log Out</span>
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </header>
+
         <div class="layout-container flex h-full grow flex-col">
             <div class="px-4 md:px-10 lg:px-40 flex flex-1 justify-center py-8">
                 <div class="layout-content-container flex flex-col w-full max-w-[1200px] flex-1">
@@ -129,7 +140,7 @@
                                     <div
                                         class="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-primary">
                                         <span class="material-symbols-outlined text-sm">auto_awesome</span>
-                                        AI-Powered Career Guidance
+                                        AI-Powered Career Guidance Platform
                                     </div>
                                     <h1
                                         class="text-[#111318] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em] lg:text-5xl">

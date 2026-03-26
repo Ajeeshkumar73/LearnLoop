@@ -33,29 +33,48 @@
         }
     </script>
     <style>
-        .roadmap-connector {
-            position: relative;
-        }
+        body { font-family: 'Manrope', sans-serif; background: #f6f6f8; }
+        .dark body { background: #101622; }
 
-        .roadmap-connector::before {
-            content: '';
-            position: absolute;
-            left: 20px;
-            top: 40px;
-            bottom: 0;
-            width: 2px;
-            background: linear-gradient(to bottom, #135bec, #6366f1);
-            opacity: 0.2;
-        }
+        /* Glass cards */
+        .glass { background: rgba(255,255,255,0.92); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.4); }
+        .dark .glass { background: rgba(15,23,42,0.88); border-color: rgba(255,255,255,0.06); }
 
-        .week-card {
-            transition: all 0.3s ease;
-        }
+        /* Skill card left accent */
+        .skill-accent { border-left: 4px solid #135bec; }
 
-        .week-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(19, 91, 236, 0.08);
-        }
+        /* Accordion topic card */
+        .topic-card { transition: all 0.25s cubic-bezier(0.4,0,0.2,1); }
+        .topic-card:hover { box-shadow: 0 4px 20px rgba(19,91,236,0.1); }
+        .topic-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+        .topic-body.open { max-height: 3000px; }
+
+        /* Stage connector */
+        .stage-dot { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; flex-shrink:0; }
+        .stage-line { flex:1; height:2px; background: linear-gradient(to right, #135bec30, #6366f130); }
+
+        /* Resource row */
+        .res-row { transition: all 0.2s ease; }
+        .res-row:hover { background: #f0f6ff; transform: translateX(3px); }
+        .dark .res-row:hover { background: #1e293b; }
+
+        /* Quiz modal */
+        #quizModal { display:none; position:fixed; inset:0; z-index:999; background:rgba(0,0,0,0.55); backdrop-filter:blur(4px); align-items:center; justify-content:center; }
+        #quizModal.show { display:flex; }
+        #quizBox { max-height:92vh; overflow-y:auto; }
+        #quizBox::-webkit-scrollbar { width:6px; }
+        #quizBox::-webkit-scrollbar-thumb { background:#135bec55; border-radius:6px; }
+
+        /* MCQ option */
+        .mcq-opt { transition: all 0.15s ease; border: 2px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; cursor: pointer; display:flex; align-items:center; gap:10px; }
+        .mcq-opt:hover { border-color:#135bec; background:#eff6ff; }
+        .mcq-opt.selected { border-color:#135bec; background:#dbeafe; }
+        .mcq-opt.correct { border-color:#16a34a; background:#dcfce7; }
+        .mcq-opt.wrong { border-color:#dc2626; background:#fee2e2; }
+
+        @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+        .fade-up { animation: fadeUp 0.45s ease forwards; }
+
     </style>
 </head>
 
@@ -63,24 +82,51 @@
     class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white overflow-x-hidden antialiased">
     <div class="relative flex h-auto min-h-screen w-full flex-col">
         <!-- Top Navigation -->
-        <header
-            class="sticky top-0 z-50 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 lg:px-10 py-3">
-            <div class="flex items-center gap-4">
-                <h2 class="text-lg font-bold">Learn Loop</h2>
-            </div>
-            <div class="flex flex-1 justify-end gap-8">
-                <div class="hidden md:flex items-center gap-9">
-                    <a class="text-slate-600 dark:text-gray-300 hover:text-primary transition-colors text-sm font-medium"
-                        href="{% url 'career_analysis:gap_analyzer' %}">Dashboard</a>
-                    <a class="text-slate-600 dark:text-gray-300 hover:text-primary transition-colors text-sm font-medium"
-                        href="{% url 'career_analysis:roadmap_page' %}">Roadmap</a>
-                    <a class="text-primary text-sm font-bold border-b-2 border-primary pb-0.5"
-                        href="{% url 'career_analysis:job_analyzer' %}">Job Analyzer</a>
-                    <a class="text-slate-600 dark:text-gray-300 hover:text-primary transition-colors text-sm font-medium"
-                        href="{% url 'career_analysis:profile' %}">Profile</a>
+         <header
+            class="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#101622]/90 backdrop-blur-sm border-b border-[#f0f2f4] dark:border-gray-800">
+            <div class="layout-container flex justify-center">
+                <div class="px-4 md:px-10 py-3 w-full max-w-[1280px]">
+                    <div class="flex items-center justify-between whitespace-nowrap">
+                        <div class="flex items-center gap-3 text-primary">
+                            <div class="size-8 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-3xl"></span>
+                            </div>
+                           <h2
+  class="text-[#111318] dark:text-white text-2xl font-semibold tracking-wide"
+  style="font-family: Georgia, serif; letter-spacing: 1px;">
+  LEARN LOOP
+</h2>
+                        </div>
+                        <div class="flex flex-1 justify-end gap-8">
+                            <div class="hidden md:flex items-center gap-9">
+          <a class="text-primary text-sm font-bold border-b-2 border-primary pb-0.5"
+           href="{% url 'career_analysis:job_analyzer' %}">Job Analyzer</a>
+          <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+            href="{% url 'career_analysis:gap_analyzer' %}">Dashboard</a>
+          <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+             href="{% url 'career_analysis:roadmap_page' %}">Roadmap</a>
+          <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+            href="{% url 'career_analysis:profile' %}">Profile</a>
+          <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+            href="{% url 'career_analysis:community' %}">Community</a>
+          <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors relative flex items-center justify-center size-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+            href="{% url 'career_analysis:chat' %}" title="Messages">
+            <span class="material-symbols-outlined !text-2xl">notifications</span>
+            <span id="chat-notification-badge-job" class="hidden absolute top-1 right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900 font-bold scale-90 transition-transform">0</span>
+          </a>
+        </div>
+                            <a href="{% url 'accounts:logout' %}">
+                                <button
+                                    class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-blue-700 transition-colors text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                                    <span class="truncate">Log Out</span>
+                                </button>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
+    
 
         <main class="layout-container flex h-full grow flex-col py-8">
             <div class="px-4 md:px-10 lg:px-40 flex flex-col gap-8 max-w-[1200px] mx-auto w-full">
@@ -216,6 +262,24 @@
                         </button>
                     </div>
 
+                    <!-- AI Mentor Activation Banner -->
+                    <div id="mentorActivationBanner" class="hidden glass rounded-3xl p-6 mb-8 border border-primary/20 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800 flex flex-col md:flex-row items-center justify-between gap-6 fade-up">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0">
+                                <span class="text-3xl animate-bounce">🤖</span>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-black text-slate-800 dark:text-white">Meet Your Study Buddy</h4>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Activate your AI Mentor to clear doubts and get study help anytime.</p>
+                            </div>
+                        </div>
+                        <button id="activateMentorBtn" onclick="activateMentor()"
+                            class="bg-slate-900 dark:bg-primary text-white font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all flex items-center gap-2 shadow-lg">
+                            <span class="material-symbols-outlined">bolt</span>
+                            Activate AI Mentor
+                        </button>
+                    </div>
+
                     <div id="roadmapResults" class="hidden flex flex-col gap-6 mb-12">
                         <h2 class="text-2xl font-black text-slate-900 dark:text-white mt-4 ml-2">Your Personalized
                             Roadmaps</h2>
@@ -260,6 +324,44 @@
                 {% endif %}
             </div>
         </main>
+
+        <!-- ====== QUIZ MODAL ====== -->
+        <div id="quizModal" class="quizModal" role="dialog" aria-modal="true">
+            <div id="quizBox" class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-xl mx-4 p-6">
+                <div class="flex items-center justify-between mb-5">
+                    <div>
+                        <h2 class="text-lg font-black text-slate-900 dark:text-white" id="quizTitle">Topic Test</h2>
+                        <p class="text-xs text-slate-400" id="quizSubtitle">Answer 5 questions to certify this week</p>
+                    </div>
+                    <button onclick="closeQuiz()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-400">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                </div>
+                <div id="quizLoading" class="text-center py-10">
+                    <div class="inline-block w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-3"></div>
+                    <p class="text-sm text-slate-400 font-medium">Generating quiz with AI...</p>
+                </div>
+                <div id="quizQuestions" class="hidden space-y-6"></div>
+                <div id="quizSubmit" class="hidden mt-6">
+                    <button onclick="submitQuiz()" id="submitBtn" class="w-full py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl hover:opacity-90 transition shadow-md">
+                        Submit Test
+                    </button>
+                </div>
+                <div id="quizResult" class="hidden mt-4 p-5 rounded-xl text-center">
+                    <div id="quizResultIcon" class="text-5xl mb-3"></div>
+                    <h3 id="quizResultTitle" class="text-xl font-black mb-1"></h3>
+                    <p id="quizResultMsg" class="text-sm text-slate-500 mb-4"></p>
+                    <div class="flex gap-3 justify-center flex-wrap">
+                        <button onclick="retryQuiz()" id="retryBtn" class="hidden px-4 py-2 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary/10 transition text-sm">
+                            Retry Test
+                        </button>
+                        <button onclick="closeQuiz()" class="px-4 py-2 bg-primary text-white font-bold rounded-xl hover:bg-blue-700 transition text-sm">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -269,7 +371,6 @@
             const btnIcon = document.getElementById('genBtnIcon');
             const resultsSection = document.getElementById('roadmapResults');
             const container = document.getElementById('roadmapContainer');
-            const loading = document.getElementById('loadingState');
 
             btn.disabled = true;
             btnText.innerText = 'Generating...';
@@ -280,85 +381,447 @@
             resultsSection.scrollIntoView({ behavior: 'smooth' });
 
             const gaps = [
-                {% for skill in analysis.tech_gap %} { name: "{{ skill }}", type: "Technical Skill" }, {% endfor %}
-        {% for skill in analysis.soft_gap %} { name: "{{ skill }}", type: "Soft Skill" }, {% endfor %}
-            ].slice(0, 3); // Limit to top 3
+                {% for skill in analysis.tech_gap %} { name: "{{ skill|escapejs }}", type: "Technical Skill" }, {% endfor %}
+                {% for skill in analysis.soft_gap %} { name: "{{ skill|escapejs }}", type: "Soft Skill" }, {% endfor %}
+            ].slice(0, 5); 
 
-        container.innerHTML = '';
+            container.innerHTML = '';
+            
+            // Show loading state initially
+            container.innerHTML = `
+                <div class="flex items-center justify-center p-20" id="loadingState">
+                    <div class="flex flex-col items-center gap-4">
+                        <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                        <p class="text-slate-500 animate-pulse">AI is crafting your roadmaps...</p>
+                    </div>
+                </div>
+            `;
 
-        for (const skill of gaps) {
-            try {
-                const response = await fetch(`/career-analysis/get-skill-roadmap/?skill=${encodeURIComponent(skill.name)}&type=${encodeURIComponent(skill.type)}`);
-                const data = await response.json();
-                renderRoadmap(data, container);
-            } catch (error) {
-                console.error('Error:', error);
+            for (const skill of gaps) {
+                try {
+                    const response = await fetch(`/career/get-skill-roadmap/?skill=${encodeURIComponent(skill.name)}&type=${encodeURIComponent(skill.type)}`);
+                    const data = await response.json();
+                    
+                    if (container.querySelector('#loadingState')) {
+                        container.innerHTML = '';
+                    }
+                    
+                    renderRoadmap(data, container);
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+
+            btnIcon.classList.remove('animate-spin');
+            btnIcon.innerText = 'check_circle';
+            btnText.innerText = 'Roadmaps Generated';
+            
+            // Show AI Mentor Activation Banner
+            const mentorBanner = document.getElementById('mentorActivationBanner');
+            if (mentorBanner && !localStorage.getItem('mentorActivated')) {
+                mentorBanner.classList.remove('hidden');
             }
         }
 
-        loading.classList.add('hidden');
-        btnIcon.classList.remove('animate-spin');
-        btnIcon.innerText = 'check_circle';
-        btnText.innerText = 'Roadmaps Generated';
+        function toggleTopic(id) {
+            const body = document.getElementById(id);
+            const chev = document.getElementById('chev-' + id);
+            const isOpen = body.classList.contains('open');
+            body.classList.toggle('open', !isOpen);
+            if (chev) {
+                chev.style.transform = isOpen ? '' : 'rotate(180deg)';
+                chev.style.transition = 'transform 0.3s ease';
+            }
         }
 
         function renderRoadmap(data, container) {
+            const slug = data.skill.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
             const div = document.createElement('div');
-            div.className = 'animate-in roadmap-connector mb-2';
+            div.className = 'glass rounded-2xl shadow-md overflow-hidden skill-accent mb-8 fade-up';
 
             let roadmapHtml = `
-                <div class="glass-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden mb-4">
-                    <div class="bg-gradient-to-r from-primary/5 to-accent/5 p-5 border-b border-slate-100 dark:border-slate-800">
+                <div class="bg-gradient-to-r from-primary/8 to-accent/8 px-6 py-5">
+                    <div class="flex items-center justify-between flex-wrap gap-4">
                         <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white shadow-lg">
-                                <span class="material-symbols-outlined">${data.type === 'Soft Skill' ? 'psychology' : 'terminal'}</span>
+                            <div class="w-11 h-11 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shrink-0">
+                                <span class="material-symbols-outlined">${data.type === 'Soft Skill' ? 'psychology' : 'code'}</span>
                             </div>
                             <div>
-                                <h3 class="font-bold text-lg text-slate-900 dark:text-white">${data.skill}</h3>
-                                <div class="flex items-center gap-2 mt-0.5">
-                                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 font-bold uppercase tracking-wider text-slate-500">${data.type}</span>
-                                </div>
+                                <h2 class="font-black text-xl text-slate-900 dark:text-white">${data.skill}</h2>
+                                <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 font-semibold text-slate-600 dark:text-slate-300">${data.type}</span>
                             </div>
                         </div>
                     </div>
-                    <div class="p-5 space-y-4">
+                </div>
+
+                <div class="px-6 py-4 bg-white dark:bg-slate-900/40 border-b border-slate-100 dark:border-slate-800">
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">📚 Structured Learning Path</p>
+                    <div class="flex items-center gap-1 overflow-x-auto pb-1">
+                        <div class="flex flex-col items-center shrink-0">
+                            <span class="stage-dot bg-green-100 text-green-700">1</span>
+                            <span class="text-[10px] font-bold text-green-600 mt-1">Beginner</span>
+                        </div>
+                        <div class="stage-line shrink-0 min-w-[40px]"></div>
+                        <div class="flex flex-col items-center shrink-0">
+                            <span class="stage-dot bg-blue-100 text-blue-700">2</span>
+                            <span class="text-[10px] font-bold text-blue-600 mt-1">Intermediate</span>
+                        </div>
+                        <div class="stage-line shrink-0 min-w-[40px]"></div>
+                        <div class="flex flex-col items-center shrink-0">
+                            <span class="stage-dot bg-purple-100 text-purple-700">3</span>
+                            <span class="text-[10px] font-bold text-purple-600 mt-1">Advanced</span>
+                        </div>
+                        <div class="stage-line shrink-0 min-w-[40px]"></div>
+                        <div class="flex flex-col items-center shrink-0">
+                            <span class="stage-dot bg-amber-100 text-amber-600">🏆</span>
+                            <span class="text-[10px] font-bold text-amber-600 mt-1">Mastery</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divide-y divide-slate-100 dark:divide-slate-800">
             `;
 
             data.roadmap.forEach((week, index) => {
+                const weekNum = index + 1;
+                const topicId = `topic-${slug}-${weekNum}`;
+                
                 roadmapHtml += `
-                    <div class="week-card rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/50 p-4">
-                        <div class="flex items-center gap-3 mb-3">
-                            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-br from-primary to-accent text-white text-[10px] font-bold shrink-0 shadow-md">
-                                ${index + 1}
-                            </span>
-                            <h4 class="font-bold text-sm text-slate-900 dark:text-white">Week ${index + 1} — ${week.goal}</h4>
-                        </div>
-                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed ml-10 mb-4">${week.how}</p>
-                        
-                        <div class="ml-10 space-y-3">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                ${week.resources.map(res => `
-                                    <a href="${res.url}" target="_blank" class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-primary transition-all group">
-                                        <span class="material-symbols-outlined text-sm text-primary">play_circle</span>
-                                        <span class="text-xs font-medium text-slate-700 dark:text-slate-200 truncate group-hover:text-primary">${res.title}</span>
-                                    </a>
-                                `).join('')}
+                    <div class="topic-card">
+                        <div class="flex items-center justify-between px-6 py-4 cursor-pointer select-none hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                             onclick="toggleTopic('${topicId}')" id="hdr-${topicId}">
+                            <div class="flex items-center gap-4">
+                                <div class="shrink-0 flex flex-col items-center">
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase leading-none">Week</span>
+                                    <span class="text-sm font-black text-primary">${weekNum}</span>
+                                </div>
+                                <div class="w-px h-8 bg-slate-200 dark:bg-slate-700 shrink-0"></div>
+                                <div>
+                                    <div class="flex items-center gap-2 mb-0.5">
+                                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded
+                                            ${weekNum === 1 ? 'bg-green-100 text-green-700' : 
+                                              weekNum === data.roadmap.length ? 'bg-amber-100 text-amber-700' : 
+                                              weekNum >= 3 ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}">
+                                            ${weekNum === 1 ? 'Beginner' : 
+                                              weekNum === data.roadmap.length ? 'Mastery' : 
+                                              weekNum >= 3 ? 'Advanced' : 'Intermediate'}
+                                        </span>
+                                    </div>
+                                    <h3 class="font-bold text-slate-900 dark:text-white text-sm leading-tight">${week.goal}</h3>
+                                </div>
                             </div>
-                            
-                            <div class="flex items-start gap-2 p-3 rounded-lg bg-green-50/50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/20">
-                                <span class="material-symbols-outlined text-green-600 text-sm mt-0.5">task_alt</span>
-                                <p class="text-xs text-green-800 dark:text-green-300 leading-relaxed"><span class="font-bold">Practice:</span> ${week.practice}</p>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <div class="flex items-center gap-1 text-xs text-slate-400">
+                                    <span class="material-symbols-outlined text-[14px]">menu_book</span> Notes
+                                    <span class="material-symbols-outlined text-[14px] ml-1">play_circle</span> ${week.resources.length} Videos
+                                    <span class="material-symbols-outlined text-[14px] ml-1">quiz</span> Test
+                                </div>
+                                <span class="material-symbols-outlined text-slate-400 text-xl" id="chev-${topicId}">expand_more</span>
+                            </div>
+                        </div>
+
+                        <div class="topic-body" id="${topicId}">
+                            <div class="px-6 pb-6 pt-2 space-y-5 bg-slate-50/50 dark:bg-slate-900/30">
+                                <!-- Notes -->
+                                <div class="rounded-xl border border-amber-200 dark:border-amber-800 overflow-hidden">
+                                    <div class="flex items-center justify-between gap-3 px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-100 dark:border-amber-800">
+                                        <div class="flex items-center gap-3">
+                                            <div class="p-1.5 bg-amber-100 dark:bg-amber-900/40 rounded-lg text-amber-600">
+                                                <span class="material-symbols-outlined text-base">menu_book</span>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-black text-sm text-amber-800 dark:text-amber-200">📖 AI Study Notes</h4>
+                                                <p class="text-xs text-amber-600 font-medium">Structured notes · Definition · Examples</p>
+                                            </div>
+                                        </div>
+                                        <button onclick="loadTopicNotes(this, '${data.skill.replace(/'/g, "\\'")}', '${week.goal.replace(/'/g, "\\'")}')"
+                                                class="text-xs font-bold px-3 py-1.5 rounded-lg bg-amber-500 text-white hover:bg-amber-600 transition-all flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[13px]">auto_awesome</span> Load Notes
+                                        </button>
+                                    </div>
+                                    <div class="notes-content hidden px-5 py-4 bg-white dark:bg-slate-800"></div>
+                                    <div class="notes-fallback px-5 py-4 bg-white dark:bg-slate-800">
+                                        <p class="text-xs text-slate-400 italic">Click "Load Notes" for detailed study material.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Courses -->
+                                <div class="rounded-xl border border-red-200 dark:border-red-800 overflow-hidden">
+                                    <div class="flex items-center justify-between gap-3 px-4 py-3 bg-red-50 dark:bg-red-900/20 border-b border-red-100 dark:border-red-800">
+                                        <div class="flex items-center gap-3">
+                                            <div class="p-1.5 bg-red-100 dark:bg-red-900/40 rounded-lg text-red-600">
+                                                <span class="material-symbols-outlined text-base">play_circle</span>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-black text-sm text-red-800 dark:text-red-200">🎥 Courses & Resources</h4>
+                                                <p class="text-xs text-red-500 font-medium">Udemy · YouTube · Free courses</p>
+                                            </div>
+                                        </div>
+                                        <button onclick="loadTopicCourses(this, '${data.skill.replace(/'/g, "\\'")}', '${week.goal.replace(/'/g, "\\'")}', ${index === 0})"
+                                                class="text-xs font-bold px-3 py-1.5 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-all flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[13px]">search</span> Find Courses
+                                        </button>
+                                    </div>
+                                    <div class="courses-content divide-y divide-slate-100 dark:divide-slate-700/50 bg-white dark:bg-slate-800">
+                                        ${week.resources.map(res => `
+                                            <a href="${res.url}" target="_blank" class="res-row flex items-center gap-4 px-5 py-3.5 group">
+                                                <div class="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 text-slate-500">
+                                                    <span class="material-symbols-outlined text-sm">play_arrow</span>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <p class="text-sm font-semibold text-slate-800 dark:text-white group-hover:text-primary truncate">${res.title}</p>
+                                                </div>
+                                                <span class="material-symbols-outlined text-slate-300 group-hover:text-primary text-sm">arrow_outward</span>
+                                            </a>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
+                                <!-- Practice -->
+                                <div class="rounded-xl border border-green-200 dark:border-green-800 overflow-hidden">
+                                    <div class="flex items-center gap-3 px-4 py-3 bg-green-50 dark:bg-green-900/20">
+                                        <div class="p-1.5 bg-green-100 dark:bg-green-900/40 rounded-lg text-green-600">
+                                            <span class="material-symbols-outlined text-base">assignment</span>
+                                        </div>
+                                        <h4 class="font-black text-sm text-green-800 dark:text-green-200">🏋️ Practice Task</h4>
+                                    </div>
+                                    <div class="px-5 py-4 bg-white dark:bg-slate-800">
+                                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">${week.practice}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Quiz -->
+                                <div class="flex items-center justify-between pt-2">
+                                     <div class="flex items-center gap-2 text-xs text-slate-400">
+                                        <span class="material-symbols-outlined text-[14px]">info</span>
+                                        Answer 5 questions to certify this week
+                                    </div>
+                                    <button onclick="startQuiz('${data.skill.replace(/'/g, "\\'")}', '${week.goal.replace(/'/g, "\\'")}', ${weekNum}, '${data.type}')"
+                                            class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-accent text-white text-sm font-bold rounded-xl hover:opacity-90 transition shadow-md">
+                                        <span class="material-symbols-outlined text-base">quiz</span>
+                                        Take Topic Test
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 `;
             });
 
-            roadmapHtml += `</div></div>`;
+            roadmapHtml += `</div>`;
             div.innerHTML = roadmapHtml;
             container.appendChild(div);
         }
-    </script>
-</body>
 
+        async function loadTopicNotes(btn, skill, topic) {
+            const container = btn.closest('.rounded-xl');
+            const notesContent = container.querySelector('.notes-content');
+            const notesFallback = container.querySelector('.notes-fallback');
+            if (btn.dataset.loaded === '1') return;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined text-[13px] animate-spin">progress_activity</span>';
+            try {
+                const res = await fetch(`/career/generate-topic-notes/?skill=${encodeURIComponent(skill)}&topic=${encodeURIComponent(topic)}`);
+                const data = await res.json();
+                if (data.notes) {
+                    notesContent.innerHTML = renderNotes(data.notes, topic);
+                    notesContent.classList.remove('hidden');
+                    notesFallback.classList.add('hidden');
+                    btn.innerHTML = '<span class="material-symbols-outlined text-[13px]">check_circle</span> Loaded';
+                    btn.classList.replace('bg-amber-500', 'bg-green-500');
+                    btn.dataset.loaded = '1';
+                }
+            } catch (e) {
+                btn.disabled = false;
+                btn.innerHTML = 'Retry';
+            }
+        }
+
+        function renderNotes(text, topic) {
+            const sectionColors = {
+                'Definition'         : { bg:'bg-blue-50 dark:bg-blue-900/20',   border:'border-blue-200 dark:border-blue-800',   title:'text-blue-700 dark:text-blue-300'   },
+                'Explanation'        : { bg:'bg-indigo-50 dark:bg-indigo-900/20', border:'border-indigo-200 dark:border-indigo-800', title:'text-indigo-700 dark:text-indigo-300' },
+                'Syntax'             : { bg:'bg-slate-50 dark:bg-slate-800',     border:'border-slate-200 dark:border-slate-700', title:'text-slate-700 dark:text-slate-300'  , code:true },
+                'Example'            : { bg:'bg-slate-50 dark:bg-slate-800',     border:'border-slate-200 dark:border-slate-700', title:'text-slate-700 dark:text-slate-300'  , code:true },
+                'Use Cases'          : { bg:'bg-green-50 dark:bg-green-900/20',  border:'border-green-200 dark:border-green-800', title:'text-green-700 dark:text-green-300'  },
+                'Common Mistakes'    : { bg:'bg-red-50 dark:bg-red-900/20',      border:'border-red-200 dark:border-red-800',    title:'text-red-700 dark:text-red-300'      },
+                'Key Points'         : { bg:'bg-amber-50 dark:bg-amber-900/20',  border:'border-amber-200 dark:border-amber-800',title:'text-amber-700 dark:text-amber-300'  },
+                'Interview Questions': { bg:'bg-purple-50 dark:bg-purple-900/20',border:'border-purple-200 dark:border-purple-800',title:'text-purple-700 dark:text-purple-300'},
+                'Hands-on Practice'  : { bg:'bg-cyan-50 dark:bg-cyan-900/20',    border:'border-cyan-200 dark:border-cyan-800',    title:'text-cyan-700 dark:text-cyan-300'    },
+            };
+            const sectionEmojis = {
+                'Definition':'📌','Explanation':'📖','Syntax':'🧾','Example':'💡','Use Cases':'🎯','Common Mistakes':'⚠️','Key Points':'🔑','Interview Questions':'❓'
+            };
+
+            const parts = text.split(/\n(?=\d+\.\s)/);
+            let html = `<div class="space-y-3">`;
+            parts.forEach(part => {
+                let sectionKey = null;
+                for (const key of Object.keys(sectionColors)) {
+                    if (part.toLowerCase().includes(key.toLowerCase())) { sectionKey = key; break; }
+                }
+                const c = sectionColors[sectionKey] || { bg:'bg-slate-50 dark:bg-slate-800', border:'border-slate-200', title:'text-slate-700' };
+                const emoji = sectionEmojis[sectionKey] || '📝';
+                const lines = part.trim().split('\n');
+                const titleLine = lines[0].replace(/^\d+\.\s*/, '').trim();
+                const bodyLines = lines.slice(1).filter(l => l.trim());
+                if (!titleLine) return;
+
+                let bodyHtml = '';
+                if (c.code) {
+                    const codeContent = bodyLines.map(l => l.replace(/^-\s*/, '')).join('\n');
+                    bodyHtml = `<pre class="mt-2 p-3 rounded-lg bg-slate-900 text-green-300 text-xs overflow-x-auto font-mono leading-relaxed">${escapeHtml(codeContent)}</pre>`;
+                } else {
+                    bodyHtml = '<ul class="mt-2 space-y-1.5">';
+                    bodyLines.forEach(line => {
+                        const txt = line.replace(/^[-*•]\s*/, '').trim();
+                        if (txt) bodyHtml += `<li class="flex gap-2 text-xs text-slate-600 dark:text-slate-300"><span class="text-slate-400 shrink-0 mt-0.5">▸</span><span>${escapeHtml(txt)}</span></li>`;
+                    });
+                    bodyHtml += '</ul>';
+                }
+
+                html += `
+                <div class="rounded-lg border ${c.border} ${c.bg} overflow-hidden">
+                    <div class="px-3 py-2 border-b ${c.border}">
+                        <p class="text-xs font-black uppercase tracking-wide ${c.title}">${emoji} ${escapeHtml(titleLine.replace(/[📌📖🧾💡🎯⚠️🔑❓]/g,'').replace(':','').trim())}</p>
+                    </div>
+                    <div class="px-3 pb-3">${bodyHtml}</div>
+                </div>`;
+            });
+            html += '</div>';
+            return html;
+        }
+
+        function escapeHtml(str) {
+            return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        async function loadTopicCourses(btn, skill, topic, isFirst = false) {
+            const container = btn.closest('.rounded-xl');
+            const content = container.querySelector('.courses-content');
+            if (btn.dataset.loaded === '1') return;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined text-[13px] animate-spin">progress_activity</span> searching...';
+            try {
+                const res = await fetch(`/career/get-topic-courses/?skill=${encodeURIComponent(skill)}&topic=${encodeURIComponent(topic)}&is_first=${isFirst}`);
+                const data = await res.json();
+                if (data.courses && data.courses.length > 0) {
+                    content.innerHTML = data.courses.map(res => {
+                         const isYouTube = res.url.includes('youtube.com') || res.url.includes('youtu.be');
+                         const srcColor = isYouTube ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600';
+                         const srcIcon = isYouTube ? 'play_arrow' : 'school';
+
+                         return `
+                            <a href="${res.url}" target="_blank" class="res-row flex items-center gap-4 px-5 py-3.5 group">
+                                <div class="shrink-0 w-9 h-9 rounded-lg overflow-hidden bg-slate-100">
+                                    <img src="${res.thumbnail || ''}" class="w-full h-full object-cover" onerror="this.src='/static/img/course-placeholder.png'">
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-semibold text-slate-800 dark:text-white group-hover:text-primary truncate">${escapeHtml(res.title)}</p>
+                                    <p class="text-[10px] text-slate-400 mt-0.5">${res.source} · ${res.price || 'Free'}</p>
+                                </div>
+                                <span class="material-symbols-outlined text-slate-300 group-hover:text-primary text-sm">arrow_outward</span>
+                            </a>
+                        `;
+                    }).join('');
+                    btn.innerHTML = '<span class="material-symbols-outlined text-[13px]">check_circle</span> Loaded';
+                    btn.classList.replace('bg-red-500', 'bg-green-500');
+                    btn.dataset.loaded = '1';
+                }
+            } catch (e) {
+                btn.disabled = false;
+                btn.innerHTML = 'Retry';
+            }
+        }
+
+        let currentQuiz = { skill:'', topic:'', week:0, type:'', questions:[], answers:[] };
+
+        function startQuiz(skill, topic, week, type) {
+            currentQuiz = { skill, topic, week, type, questions:[], answers:[] };
+            document.getElementById('quizTitle').textContent = `Test — ${skill}`;
+            document.getElementById('quizSubtitle').textContent = topic;
+            document.getElementById('quizLoading').classList.remove('hidden');
+            document.getElementById('quizQuestions').classList.add('hidden');
+            document.getElementById('quizSubmit').classList.add('hidden');
+            document.getElementById('quizResult').classList.add('hidden');
+            document.getElementById('quizModal').classList.add('show');
+
+            fetch(`/career/generate-topic-quiz/?skill=${encodeURIComponent(skill)}&topic=${encodeURIComponent(topic)}&week=${week}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.questions) {
+                        currentQuiz.questions = data.questions;
+                        currentQuiz.answers = new Array(data.questions.length).fill(-1);
+                        renderQuestions(data.questions);
+                    }
+                });
+        }
+
+        function renderQuestions(questions) {
+            document.getElementById('quizLoading').classList.add('hidden');
+            const container = document.getElementById('quizQuestions');
+            container.innerHTML = questions.map((q, qi) => `
+                <div>
+                    <p class="font-bold text-sm text-slate-800 dark:text-white mb-3">${qi+1}. ${q.q}</p>
+                    <div class="space-y-2">
+                        ${q.options.map((opt, oi) => `
+                            <div class="mcq-opt" id="opt-${qi}-${oi}" onclick="selectOpt(${qi},${oi})">
+                                <span class="text-sm text-slate-700 dark:text-slate-200">${opt}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+            container.classList.remove('hidden');
+            document.getElementById('quizSubmit').classList.remove('hidden');
+        }
+
+        function selectOpt(qi, oi) {
+            const opts = document.querySelectorAll(`[id^="opt-${qi}-"]`);
+            opts.forEach(el => el.classList.remove('selected'));
+            document.getElementById(`opt-${qi}-${oi}`).classList.add('selected');
+            currentQuiz.answers[qi] = oi;
+        }
+
+        function submitQuiz() {
+            let correct = 0;
+            currentQuiz.questions.forEach((q, i) => {
+                if (currentQuiz.answers[i] === q.answer) correct++;
+            });
+            const passed = correct >= 3;
+            document.getElementById('quizQuestions').classList.add('hidden');
+            document.getElementById('quizSubmit').classList.add('hidden');
+            const res = document.getElementById('quizResult');
+            res.classList.remove('hidden');
+            document.getElementById('quizResultIcon').textContent = passed ? '🏆' : '📚';
+            document.getElementById('quizResultTitle').textContent = passed ? 'Passed!' : 'Try Again';
+            document.getElementById('quizResultMsg').textContent = `You got ${correct}/5 correct.`;
+            document.getElementById('retryBtn').classList.toggle('hidden', passed);
+        }
+
+        function retryQuiz() { startQuiz(currentQuiz.skill, currentQuiz.topic, currentQuiz.week, currentQuiz.type); }
+        function closeQuiz() { document.getElementById('quizModal').classList.remove('show'); }
+    </script>
+    <script>
+        async function updateNotifications() {
+            try {
+                const res = await fetch("{% url 'career_analysis:chat_notifications' %}");
+                const data = await res.json();
+                const badge = document.getElementById('chat-notification-badge-job');
+                if(!badge) return;
+                if(data.count > 0) {
+                    badge.innerText = data.count;
+                    badge.classList.remove('hidden');
+                    badge.classList.add('flex');
+                } else {
+                    badge.classList.add('hidden');
+                    badge.classList.remove('flex');
+                }
+            } catch(e) {}
+        }
+        setInterval(updateNotifications, 5000);
+        updateNotifications();
+    </script>
+    {% include 'ai_mentor_snippet.html' %}
+</body>
 </html>

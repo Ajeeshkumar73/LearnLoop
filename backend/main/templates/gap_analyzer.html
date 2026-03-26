@@ -57,15 +57,23 @@
   class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white overflow-x-hidden antialiased selection:bg-primary/20 selection:text-primary">
   <div class="relative flex h-auto min-h-screen w-full flex-col">
     <!-- Top Navigation -->
-    <header
-      class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 lg:px-10 py-3">
-      <div class="flex items-center gap-4 text-slate-900 dark:text-white">
-        <div class="size-8 text-primary flex items-center justify-center">
-        </div>
-        <h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Learn Loop</h2>
-      </div>
-      <div class="flex flex-1 justify-end gap-8">
-        <div class="hidden md:flex items-center gap-9">
+      <header
+            class="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#101622]/90 backdrop-blur-sm border-b border-[#f0f2f4] dark:border-gray-800">
+            <div class="layout-container flex justify-center">
+                <div class="px-4 md:px-10 py-3 w-full max-w-[1280px]">
+                    <div class="flex items-center justify-between whitespace-nowrap">
+                        <div class="flex items-center gap-3 text-primary">
+                            <div class="size-8 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-3xl"></span>
+                            </div>
+                           <h2
+  class="text-[#111318] dark:text-white text-2xl font-semibold tracking-wide"
+  style="font-family: Georgia, serif; letter-spacing: 1px;">
+  LEARN LOOP
+</h2>
+                        </div>
+                        <div class="flex flex-1 justify-end gap-8">
+                            <div class="hidden md:flex items-center gap-9">
           <a class="text-primary text-sm font-bold border-b-2 border-primary pb-0.5"
             href="{% url 'career_analysis:gap_analyzer' %}">Dashboard</a>
           <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
@@ -74,20 +82,26 @@
             href="{% url 'career_analysis:job_analyzer' %}">Job Analyzer</a>
           <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
             href="{% url 'career_analysis:profile' %}">Profile</a>
+          <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+            href="{% url 'career_analysis:community' %}">Community</a>
+          <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors relative flex items-center justify-center size-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+            href="{% url 'career_analysis:chat' %}" title="Messages">
+            <span class="material-symbols-outlined !text-2xl">notifications</span>
+            <span id="chat-notification-badge-gap" class="hidden absolute top-1 right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900 font-bold scale-90 transition-transform">0</span>
+          </a>
         </div>
-        <a href="{% url 'accounts:logout' %}">
-          <button
-            class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors"
-            type="submit">
-            <span class="truncate">Log Out</span>
-          </button>
-        </a>
-        <div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border border-slate-200 dark:border-slate-700"
-          data-alt="User profile avatar image"
-          style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCvqZU5Sd2Xk6AfzHII15Q0jkhSmw8ohSADZpVwNpNnuZhgCfmyDWqGI62OX1AYTaOifUBNq3UsskyG5NekYnEbZEuo8w1ilKI5KHW0TgT9EX298Auvu6P7QMWh_3LUKf2gmHF76ICmJAOHU0R3TW63ROjBJV_AbdI2Jvhu1ki1pJXDb0Nd79d9oeHVP_XAearMDjpnKs0O5KP5RsczpWiIyGkx_NK__Lk-g-lJfUPyYEI2_GlPzrt_5Wj3IFCZR4TA0ayb70G1JbE");'>
-        </div>
-      </div>
-    </header>
+                            <a href="{% url 'accounts:logout' %}">
+                                <button
+                                    class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-blue-700 transition-colors text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                                    <span class="truncate">Log Out</span>
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    
     <!-- Main Content -->
     <main class="layout-container flex h-full grow flex-col">
       <div class="px-4 md:px-10 lg:px-40 flex flex-1 justify-center py-8">
@@ -170,7 +184,7 @@
                 <span class="material-symbols-outlined text-[20px]">timelapse</span>
                 <p class="text-sm font-medium uppercase tracking-wider">Time to Bridge</p>
               </div>
-              <p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">{{ custom_duration }}W</p>
+              <p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">4 W</p>
             </div>
           </div>
 
@@ -475,6 +489,9 @@
             </div>
           </div>
 
+
+        </div>
+      </div>
     </main>
   </div>
 
@@ -560,6 +577,28 @@
 
 
 
+
+  <script>
+    async function updateNotifications() {
+        try {
+            const res = await fetch("{% url 'career_analysis:chat_notifications' %}");
+            const data = await res.json();
+            const badge = document.getElementById('chat-notification-badge-gap');
+            if(data.count > 0) {
+                badge.innerText = data.count;
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+            } else {
+                badge.classList.add('hidden');
+                badge.classList.remove('flex');
+            }
+        } catch(e) {}
+    }
+    setInterval(updateNotifications, 5000);
+    updateNotifications();
+  </script>
+
+  {% include 'ai_mentor_snippet.html' %}
 </body>
 
 </html>

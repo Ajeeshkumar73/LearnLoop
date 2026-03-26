@@ -1,13 +1,327 @@
-import os, json, re, random
+import os, json, re, random, bson
 from django.shortcuts import render, redirect
 from groq import Groq
 from dotenv import load_dotenv
-from .models import CareerSubmission, SavedCareer, SkillProgress, UserProfile, CompletedRoadmapSkill, CachedRoadmap
+from .models import CareerSubmission, SavedCareer, SkillProgress, UserProfile, CompletedRoadmapSkill, CachedRoadmap, CommunityPost, PostLike, DirectMessage, PostComment
 from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
+from mongoengine import Q
+from django.utils import timezone
+from django.core.serializers.json import DjangoJSONEncoder
+from django.core.files.storage import FileSystemStorage
+
+
+def community_view(request):
+    if not request.session.get('user_email'):
+        return redirect('login')
+    
+    user_email = request.session['user_email']
+    user_profile = UserProfile.objects(user_email=user_email).first()
+    
+    # Search query
+    query = request.GET.get('q', '')
+    
+    # Filter by target role if requested (same target users)
+    filter_type = request.GET.get('filter', 'all')
+    
+    posts = []
+    if filter_type == 'target' and user_profile and user_profile.target_role:
+        posts = CommunityPost.objects(Q(target_role__icontains=user_profile.target_role) | Q(content__icontains=query)).order_by('-created_at')
+    elif query:
+        posts = CommunityPost.objects(Q(content__icontains=query) | Q(author_name__icontains=query)).order_by('-created_at')
+    else:
+        posts = CommunityPost.objects().order_by('-created_at')
+
+    # Add like status and comments for each post
+    posts_data = []
+    for post in posts:
+        post_id_str = str(post.id)
+        post_all_comments = PostComment.objects(post_id=post_id_str).order_by('created_at')
+        
+        posts_data.append({
+            'post_id': post_id_str,
+            'author_name': post.author_name,
+            'author_pic': post.author_pic,
+            'user_email': post.user_email,
+            'content': post.content,
+            'media_url': post.media_url,
+            'media_type': post.media_type,
+            'likes_count': post.likes_count,
+            'created_at': post.created_at,
+            'is_liked': PostLike.objects(user_email=user_email, post_id=post_id_str).count() > 0,
+            'comments_count': post_all_comments.count(),
+            'comments': post_all_comments
+        })
+
+    return render(request, 'community.html', {
+        'posts': posts_data,
+        'user_profile': user_profile,
+        'query': query,
+        'filter': filter_type
+    })
+
+@csrf_exempt
+@require_POST
+def create_community_post(request):
+    if not request.session.get('user_email'):
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+    
+    user_email = request.session['user_email']
+    user_profile = UserProfile.objects(user_email=user_email).first()
+    
+    content = request.POST.get('content')
+    media_file = request.FILES.get('media')
+    
+    if not content:
+        return JsonResponse({'error': 'Content required'}, status=400)
+    
+    media_url = None
+    media_type = None
+    
+    if media_file:
+        fs = FileSystemStorage()
+        filename = fs.save(f"community/{media_file.name}", media_file)
+        media_url = fs.url(filename)
+        if media_file.content_type.startswith('image/'):
+            media_type = 'image'
+        elif media_file.content_type.startswith('video/'):
+            media_type = 'video'
+
+    post = CommunityPost(
+        user_email=user_email,
+        author_name=user_profile.full_name or user_email.split('@')[0],
+        author_pic=user_profile.profile_pic,
+        content=content,
+        target_role=user_profile.target_role,
+        media_url=media_url,
+        media_type=media_type
+    ).save()
+    
+    return JsonResponse({'success': True, 'post_id': str(post.id)})
+
+@csrf_exempt
+@require_POST
+def toggle_like_post(request):
+    if not request.session.get('user_email'):
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+    
+    user_email = request.session['user_email']
+    data = json.loads(request.body)
+    post_id = data.get('post_id')
+    
+    existing_like = PostLike.objects(user_email=user_email, post_id=post_id).first()
+    post = CommunityPost.objects(id=post_id).first()
+    
+    if existing_like:
+        existing_like.delete()
+        if post:
+            post.likes_count = max(0, post.likes_count - 1)
+            post.save()
+        return JsonResponse({'liked': False, 'count': post.likes_count if post else 0})
+    else:
+        PostLike(user_email=user_email, post_id=post_id).save()
+        if post:
+            post.likes_count += 1
+            post.save()
+        return JsonResponse({'liked': True, 'count': post.likes_count if post else 0})
+
+@csrf_exempt
+@require_POST
+def add_post_comment(request):
+    if not request.session.get('user_email'):
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+    
+    user_email = request.session['user_email']
+    user_profile = UserProfile.objects(user_email=user_email).first()
+    data = json.loads(request.body)
+    post_id = data.get('post_id')
+    content = data.get('content')
+    
+    if not post_id or not content:
+        return JsonResponse({'error': 'Invalid data'}, status=400)
+    
+    comment = PostComment(
+        post_id=post_id,
+        author_email=user_email,
+        author_name=user_profile.full_name or user_email.split('@')[0],
+        content=content
+    ).save()
+    
+    return JsonResponse({
+        'success': True, 
+        'comment': {
+            'id': str(comment.id),
+            'author_name': comment.author_name,
+            'content': comment.content,
+            'created_at': comment.created_at.strftime('%Y-%m-%d %I:%M %p')
+        }
+    })
+
+@csrf_exempt
+@require_POST
+def delete_post_comment(request):
+    if not request.session.get('user_email'):
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+    
+    data = json.loads(request.body)
+    comment_id = data.get('comment_id')
+    user_email = request.session['user_email']
+    
+    comment = PostComment.objects(id=comment_id, author_email=user_email).first()
+    if comment:
+        post = CommunityPost.objects(id=comment.post_id).first()
+        if post:
+            post.comments_count = max(0, post.comments_count - 1)
+            post.save()
+        comment.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False, 'error': 'Unauthorized or comment not found'})
+
+def chat_view(request):
+    if not request.session.get('user_email'):
+        return redirect('login')
+    
+    user_email = request.session['user_email']
+    
+    # Get all users who have careers/profiles to start chats with
+    all_users = UserProfile.objects(user_email__ne=user_email)
+    
+    # Get active conversations with unread counts and sorted by latest message
+    msgs = DirectMessage.objects(Q(sender_email=user_email) | Q(receiver_email=user_email)).order_by('-timestamp')
+    active_emails_ordered = []
+    seen = set()
+    for m in msgs:
+        other = m.sender_email if m.sender_email != user_email else m.receiver_email
+        if other not in seen:
+            active_emails_ordered.append(other)
+            seen.add(other)
+    
+    active_users = []
+    for email in active_emails_ordered[:20]: # Limit to 20 recent
+        profile = UserProfile.objects(user_email=email).first()
+        if profile:
+            # Set unread count attribute dynamically
+            profile.unread_count = DirectMessage.objects(sender_email=email, receiver_email=user_email, is_read=0).count()
+            active_users.append(profile)
+    
+    target_email = request.GET.get('with')
+    chat_with = None
+    messages = []
+    
+    if target_email:
+        chat_with = UserProfile.objects(user_email=target_email).first()
+        if chat_with:
+            messages = DirectMessage.objects(
+                (Q(sender_email=user_email) & Q(receiver_email=target_email)) |
+                (Q(sender_email=target_email) & Q(receiver_email=user_email))
+            ).order_by('timestamp')
+            
+            # Mark incoming messages as read
+            DirectMessage.objects(sender_email=target_email, receiver_email=user_email, is_read=0).update(is_read=1)
+            # Reset count for this user in the list if needed (though we just marked them as read)
+            for u in active_users:
+                if u.user_email == target_email:
+                    u.unread_count = 0
+
+    return render(request, 'chat.html', {
+        'all_users': all_users,
+        'active_users': active_users,
+        'active_emails': active_emails_ordered,
+        'chat_with': chat_with,
+        'messages': messages,
+        'user_email': user_email
+    })
+
+@require_GET
+def get_messages(request):
+    if not request.session.get('user_email'):
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+    
+    user_email = request.session['user_email']
+    other_email = request.GET.get('with')
+    last_id = request.GET.get('last_id')
+    
+    if not other_email:
+        return JsonResponse({'error': 'Missing recipient'}, status=400)
+    
+    query = Q(sender_email=user_email, receiver_email=other_email) | Q(sender_email=other_email, receiver_email=user_email)
+    if last_id:
+        from bson import ObjectId
+        query &= Q(id__gt=ObjectId(last_id))
+    
+    new_msgs = DirectMessage.objects(query).order_by('timestamp')
+    msg_list = []
+    for m in new_msgs:
+        # Mark as seen if we are receiving them
+        if m.receiver_email == user_email:
+            m.seen = True
+            m.save()
+            
+        msg_list.append({
+            'id': str(m.id),
+            'sender_email': m.sender_email,
+            'message': m.message,
+            'timestamp': m.timestamp.strftime('%I:%M %p')
+        })
+    
+    return JsonResponse({'success': True, 'messages': msg_list})
+
+@csrf_exempt
+@require_POST
+def send_direct_message(request):
+    if not request.session.get('user_email'):
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+    
+    user_email = request.session['user_email']
+    data = json.loads(request.body)
+    receiver_email = data.get('receiver_email')
+    message = data.get('message')
+    
+    if not receiver_email or not message:
+        return JsonResponse({'error': 'Invalid data'}, status=400)
+    
+    if receiver_email == user_email:
+        return JsonResponse({'error': 'Cannot chat with yourself'}, status=400)
+    
+    msg = DirectMessage(
+        sender_email=user_email,
+        receiver_email=receiver_email,
+        message=message
+    ).save()
+    
+    return JsonResponse({'success': True, 'msg_id': str(msg.id), 'timestamp': msg.timestamp.strftime('%I:%M %p')})
+
+def get_chat_notifications(request):
+    if not request.session.get('user_email'):
+        return JsonResponse({'count': 0, 'notifications': []})
+    
+    user_email = request.session['user_email']
+    # Get unread messages
+    unread_msgs = DirectMessage.objects(receiver_email=user_email, is_read=0).order_by('-timestamp')
+    count = unread_msgs.count()
+    
+    notifications = []
+    seen_senders = set()
+    
+    for msg in unread_msgs:
+        # Only show latest message per sender in the dropdown to avoid clutter
+        if msg.sender_email not in seen_senders:
+            sender = UserProfile.objects(user_email=msg.sender_email).first()
+            notifications.append({
+                'sender_name': sender.full_name if sender else msg.sender_email,
+                'sender_email': msg.sender_email,
+                'message': msg.message[:40] + ('...' if len(msg.message) > 40 else ''),
+                'timestamp': msg.timestamp.strftime('%I:%M %p'),
+                'profile_pic': sender.profile_pic if sender else None
+            })
+            seen_senders.add(msg.sender_email)
+        if len(notifications) >= 5: # Max 5 notifications in dropdown
+            break
+            
+    return JsonResponse({'count': count, 'notifications': notifications})
 from difflib import get_close_matches
 
 load_dotenv()
@@ -710,6 +1024,8 @@ def toggle_week_progress(request):
             skill_name=skill
         ).first()
 
+        total_weeks = int(request.POST.get("total_weeks", 4))
+
         if not progress:
             progress = SkillProgress(
                 user_email=user_email,
@@ -725,10 +1041,29 @@ def toggle_week_progress(request):
             completed = True
 
         progress.save()
+        
+        # Calculate percentage
+        percent = int((len(progress.completed_weeks) / total_weeks) * 100) if total_weeks > 0 else 0
+
+        # AUTO-COMPLETE: If 100%, add to profile & completed skills
+        if percent >= 100:
+            # Add to CompletedRoadmapSkill
+            if not CompletedRoadmapSkill.objects(user_email=user_email, skill_name=skill).first():
+                CompletedRoadmapSkill(user_email=user_email, skill_name=skill).save()
+            
+            # Add to UserProfile current_skills
+            profile = UserProfile.objects(user_email=user_email).first()
+            if profile:
+                current = [s.strip() for s in profile.current_skills.split(",") if s.strip()] if profile.current_skills else []
+                if skill not in current:
+                    current.append(skill)
+                    profile.current_skills = ", ".join(current)
+                    profile.save()
 
         return JsonResponse({
             "completed": completed,
-            "total_completed": len(progress.completed_weeks)
+            "total_completed": len(progress.completed_weeks),
+            "percent": percent
         })
 
 def generate_with_fallback(prompt): 
@@ -993,7 +1328,7 @@ def update_profile(request):
 
     # Update fields from POST
     fields = [
-        "full_name", "phone", "current_occupation", "target_role",
+        "full_name", "custom_name", "phone", "current_occupation", "target_role",
         "education", "specialization", "current_skills", "bio",
         "linkedin_url", "github_url", "location", "profile_pic"
     ]
@@ -1001,10 +1336,14 @@ def update_profile(request):
     for field in fields:
         value = request.POST.get(field)
         if value is not None:
-            setattr(profile, field, value)
+            # Handle empty strings for URL fields to avoid validation errors
+            if field in ["linkedin_url", "github_url"] and (not value or value.strip() == ""):
+                setattr(profile, field, None)
+            else:
+                setattr(profile, field, value)
 
     # Complex fields (JSON serialized or comma-separated)
-    complex_fields = ["education_list", "projects", "certifications", "achievements", "hobbies"]
+    complex_fields = ["education_list", "projects", "certifications", "achievements", "hobbies", "custom_sections"]
     for field in complex_fields:
         value = request.POST.get(field)
         if value:
@@ -1022,12 +1361,43 @@ def update_profile(request):
 
     from datetime import datetime
     profile.updated_at = datetime.utcnow()
-    profile.save()
+    try:
+        profile.save()
+        return JsonResponse({"status": "success"})
+    except Exception as e:
+        print(f"❌ Profile Save Error: {e}")
+        return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
-    return JsonResponse({"status": "success"})
 
 
-@never_cache
+def categorize_profile_skills(skills_list):
+    """Categorizes a list of skills into logical sections using AI"""
+    if not skills_list:
+        return {}
+    
+    prompt = f"""
+    Categorize the following skills into logical technical sections:
+    {", ".join(skills_list)}
+
+    Return ONLY a JSON object where keys are categories and values are lists of skills.
+    Common categories: "Programming Languages", "Frameworks & Libraries", "Databases", "Web Technologies", "AI/ML", "Tools & Others".
+    {{
+       "Category1": ["Skill1", "Skill2"],
+       "Category2": ["Skill3"]
+    }}
+    """
+    try:
+        content = generate_with_fallback(prompt)
+        data = extract_json_from_text(content)
+        if data and isinstance(data, dict):
+            return data
+    except Exception as e:
+        print("Skill Categorization Error:", e)
+    
+    # Simple alphabetical fallback if AI fails
+    return {"Technical Skills": sorted(skills_list)}
+
+
 def generate_resume(request):
     """Generate a downloadable HTML resume"""
     if not request.session.get("user_email"):
@@ -1078,29 +1448,38 @@ def generate_resume(request):
         """
         tailored_summary = generate_with_fallback(prompt)
 
+    # Categorize skills
+    categorized_skills = categorize_profile_skills(all_skills)
+
     return render(request, "resume_template.html", {
         "profile": profile,
         "user_email": user_email,
         "saved_career": saved_career,
         "all_skills": all_skills,
+        "categorized_skills": categorized_skills,
         "expert_skills": expert_skills,
         "intermediate_skills": intermediate_skills,
         "completed_skills": completed_list,
         "tailored_summary": tailored_summary,
-        "is_tailored": bool(jd_text)
+        "is_tailored": bool(jd_text),
+        "education_list": profile.education_list or []
     })
 
 
 def extract_skills_from_jd(job_description):
     """Uses Groq to extract structured skills from a Job Description"""
     prompt = f"""
-    You are an AI Technical Recruiter. Analyze the Job Description below and extract ONLY the specific skills required.
+    You are an AI Technical Recruiter. Analyze the Job Description below and extract ONLY the specific skill names.
     Categorize them into 'Technical Skills' and 'Soft Skills'.
 
-    MANDATORY: Return ONLY valid JSON in the exact structure below. No extra text.
+    MANDATORY: Return ONLY valid JSON in the exact structure below. 
+    Each skill must be a SIMPLE STRING (e.g., "Python", "Project Management"). 
+    DO NOT return objects or dictionaries as skills.
+    No extra text, no markdown.
+
     {{
-      "technical_skills": ["Skill1", "Skill2", ...],
-      "soft_skills": ["Skill1", "Skill2", ...]
+      "technical_skills": ["Skill Name 1", "Skill Name 2", ...],
+      "soft_skills": ["Skill Name 1", "Skill Name 2", ...]
     }}
 
     Job Description:
@@ -1120,10 +1499,21 @@ def extract_skills_from_jd(job_description):
         content = response.choices[0].message.content.strip()
         data = extract_json_from_text(content)
         if data and isinstance(data, dict):
-            # Ensure keys exist
-            data.setdefault("technical_skills", [])
-            data.setdefault("soft_skills", [])
-            return data
+            # Ensure keys exist and contain only strings
+            tech = []
+            for s in data.get("technical_skills", []):
+                if isinstance(s, str): tech.append(s)
+                elif isinstance(s, dict): tech.append(s.get("name", str(s)))
+            
+            soft = []
+            for s in data.get("soft_skills", []):
+                if isinstance(s, str): soft.append(s)
+                elif isinstance(s, dict): soft.append(s.get("name", str(s)))
+
+            return {
+                "technical_skills": tech,
+                "soft_skills": soft
+            }
     except Exception as e:
         print("❌ JD Skill Extraction Error:", e)
     
@@ -1634,3 +2024,85 @@ def get_topic_courses(request):
         ]
 
     return JsonResponse({"courses": courses[:6], "query": query})
+
+from .models import Review
+
+@require_POST
+def submit_review(request):
+    user_email = request.session.get("user_email")
+    if not user_email:
+        return redirect("accounts:login")
+
+    rating = int(request.POST.get("rating", 5))
+    review_text = request.POST.get("review_text", "")
+
+    Review(
+        user_email=user_email,
+        rating=rating,
+        review_text=review_text
+    ).save()
+
+    # Determine where the request came from
+    referer = request.META.get('HTTP_REFERER', '')
+    if 'gap-analyzer' in referer:
+        return redirect('career_analysis:gap_analyzer')
+    elif 'profile' in referer:
+        return redirect('career_analysis:profile')
+    else:
+        return redirect('home')
+@csrf_exempt
+@require_POST
+def chat_with_mentor(request):
+    """
+    AI Mentor chat endpoint: Provides context-aware study help based on user's career path.
+    """
+    if not request.session.get("user_email"):
+        return JsonResponse({"error": "Unauthorized"}, status=401)
+
+    user_email = request.session["user_email"]
+    data = json.loads(request.body)
+    user_message = data.get("message", "")
+    
+    if not user_message:
+        return JsonResponse({"error": "Missing message"}, status=400)
+
+    # Fetch context: Saved Career, Education, Skills
+    saved = SavedCareer.objects(user_email=user_email).first()
+    submission = CareerSubmission.objects(user_email=user_email).first()
+    
+    context_str = "Unknown"
+    if saved and submission:
+        career = saved.career_name
+        edu = f"{submission.education} ({submission.specialization})"
+        skills = f"Expert: {submission.expert_skills}, Intermediate: {submission.intermediate_skills}"
+        context_str = f"Target Career: {career}, Education: {edu}, Current Skills: {skills}"
+
+    system_prompt = f"""
+    You are 'LearnLoop AI Mentor', a cute and friendly robot mentor.
+    Your goal is to help the user clear doubts regarding their studies and career path.
+    
+    User Context: {context_str}
+    
+    Guidelines:
+    1. Be encouraging, concise, and professional yet friendly.
+    2. Provide direct answers to study-related questions.
+    3. If the user asks about something outside their career path, gently guide them back or explain how it relates.
+    4. Keep responses short and easy to read (use bullet points if needed).
+    5. Always refer to yourself as their dedicated AI Mentor.
+    """
+
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_message}
+            ],
+            temperature=0.7,
+            max_tokens=1000
+        )
+        ai_response = response.choices[0].message.content.strip()
+        return JsonResponse({"response": ai_response})
+    except Exception as e:
+        print("❌ AI Mentor Error:", e)
+        return JsonResponse({"error": "Failed to get AI response"}, status=500)

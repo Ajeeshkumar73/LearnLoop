@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{% block title %}CareerAI{% endblock %}</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Noto+Sans:wght@300..800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Tailwind Configuration -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white overflow-x-hidden antialiased selection:bg-primary/20 selection:text-primary">
+<div class="relative flex h-auto min-h-screen w-full flex-col">
+    <!-- Top Navigation -->
+     <header
+            class="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#101622]/90 backdrop-blur-sm border-b border-[#f0f2f4] dark:border-gray-800">
+            <div class="layout-container flex justify-center">
+                <div class="px-4 md:px-10 py-3 w-full max-w-[1280px]">
+                    <div class="flex items-center justify-between whitespace-nowrap">
+                        <div class="flex items-center gap-3 text-primary">
+                            <div class="size-8 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-3xl"></span>
+                            </div>
+                           <h2
+  class="text-[#111318] dark:text-white text-2xl font-semibold tracking-wide"
+  style="font-family: Georgia, serif; letter-spacing: 1px;">
+  LEARN LOOP
+</h2>
+                        </div>
+                        <div class="flex flex-1 justify-end gap-8">
+                            <div class="hidden md:flex items-center gap-9">
+          <a class="text-primary text-sm font-bold border-b-2 border-primary pb-0.5"
+            href="{% url 'career_analysis:community' %}">Community</a>
+          <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+            href="{% url 'career_analysis:gap_analyzer' %}">Dashboard</a>
+          <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+            href="{% url 'career_analysis:profile' %}">Profile</a>
+            <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+            href="{% url 'career_analysis:chat' %}">Inbox</a>
+          
+            <!-- Notifications with Dropdown -->
+          <div class="relative group" id="notification-wrapper">
+            <button class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors relative flex items-center justify-center size-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+              title="Notifications">
+              <span class="material-symbols-outlined !text-2xl">notifications</span>
+              <span id="chat-notification-badge-base" class="hidden absolute top-1 right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900 font-bold scale-90 transition-transform">0</span>
+            </button>
+
+            <!-- Dropdown Menu - Removed mt-2 to fix hover gap -->
+            <div id="notification-dropdown" class="absolute right-0 top-full pt-2 w-80 hidden group-hover:block z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
+                <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
+                    <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <h3 class="font-bold text-sm text-slate-800 dark:text-white">Recent Messages</h3>
+                        <span id="notification-count-pill" class="text-[10px] bg-primary/10 text-primary font-bold px-2 py-0.5 rounded-full">0 New</span>
+                    </div>
+                    <div id="notification-list" class="max-h-96 overflow-y-auto custom-scrollbar">
+                        <!-- Notifications will be injected here -->
+                        <div class="p-8 text-center text-slate-400">
+                            <span class="material-symbols-outlined !text-4xl mb-2 opacity-20">notifications_off</span>
+                            <p class="text-xs font-medium">No new notifications</p>
+                        </div>
+                    </div>
+                    <a href="{% url 'career_analysis:chat' %}" class="block p-3 text-center text-xs font-bold text-primary hover:bg-primary/5 transition-colors border-t border-slate-50 dark:border-slate-800">
+                        View All Messages
+                    </a>
+                </div>
+            </div>
+          </div>
+        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+   
+    {% block content %}{% endblock %}
+
+</div>
+
+<script>
+    async function updateNotifications() {
+        try {
+            const res = await fetch("{% url 'career_analysis:chat_notifications' %}");
+            const data = await res.json();
+            const badge = document.getElementById('chat-notification-badge-base');
+            const pill = document.getElementById('notification-count-pill');
+            const list = document.getElementById('notification-list');
+            const wrapper = document.getElementById('notification-wrapper');
+            const dropdown = document.getElementById('notification-dropdown');
+            if(!badge || !list || !wrapper) return;
+            
+            // On the chat page, keep the indication (bell/red dot) and allow dropdown, but disable navigation
+            if(window.location.pathname.includes('/chat/')) {
+                wrapper.classList.remove('hidden'); 
+                wrapper.style.pointerEvents = 'auto'; // Re-enable pointer events for hover
+                // We'll handle the 'cannot click' by disabling the links inside or the main button
+            } else {
+                wrapper.style.pointerEvents = 'auto';
+            }
+
+            if(data.count > 0) {
+                badge.innerText = data.count;
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+                if(pill) pill.innerText = `${data.count} New`;
+
+                // Update List
+                if(data.notifications && data.notifications.length > 0) {
+                    const isChatPage = window.location.pathname.includes('/chat/');
+                    list.innerHTML = data.notifications.map(n => `
+                        <a href="${isChatPage ? 'javascript:void(0)' : `{% url 'career_analysis:chat' %}?with=${n.sender_email}`}" class="flex items-start gap-3 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-50 dark:border-slate-800/50 last:border-0">
+                            <div class="shrink-0 size-10 rounded-xl bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/10">
+                                ${n.profile_pic ? `<img src="${n.profile_pic}" class="w-full h-full object-cover">` : `<span class="text-primary font-black uppercase text-sm">${n.sender_name.slice(0,1)}</span>`}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between mb-0.5">
+                                    <p class="font-bold text-xs text-slate-800 dark:text-white truncate">${n.sender_name}</p>
+                                    <span class="text-[9px] text-slate-400 font-bold uppercase">${n.timestamp}</span>
+                                </div>
+                                <p class="text-[11px] text-slate-510 dark:text-slate-400 truncate font-medium">${n.message}</p>
+                            </div>
+                        </a>
+                    `).join('');
+                }
+            } else {
+                badge.classList.add('hidden');
+                badge.classList.remove('flex');
+                if(pill) pill.innerText = '0 New';
+                list.innerHTML = `
+                    <div class="p-8 text-center text-slate-400">
+                        <span class="material-symbols-outlined !text-4xl mb-2 opacity-20">notifications_off</span>
+                        <p class="text-xs font-medium">No new notifications</p>
+                    </div>
+                `;
+            }
+        } catch(e) {}
+    }
+    setInterval(updateNotifications, 5000);
+    updateNotifications();
+</script>
+
+{% include 'ai_mentor_snippet.html' %}
+
+</body>
+</html>

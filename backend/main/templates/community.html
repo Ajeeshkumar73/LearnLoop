@@ -1,0 +1,358 @@
+{% extends 'dashboard_base.html' %}
+{% block title %}Community Feed - CareerAI{% endblock %}
+{% block content %}
+<div class="flex-grow flex flex-col items-center w-full">
+<main class="w-full max-w-[1280px] p-8 bg-slate-50 min-h-screen dark:bg-slate-900 transition-colors duration-300 mx-auto">
+    <!-- Community Header -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-black text-slate-800 dark:text-white flex items-center gap-3">
+                <span class="material-symbols-outlined !text-4xl text-primary">groups</span>
+                Community Feed
+            </h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Connect with users targeting similar career paths.</p>
+        </div>
+        
+        <div class="flex gap-4">
+            <div class="relative">
+                <input type="text" id="searchInput" placeholder="Search content..." value="{{ query }}"
+                       onkeypress="if(event.key === 'Enter') searchPosts()"
+                       class="bg-white dark:bg-slate-800 border-none rounded-2xl px-6 py-3 pr-12 shadow-sm focus:ring-2 focus:ring-primary w-64 dark:text-white">
+                <span class="material-symbols-outlined absolute right-4 top-3 text-slate-400">search</span>
+            </div>
+            <button onclick="document.getElementById('postModal').classList.remove('hidden')" class="bg-primary text-white px-6 py-3 rounded-2xl font-bold hover:shadow-lg hover:shadow-primary/30 transition flex items-center gap-2">
+                <span class="material-symbols-outlined">add</span> Create Post
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-12 gap-8">
+        <!-- Sidebar Groups -->
+        <div class="col-span-12 lg:col-span-3 space-y-6">
+            <!-- User Profile Section -->
+            <div class="glass p-6 rounded-3xl flex items-center gap-4">
+                {% if user_profile.profile_pic %}
+                <img src="{{ user_profile.profile_pic }}" class="w-14 h-14 rounded-full object-cover border-2 border-primary/20 shadow-md">
+                {% else %}
+                <div class="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-blue-600/20 flex items-center justify-center text-primary font-black shadow-inner uppercase border-2 border-primary/10">
+                    {{ user_profile.full_name|slice:":1" }}
+                </div>
+                {% endif %}
+                <div class="overflow-hidden">
+                    <h3 class="font-bold text-slate-800 dark:text-white truncate" title="{{ user_profile.full_name }}">{{ user_profile.full_name }}</h3>
+                    <p class="text-[10px] text-primary font-black uppercase tracking-widest mt-0.5 truncate">{{ user_profile.target_role|default:'Setup Goal' }}</p>
+                </div>
+            </div>
+
+            <div class="glass p-6 rounded-3xl">
+                <h2 class="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">filter_alt</span>
+                    Filters
+                </h2>
+                <div class="space-y-2">
+                    <a href="?filter=all" class="flex items-center justify-between p-3 rounded-xl transition {% if filter == 'all' %}bg-primary text-white shadow-lg shadow-primary/20{% else %}hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400{% endif %}">
+                        <span class="flex items-center gap-3">
+                            <span class="material-symbols-outlined !text-lg">public</span> Global Feed
+                        </span>
+                    </a>
+                    <a href="?filter=target" class="flex items-center justify-between p-3 rounded-xl transition {% if filter == 'target' %}bg-primary text-white shadow-lg shadow-primary/20{% else %}hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400{% endif %}">
+                        <span class="flex items-center gap-3">
+                            <span class="material-symbols-outlined !text-lg">target</span> Same Target
+                        </span>
+                    </a>
+                </div>
+            </div>
+
+            {% if user_profile.target_role %}
+            <div class="glass p-6 rounded-3xl bg-primary/5 border-primary/10">
+                <h2 class="font-bold text-slate-800 dark:text-white mb-2">My Target</h2>
+                <p class="text-xs text-primary font-bold uppercase tracking-wider">{{ user_profile.target_role }}</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">You are seeing posts from people aiming for the same role.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Feed -->
+        <div class="col-span-12 lg:col-span-9 space-y-6">
+            {% for post in posts %}
+            <div class="glass p-6 rounded-3xl hover:shadow-xl transition-shadow border border-slate-100 dark:border-slate-800">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-4">
+                        {% if post.author_pic %}
+                        <img src="{{ post.author_pic }}" class="w-12 h-12 rounded-2xl object-cover shadow-md">
+                        {% else %}
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center text-white font-black shadow-md uppercase">
+                            {{ post.author_name|slice:":1" }}
+                        </div>
+                        {% endif %}
+                        <div>
+                            <h3 class="font-bold text-slate-800 dark:text-white">{{ post.author_name }}</h3>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <span class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">{{ post.target_role }}</span>
+                                <span class="text-[10px] text-slate-400">• {{ post.created_at|timesince }} ago</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% if post.user_email != user_profile.user_email %}
+                    <div class="flex gap-2">
+                        <button onclick="openChat('{{ post.user_email }}')" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition text-slate-400 hover:text-primary">
+                            <span class="material-symbols-outlined">message</span>
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <p class="text-slate-700 dark:text-slate-300 leading-relaxed {% if post.media_url %}mb-4{% else %}mb-6{% endif %}">
+                    {{ post.content|linebreaksbr }}
+                </p>
+
+                {% if post.media_url %}
+                <div class="mb-6 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800">
+                    {% if post.media_type == 'image' %}
+                    <img src="{{ post.media_url }}" class="w-full h-auto max-h-[500px] object-cover">
+                    {% elif post.media_type == 'video' %}
+                    <video src="{{ post.media_url }}" controls class="w-full max-h-[500px] bg-black"></video>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div class="flex items-center gap-6 pt-4 border-t border-slate-50 dark:border-slate-800/50">
+                    <button onclick="toggleLike(this, '{{ post.post_id }}')" 
+                            class="flex items-center gap-2 transition group {% if post.is_liked %}text-primary{% else %}text-slate-400 hover:text-primary{% endif %}">
+                        <span class="material-symbols-outlined !text-xl group-hover:scale-125 transition-transform {% if post.is_liked %}fill-1{% endif %}">favorite</span>
+                        <span class="font-bold text-sm" id="like-count-{{ post.post_id }}">{{ post.likes_count }}</span>
+                    </button>
+                    <button onclick="toggleComments('{{ post.post_id }}')" class="flex items-center gap-2 text-slate-400 hover:text-primary transition group">
+                        <span class="material-symbols-outlined !text-xl">comment</span>
+                        <span class="font-bold text-sm">Comments</span>
+                        <span class="font-bold text-sm ml-1" id="comment-count-{{ post.post_id }}">{{ post.comments_count|default:0 }}</span>
+                    </button>
+                </div>
+
+                <!-- Comment Input (Always Visible) -->
+                <div class="flex gap-3 pt-4 border-t border-slate-50 dark:border-slate-800/50">
+                    <input type="text" id="comment-input-{{ post.post_id }}" placeholder="Add a comment..." 
+                           onkeypress="if(event.key === 'Enter') submitComment('{{ post.post_id }}')"
+                           class="flex-1 bg-white dark:bg-slate-800 border-none rounded-xl px-4 py-2 text-xs shadow-inner focus:ring-1 focus:ring-primary dark:text-white outline-none">
+                    <button onclick="submitComment('{{ post.post_id }}')" class="bg-primary/10 text-primary p-2 rounded-xl hover:bg-primary hover:text-white transition">
+                        <span class="material-symbols-outlined !text-xl">send</span>
+                    </button>
+                </div>
+
+                <!-- Comments List (Hidden by Default) -->
+                <div id="comments-{{ post.post_id }}" class="hidden pt-6 mt-4 space-y-4">
+                    <div id="comment-list-{{ post.post_id }}" class="space-y-4">
+                        {% for comment in post.comments %}
+                        <div class="flex gap-3">
+                            <div class="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold uppercase text-slate-500">
+                                {{ comment.author_name|slice:":1" }}
+                            </div>
+                            <div class="flex-1 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl rounded-tl-none">
+                                <div class="flex items-baseline justify-between mb-1">
+                                    <h4 class="text-xs font-black text-slate-700 dark:text-slate-200">{{ comment.author_name }}</h4>
+                                    <span class="text-[9px] text-slate-400 font-bold uppercase">{{ comment.created_at|date:"M d, h:i A" }}</span>
+                                </div>
+                                <div class="flex items-start justify-between gap-4">
+                                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{{ comment.content }}</p>
+                                    {% if comment.author_email == user_profile.user_email %}
+                                    <button onclick="deleteComment('{{ post.post_id }}', '{{ comment.id }}', this.closest('.flex.gap-3'))" 
+                                            class="text-slate-300 hover:text-red-500 transition shrink-0">
+                                        <span class="material-symbols-outlined !text-sm">delete</span>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="glass p-12 rounded-3xl text-center">
+                <span class="material-symbols-outlined !text-6xl text-slate-200 dark:text-slate-700 mb-4">post_add</span>
+                <h3 class="text-xl font-bold text-slate-800 dark:text-white">No posts found</h3>
+                <p class="text-slate-500 dark:text-slate-400">Be the first one to share something with the community!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</main>
+</div>
+
+<!-- Post Modal -->
+<div id="postModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[2000] hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-xl rounded-[40px] shadow-2xl overflow-hidden animate-fadeUp">
+        <div class="bg-primary p-6 text-white flex items-center justify-between">
+            <h2 class="text-xl font-black flex items-center gap-3">
+                <span class="material-symbols-outlined">edit_note</span>
+                Share Thoughts
+            </h2>
+            <button onclick="document.getElementById('postModal').classList.add('hidden')" class="hover:bg-white/20 p-2 rounded-2xl transition">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="p-8">
+            <textarea id="postContent" placeholder="What's on your mind regarding your studies or career?" 
+                      class="w-full h-40 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl p-6 focus:ring-2 focus:ring-primary outline-none dark:text-white resize-none mb-6"></textarea>
+            
+            <div class="mb-6">
+                <label class="flex items-center gap-3 p-4 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl cursor-pointer hover:border-primary transition group">
+                    <span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition">attachment</span>
+                    <span class="text-slate-500 text-sm font-medium group-hover:text-primary transition" id="fileNameLabel">Upload Image or Video</span>
+                    <input type="file" id="postMedia" class="hidden" accept="image/*,video/*" onchange="document.getElementById('fileNameLabel').innerText = this.files[0].name">
+                </label>
+            </div>
+
+            <div class="flex justify-end gap-4">
+                <button onclick="document.getElementById('postModal').classList.add('hidden')" class="px-6 py-3 rounded-2xl font-bold text-slate-500 hover:bg-slate-100 transition">Cancel</button>
+                <button id="submitPostBtn" onclick="submitPost()" class="bg-primary text-white px-8 py-3 rounded-2xl font-bold hover:shadow-lg hover:shadow-primary/30 transition shadow-md shadow-primary/20 flex items-center gap-2">
+                    Post Update
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function searchPosts() {
+        const query = document.getElementById('searchInput').value;
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('q', query);
+        window.location.href = currentUrl.toString();
+    }
+
+    async function submitPost() {
+        const content = document.getElementById('postContent').value.trim();
+        const media = document.getElementById('postMedia').files[0];
+        const btn = document.getElementById('submitPostBtn');
+        if(!content) return;
+
+        btn.disabled = true;
+        btn.innerText = "Posting...";
+
+        const formData = new FormData();
+        formData.append('content', content);
+        if(media) formData.append('media', media);
+
+        try {
+            const res = await fetch("{% url 'career_analysis:create_post' %}", {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if(data.success) {
+                window.location.reload();
+            }
+        } catch(e) { 
+            console.error(e);
+            btn.disabled = false;
+            btn.innerText = "Post Update";
+        }
+    }
+
+    async function toggleLike(btn, postId) {
+        try {
+            const res = await fetch("{% url 'career_analysis:like_post' %}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ post_id: postId })
+            });
+            const data = await res.json();
+            
+            const countSpan = document.getElementById(`like-count-${postId}`);
+            const icon = btn.querySelector('.material-symbols-outlined');
+            
+            countSpan.innerText = data.count;
+            if(data.liked) {
+                btn.classList.add('text-primary');
+                btn.classList.remove('text-slate-400');
+                icon.classList.add('fill-1');
+            } else {
+                btn.classList.remove('text-primary');
+                btn.classList.add('text-slate-400');
+                icon.classList.remove('fill-1');
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    function openChat(email) {
+        window.location.href = `{% url 'career_analysis:chat' %}?with=${email}`;
+    }
+
+    function toggleComments(postId) {
+        const el = document.getElementById(`comments-${postId}`);
+        el.classList.toggle('hidden');
+    }
+
+    async function submitComment(postId) {
+        const input = document.getElementById(`comment-input-${postId}`);
+        const content = input.value.trim();
+        if(!content) return;
+
+        input.value = '';
+        try {
+            const res = await fetch("{% url 'career_analysis:add_comment' %}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ post_id: postId, content: content })
+            });
+            const data = await res.json();
+            if(data.success) {
+                // Automatically show the comments list if it was hidden
+                const el = document.getElementById(`comments-${postId}`);
+                el.classList.remove('hidden');
+
+                const list = document.getElementById(`comment-list-${postId}`);
+                const countSpan = document.getElementById(`comment-count-${postId}`);
+                if(countSpan) {
+                    const currentCount = parseInt(countSpan.innerText) || 0;
+                    countSpan.innerText = currentCount + 1;
+                }
+                
+                const div = document.createElement('div');
+                div.className = "flex gap-3 animate-fadeUp";
+                div.innerHTML = `
+                    <div class="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold uppercase text-slate-500">
+                        ${data.comment.author_name.charAt(0)}
+                    </div>
+                    <div class="flex-1 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl rounded-tl-none">
+                        <div class="flex items-baseline justify-between mb-1">
+                            <h4 class="text-xs font-black text-slate-700 dark:text-slate-200">${data.comment.author_name}</h4>
+                            <span class="text-[9px] text-slate-400 font-bold uppercase">${data.comment.created_at}</span>
+                        </div>
+                        <div class="flex items-start justify-between gap-4">
+                            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">${data.comment.content}</p>
+                            <button onclick="deleteComment('${postId}', '${data.comment.id}', this.closest('.flex.gap-3'))" 
+                                    class="text-slate-300 hover:text-red-500 transition shrink-0">
+                                <span class="material-symbols-outlined !text-sm">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(div);
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    async function deleteComment(postId, commentId, element) {
+        if(!confirm('Delete this comment?')) return;
+
+        try {
+            const res = await fetch("{% url 'career_analysis:delete_comment' %}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ comment_id: commentId })
+            });
+            const data = await res.json();
+            if(data.success) {
+                element.remove();
+                const countSpan = document.getElementById(`comment-count-${postId}`);
+                if(countSpan) {
+                    const currentCount = parseInt(countSpan.innerText) || 0;
+                    countSpan.innerText = Math.max(0, currentCount - 1);
+                }
+            }
+        } catch(e) { console.error(e); }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,218 @@
+{% if request.session.user_email %}
+<!-- AI Mentor Robot Styles -->
+<style>
+    .mentor-container { position: fixed; bottom: 30px; right: 80px; z-index: 1000; display: flex; flex-direction: column; align-items: flex-end; pointer-events: none; }
+    .mentor-robot { width: 110px; height: 110px; cursor: pointer; pointer-events: auto; position: relative; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1)); }
+    .mentor-robot:hover { transform: scale(1.15) translateY(-10px) rotate(5deg); }
+    .mentor-bubble { position: absolute; bottom: 120px; right: 0; background: white; border-radius: 20px; padding: 12px 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 220px; opacity: 0; transform: translateY(10px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; border: 1px solid rgba(0,0,0,0.05); }
+    .mentor-bubble.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .mentor-bubble::after { content: ''; position: absolute; bottom: -8px; right: 40px; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid white; }
+    
+    /* Keyframes */
+    @keyframes floating { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-12px) rotate(-2deg); } }
+    .animate-float { animation: floating 4s ease-in-out infinite; }
+    
+    @keyframes waving { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(25deg); } }
+    .robot-hand { transform-origin: 75px 50px; animation: waving 2s ease-in-out infinite; }
+    
+    @keyframes blinking { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+    .robot-eye-left { transform-origin: 43px 27px; animation: blinking 4s infinite; }
+    
+    @keyframes winking { 0%, 80%, 100% { opacity: 1; } 85%, 95% { opacity: 0; } }
+    .robot-eye-right { animation: winking 5s infinite; }
+
+    @keyframes hii-pop {
+        0%, 45%, 100% { opacity: 0; transform: scale(0.5) translate(0, 0); }
+        50%, 75% { opacity: 1; transform: scale(1) translate(10px, -20px); }
+    }
+    .hii-cloud-svg { animation: hii-pop 4s ease-in-out infinite; transform-origin: 85px 35px; }
+
+    #mentorChat { position: fixed; bottom: 100px; right: 30px; width: 350px; height: 500px; background: white; border-radius: 28px; box-shadow: 0 25px 60px rgba(0,0,0,0.18); display: none; flex-direction: column; z-index: 1001; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); transition: all 0.3s ease; }
+    .dark #mentorChat { background: #1e293b; border-color: rgba(255,255,255,0.1); }
+    #mentorChat.open { display: flex; animation: fadeUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+</style>
+
+<!-- AI Mentor Component -->
+<div id="mentorWrapper" class="mentor-container hidden">
+    <div id="mentorBubble" class="mentor-bubble">
+        <p class="text-sm font-bold text-slate-800">Welcome! Can I help with anything?</p>
+        <p class="text-xs text-slate-500 mt-1">If you need me, I'll just be over here.</p>
+    </div>
+    
+    <div class="mentor-robot animate-float" onclick="toggleMentorChat()">
+        <svg viewBox="0 0 100 100" class="w-full h-full" style="overflow: visible;">
+            <!-- Main Body -->
+            <rect x="25" y="40" width="50" height="45" rx="15" fill="#f8fafc" stroke="#334155" stroke-width="2"/>
+            
+            <!-- Head -->
+            <rect x="30" y="15" width="40" height="30" rx="12" fill="#f8fafc" stroke="#334155" stroke-width="2"/>
+            
+            <!-- Face screen -->
+            <rect x="35" y="20" width="30" height="20" rx="6" fill="#1e293b"/>
+            
+            <!-- Eyes -->
+            <circle cx="43" cy="27" r="3" fill="#38bdf8" class="robot-eye-left"/> <!-- Left eye blinks -->
+            <g class="robot-eye-right">
+                <path d="M54 27 L60 27" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/> <!-- Winking right eye -->
+            </g>
+            
+            <!-- Arms -->
+            <path d="M25 50 Q15 50 15 65" stroke="#334155" stroke-width="3" fill="none"/>
+            <g class="robot-hand">
+                <path d="M75 50 Q85 50 85 35" stroke="#334155" stroke-width="3" fill="none"/>
+                <rect x="80" y="28" width="10" height="10" rx="3" fill="#f8fafc" stroke="#334155" stroke-width="2"/>
+            </g>
+
+            <!-- Hii Cloud (SVG) -->
+            <g class="hii-cloud-svg">
+                <rect x="70" y="5" width="90" height="35" rx="17" fill="#38bdf8" class="shadow-sm"/>
+                <path d="M90 40 L95 50 L105 40" fill="#38bdf8" />
+                <text id="mentorCloudText" x="115" y="27" text-anchor="middle" fill="white" font-size="10" font-weight="black" font-family="sans-serif">Ask any doubt</text>
+            </g>
+            
+            <!-- Bottom shadow -->
+            <ellipse cx="50" cy="92" rx="15" ry="3" fill="rgba(0,0,0,0.1)"/>
+        </svg>
+    </div>
+</div>
+
+<script>
+    // Cycle mentor cloud text
+    const cloudMsgs = ["Ask any doubt", "Haii!", "Ask any doubt", "Haii!"];
+    let cloudIdx = 0;
+    setInterval(() => {
+        const textElem = document.getElementById('mentorCloudText');
+        if (textElem) {
+            cloudIdx = (cloudIdx + 1) % cloudMsgs.length;
+            textElem.textContent = cloudMsgs[cloudIdx];
+        }
+    }, 4000); // Match CSS animation timing
+</script>
+
+<!-- Chat Window UI -->
+<div id="mentorChat" class="glass overflow-hidden shadow-2xl">
+    <div class="bg-primary p-4 text-white flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl"></span>
+            <div>
+                <p class="font-black text-sm leading-none">AI Mentor</p>
+                <p class="text-[10px] opacity-80 mt-1">Always here to help</p>
+            </div>
+        </div>
+        <button onclick="toggleMentorChat()" class="hover:bg-white/20 p-1 rounded-full transition">
+            <span class="material-symbols-outlined !text-lg text-white">close</span>
+        </button>
+    </div>
+    
+    <div id="mentorMessages" class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 dark:bg-slate-900">
+        <div class="flex justify-start mb-4">
+            <div class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-2xl rounded-tl-none px-4 py-2 text-sm shadow-sm border border-slate-100 dark:border-slate-700">
+                Hi! I'm your AI Mentor. I've analyzed your career path. Ask me anything about your studies or goals!
+            </div>
+        </div>
+    </div>
+
+    <div id="mentorTyping" class="hidden px-4 py-2 text-[10px] text-slate-400 italic">Mentor is typing...</div>
+    
+    <div class="p-3 border-t dark:border-slate-800 flex gap-2 bg-white dark:bg-slate-900">
+        <input type="text" id="mentorInput" 
+               onkeypress="if(event.key === 'Enter') sendMentorMsg()"
+               placeholder="Type a doubt..." 
+               class="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-primary dark:text-white outline-none">
+        <button onclick="sendMentorMsg()" class="bg-primary text-white p-2 rounded-xl hover:opacity-90 transition shadow-md shadow-primary/20 flex items-center justify-center">
+            <span class="material-symbols-outlined !text-lg">send</span>
+        </button>
+    </div>
+</div>
+
+<script>
+    let mentorActivated = localStorage.getItem('mentorActivated') === 'true';
+
+    function checkMentorActivation() {
+        if (mentorActivated) {
+            const wrapper = document.getElementById('mentorWrapper');
+            if (wrapper) {
+                wrapper.classList.remove('hidden');
+                setTimeout(() => {
+                    showMentorInitialMsg();
+                }, 2000);
+            }
+        }
+    }
+
+    function activateMentor() {
+        mentorActivated = true;
+        localStorage.setItem('mentorActivated', 'true');
+        const btn = document.getElementById('activateMentorBtn');
+        if (btn) btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> Mentor Active';
+        
+        const banner = document.getElementById('mentorActivationBanner');
+        if (banner) banner.classList.add('hidden'); // Hide banner if it exists
+        
+        checkMentorActivation();
+    }
+
+    function toggleMentorChat() {
+        const chat = document.getElementById('mentorChat');
+        chat.classList.toggle('open');
+        if (chat.classList.contains('open')) {
+            const bubble = document.getElementById('mentorBubble');
+            if (bubble) bubble.classList.remove('show');
+        }
+    }
+
+    function showMentorInitialMsg() {
+        const chat = document.getElementById('mentorChat');
+        if (chat && !chat.classList.contains('open')) {
+            const bubble = document.getElementById('mentorBubble');
+            if (bubble) {
+                bubble.classList.add('show');
+                setTimeout(() => bubble.classList.remove('show'), 6000);
+            }
+        }
+    }
+
+    async function sendMentorMsg() {
+        const input = document.getElementById('mentorInput');
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        appendMsg('user', msg);
+        input.value = '';
+        
+        const typing = document.getElementById('mentorTyping');
+        typing.classList.remove('hidden');
+
+        try {
+            const res = await fetch('/career/chat-with-mentor/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg })
+            });
+            const data = await res.json();
+            typing.classList.add('hidden');
+            if (data.response) {
+                appendMsg('bot', data.response);
+            }
+        } catch (e) {
+            typing.classList.add('hidden');
+            appendMsg('bot', "Sorry, I'm having trouble connecting right now.");
+        }
+    }
+
+    function appendMsg(role, text) {
+        const box = document.getElementById('mentorMessages');
+        const div = document.createElement('div');
+        div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} mb-4`;
+        div.innerHTML = `
+            <div class="${role === 'user' ? 'bg-primary text-white rounded-tr-none shadow-primary/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-tl-none'} px-4 py-2 rounded-2xl text-sm max-w-[85%] shadow-sm border border-slate-100 dark:border-slate-700">
+                ${text.replace(/\n/g, '<br>')}
+            </div>
+        `;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    document.addEventListener('DOMContentLoaded', checkMentorActivation);
+</script>
+{% endif %}

@@ -144,35 +144,52 @@
     <div class="relative flex h-auto min-h-screen w-full flex-col">
 
         <!-- Top Navigation -->
-        <header
-            class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 lg:px-10 py-3">
-            <div class="flex items-center gap-4 text-slate-900 dark:text-white">
-                <div class="size-8 text-primary flex items-center justify-center">
-                    <span class="material-symbols-outlined text-2xl">school</span>
+         <header
+            class="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#101622]/90 backdrop-blur-sm border-b border-[#f0f2f4] dark:border-gray-800">
+            <div class="layout-container flex justify-center">
+                <div class="px-4 md:px-10 py-3 w-full max-w-[1280px]">
+                    <div class="flex items-center justify-between whitespace-nowrap">
+                        <div class="flex items-center gap-3 text-primary">
+                            <div class="size-8 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-3xl"></span>
+                            </div>
+                           <h2
+  class="text-[#111318] dark:text-white text-2xl font-semibold tracking-wide"
+  style="font-family: Georgia, serif; letter-spacing: 1px;">
+  LEARN LOOP
+</h2>
+                        </div>
+                        <div class="flex flex-1 justify-end gap-8">
+                            <div class="hidden md:flex items-center gap-9">
+          <a class="text-primary text-sm font-bold border-b-2 border-primary pb-0.5"
+          href="{% url 'career_analysis:profile' %}">Profile</a>
+          <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+            href="{% url 'career_analysis:gap_analyzer' %}">Dashboard</a>
+          <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+             href="{% url 'career_analysis:roadmap_page' %}">Roadmap</a>
+          <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+            href="{% url 'career_analysis:job_analyzer' %}">Job Analyzer</a>
+          <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
+            href="{% url 'career_analysis:community' %}">Community</a>
+          <a id="navReviewLink" class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal cursor-pointer">Review</a>
+           <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors relative flex items-center justify-center size-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+            href="{% url 'career_analysis:chat' %}" title="Messages">
+            <span class="material-symbols-outlined !text-2xl">notifications</span>
+            <span id="chat-notification-badge-gap" class="hidden absolute top-1 right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900 font-bold scale-90 transition-transform">0</span>
+          </a>
+        </div>
+                            <a href="{% url 'accounts:logout' %}">
+                                <button
+                                    class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-blue-700 transition-colors text-white text-sm font-bold leading-normal tracking-[0.015em]">
+                                    <span class="truncate">Log Out</span>
+                                </button>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Learn
-                    Loop</h2>
-            </div>
-            <div class="flex flex-1 justify-end gap-8">
-                <div class="hidden md:flex items-center gap-9">
-                    <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
-                        href="{% url 'career_analysis:roadmap_page' %}">Roadmap</a>
-                    <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
-                        href="{% url 'career_analysis:job_analyzer' %}">Job Analyzer</a>
-                    <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
-                        href="{% url 'career_analysis:profile' %}">Profile</a>
-                    <a class="text-primary text-sm font-bold border-b-2 border-primary pb-0.5"
-                        href="{% url 'career_analysis:profile' %}">Profile</a>
-                </div>
-                <a href="{% url 'accounts:logout' %}">
-                    <button
-                        class="flex cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold hover:bg-blue-700 transition-colors">
-                        <span class="truncate">Log Out</span>
-                    </button>
-                </a>
             </div>
         </header>
-
+        
         <!-- Main Content -->
         <main class="layout-container flex h-full grow flex-col">
             <div class="px-4 md:px-10 lg:px-32 flex flex-1 justify-center py-8">
@@ -274,6 +291,42 @@
                                         <input type="text" name="full_name" value="{{ profile.full_name }}"
                                             class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                                             placeholder="Enter your full name">
+                                    </div>
+                                </div>
+
+                                <!-- Custom Name (Display Name) -->
+                                <div>
+                                    <label
+                                        class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">Custom Name / Nickname</label>
+                                    <div class="view-content">
+                                        <p
+                                            class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium min-h-[44px] flex items-center">
+                                            {% if profile.custom_name %}{{ profile.custom_name }}{% else %}<span
+                                                class="text-slate-400 italic">Not provided</span>{% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="edit-content hidden">
+                                        <input type="text" name="custom_name" value="{{ profile.custom_name }}"
+                                            class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                            placeholder="e.g. Alex, Sam">
+                                    </div>
+                                </div>
+
+                                <!-- Phone Number -->
+                                <div>
+                                    <label
+                                        class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">Phone Number</label>
+                                    <div class="view-content">
+                                        <p
+                                            class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium min-h-[44px] flex items-center">
+                                            {% if profile.phone %}{{ profile.phone }}{% else %}<span
+                                                class="text-slate-400 italic">Not provided</span>{% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="edit-content hidden">
+                                        <input type="tel" name="phone" value="{{ profile.phone }}"
+                                            class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                                            placeholder="e.g. +1 234 567 8900">
                                     </div>
                                 </div>
 
@@ -382,41 +435,109 @@
                                             placeholder="Your target career role">
                                     </div>
                                 </div>
+                            </div>
 
-                                <!-- Education -->
-                                <div>
-                                    <label
-                                        class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">Education</label>
-                                    <div class="view-content">
-                                        <p
-                                            class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium min-h-[44px] flex items-center">
-                                            {% if profile.education %}{{ profile.education }}{% else %}<span
-                                                class="text-slate-400 italic">Not provided</span>{% endif %}
-                                        </p>
-                                    </div>
-                                    <div class="edit-content hidden">
-                                        <input type="text" name="education" value="{{ profile.education }}"
-                                            class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
-                                            placeholder="e.g. B.Tech, MCA">
-                                    </div>
+                            <!-- Detailed Education List -->
+                            <div class="mt-8">
+                                <div class="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-800 pb-2">
+                                    <h3 class="text-base font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-primary">school</span>
+                                        Education History
+                                    </h3>
+                                    <button type="button" onclick="addEducationRow()" class="edit-content hidden flex items-center gap-1 text-sm font-bold text-primary hover:bg-primary/5 px-2 py-1 rounded-lg transition-colors">
+                                        <span class="material-symbols-outlined text-sm">add_circle</span>
+                                        Add Degree
+                                    </button>
                                 </div>
+                                
+                                <input type="hidden" name="education_list" id="educationListInput">
+                                
+                                <div id="educationContainer" class="space-y-4">
+                                    {% if profile.education_list %}
+                                        {% for edu in profile.education_list %}
+                                            <div class="edu-row p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/30 dark:bg-slate-800/20 relative group">
+                                                <button type="button" onclick="removeRow(this)" class="edit-content hidden absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-all hover:scale-110 z-10">
+                                                    <span class="material-symbols-outlined text-xs">close</span>
+                                                </button>
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block">Course / Degree</label>
+                                                        <p class="view-content text-sm font-bold text-slate-800 dark:text-white">{% if edu.course %}{{ edu.course }}{% else %}{{ edu.degree }}{% endif %}</p>
+                                                         <input type="text" data-field="course" placeholder="e.g. B.Tech Computer Science" value="{% firstof edu.course edu.degree %}" class="edit-content hidden input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 text-sm focus:ring-1 focus:ring-primary outline-none">
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block">College / University</label>
+                                                        <p class="view-content text-sm text-slate-600 dark:text-slate-300">{% if edu.college %}{{ edu.college }}{% else %}{{ edu.institution }}{% endif %}</p>
+                                                         <input type="text" data-field="college" placeholder="e.g. Stanford University" value="{% firstof edu.college edu.institution %}" class="edit-content hidden input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 text-sm focus:ring-1 focus:ring-primary outline-none">
+                                                    </div>
+                                                    <div class="grid grid-cols-3 gap-3 md:col-span-2">
+                                                        <div>
+                                                            <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block">Mark (CGPA/%)</label>
+                                                            <p class="view-content text-sm text-slate-600 dark:text-slate-300">{% if edu.mark %}{{ edu.mark }}{% else %}{{ edu.cgpa }}{% endif %}</p>
+                                                             <input type="text" data-field="mark" placeholder="e.g. 9.2" value="{% firstof edu.mark edu.cgpa %}" class="edit-content hidden input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 text-sm focus:ring-1 focus:ring-primary outline-none">
+                                                        </div>
+                                                        <div>
+                                                            <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block">Status</label>
+                                                            <p class="view-content text-sm text-slate-600 dark:text-slate-300">{{ edu.status|default:"Completed" }}</p>
+                                                            <select data-field="status" class="edit-content hidden input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 text-sm focus:ring-1 focus:ring-primary outline-none">
+                                                                <option value="Passout" {% if edu.status == 'Passout' %}selected{% endif %}>Passout</option>
+                                                                <option value="Pursuing" {% if edu.status == 'Pursuing' %}selected{% endif %}>Pursuing</option>
+                                                            </select>
+                                                        </div>
+                                                        <div>
+                                                            <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block">Year</label>
+                                                            <p class="view-content text-sm text-slate-600 dark:text-slate-300">{{ edu.year }}</p>
+                                                            <input type="text" data-field="year" placeholder="2024" value="{{ edu.year }}" class="edit-content hidden input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 text-sm focus:ring-1 focus:ring-primary outline-none">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="view-content italic text-sm text-slate-400 p-4 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-center">No education history added yet.</div>
+                                    {% endif %}
+                                </div>
+                            </div>
 
-                                <!-- Specialization -->
-                                <div>
-                                    <label
-                                        class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">Specialization</label>
-                                    <div class="view-content">
-                                        <p
-                                            class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium min-h-[44px] flex items-center">
-                                            {% if profile.specialization %}{{ profile.specialization }}{% else %}<span
-                                                class="text-slate-400 italic">Not provided</span>{% endif %}
-                                        </p>
-                                    </div>
-                                    <div class="edit-content hidden">
-                                        <input type="text" name="specialization" value="{{ profile.specialization }}"
-                                            class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
-                                            placeholder="e.g. Computer Science, Data Science">
-                                    </div>
+                            <!-- Custom Sections (Dynamic Titles & Items) -->
+                            <div class="mt-8">
+                                <div class="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-800 pb-2">
+                                    <h3 class="text-base font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-primary">add_box</span>
+                                        Custom Sections
+                                    </h3>
+                                    <button type="button" onclick="addCustomSection()" class="edit-content hidden flex items-center gap-1 text-sm font-bold text-primary hover:bg-primary/5 px-2 py-1 rounded-lg transition-colors">
+                                        <span class="material-symbols-outlined text-sm">add_circle</span>
+                                        Add New Section
+                                    </button>
+                                </div>
+                                
+                                <input type="hidden" name="custom_sections" id="customSectionsInput">
+                                
+                                <div id="customSectionsContainer" class="space-y-6">
+                                    {% if profile.custom_sections %}
+                                        {% for section in profile.custom_sections %}
+                                            <div class="custom-section-row p-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/30 dark:bg-slate-800/20 relative group">
+                                                <button type="button" onclick="removeRow(this)" class="edit-content hidden absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-all hover:scale-110 z-10">
+                                                    <span class="material-symbols-outlined text-xs">close</span>
+                                                </button>
+                                                
+                                                <div class="mb-4">
+                                                    <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block">Section Title</label>
+                                                    <h4 class="view-content text-sm font-bold text-primary uppercase tracking-wider">{{ section.title }}</h4>
+                                                    <input type="text" data-field="title" placeholder="e.g. Languages or Projects" value="{{ section.title }}" class="edit-content hidden input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 font-bold text-primary outline-none focus:ring-1 focus:ring-primary">
+                                                </div>
+                                                
+                                                <div>
+                                                    <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block">Content / Items (Comma separated or one per line)</label>
+                                                    <p class="view-content text-sm text-slate-600 dark:text-slate-300 whitespace-pre-line">{{ section.content }}</p>
+                                                    <textarea data-field="content" rows="3" placeholder="e.g. English, Hindi, Spanish" class="edit-content hidden input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-sm outline-none focus:ring-1 focus:ring-primary">{{ section.content }}</textarea>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="view-content italic text-sm text-slate-400 p-4 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-center">No custom sections added. Use these for Languages, Projects, etc.</div>
+                                    {% endif %}
                                 </div>
                             </div>
 
@@ -688,18 +809,56 @@
                                     </div>
                                 </div>
 
-                                <!-- Generate Button -->
-                                <div class="flex flex-col items-center gap-3">
-                                    <a href="{% url 'career_analysis:generate_resume' %}" target="_blank"
-                                        class="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-accent to-purple-600 text-white rounded-xl font-bold text-base shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]">
-                                        <span class="material-symbols-outlined text-2xl">download</span>
-                                        Generate Resume
-                                    </a>
-                                    <p class="text-xs text-slate-400">Opens in new tab • Print to PDF</p>
+                                <!-- Generate Options -->
+                                <div class="flex flex-col gap-4 w-full md:w-auto">
+                                    <div class="flex flex-col sm:flex-row gap-3">
+                                        <a href="{% url 'career_analysis:generate_resume' %}" target="_blank"
+                                            class="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-accent to-purple-600 text-white rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all hover:scale-[1.02]">
+                                            <span class="material-symbols-outlined text-xl">picture_as_pdf</span>
+                                            Download PDF
+                                        </a>
+                                        <a href="{% url 'career_analysis:generate_resume' %}?format=docx" target="_blank"
+                                            class="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white rounded-xl font-bold text-sm shadow-sm hover:shadow-md transition-all hover:scale-[1.02]">
+                                            <span class="material-symbols-outlined text-xl text-blue-500">description</span>
+                                            Download DOCS
+                                        </a>
+                                    </div>
+                                    <p class="text-[10px] text-center text-slate-400 italic">Tip: Use "Save as PDF" in the print window for the best PDF results.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Review Upload Section (Hidden Initially) -->
+                    <div id="reviewSection" class="hidden flex flex-col items-center w-full gap-6 py-10 text-center animate-in">
+                        <div>
+                        <h2 class="text-slate-900 dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">Leave a Review</h2>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Share your experience with LearnLoop.</p>
+                        </div>
+                        <div class="flex flex-col gap-4 rounded-xl border border-[#dbdfe6] dark:border-gray-800 bg-background-light dark:bg-[#1a202c] p-6 w-full max-w-2xl text-left">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" style='background-image: url("{% if profile and profile.profile_pic %}{{ profile.profile_pic }}{% else %}https://ui-avatars.com/api/?name={{ profile.full_name|urlencode|default:"User" }}&background=135bec&color=fff{% endif %}");'></div>
+                            <div class="flex-1">
+                            <p class="text-[#111318] dark:text-white text-base font-bold leading-normal">{% if profile and profile.full_name %}{{ profile.full_name }}{% else %}{{ user.username|default:"User" }}{% endif %}</p>
+                            </div>
+                        </div>
+                        <form action="{% url 'career_analysis:submit_review' %}" method="POST" class="flex flex-col gap-4">
+                            {% csrf_token %}
+                            <div class="flex gap-1 text-slate-300 dark:text-slate-600 cursor-pointer star-rating-container">
+                            <input type="hidden" name="rating" class="rating-input" value="5">
+                            <span class="material-symbols-outlined text-[20px] filled text-yellow-400 star-btn" data-value="1">star</span>
+                            <span class="material-symbols-outlined text-[20px] filled text-yellow-400 star-btn" data-value="2">star</span>
+                            <span class="material-symbols-outlined text-[20px] filled text-yellow-400 star-btn" data-value="3">star</span>
+                            <span class="material-symbols-outlined text-[20px] filled text-yellow-400 star-btn" data-value="4">star</span>
+                            <span class="material-symbols-outlined text-[20px] filled text-yellow-400 star-btn" data-value="5">star</span>
+                            </div>
+                            <textarea name="review_text" rows="3" class="w-full bg-white dark:bg-[#101622] rounded-lg border border-[#dbdfe6] dark:border-gray-700 p-3 text-[#111318] dark:text-gray-200 text-base font-normal leading-relaxed focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none" placeholder="Write your review here..."></textarea>
+                            <button type="submit" class="self-end px-5 py-2 bg-primary text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors">Submit Review</button>
+                        </form>
+                        </div>
+                    </div>
+
+                    
 
                 </div>
             </div>
@@ -736,27 +895,145 @@
             }
         }
 
+        function addEducationRow() {
+            const container = document.getElementById('educationContainer');
+            const placeholder = container.querySelector('.italic');
+            if (placeholder) placeholder.remove();
+
+            const row = document.createElement('div');
+            row.className = 'edu-row p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 relative group';
+            row.innerHTML = `
+                <button type="button" onclick="removeRow(this)" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-md">
+                    <span class="material-symbols-outlined text-xs">close</span>
+                </button>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block">Course / Degree</label>
+                        <input type="text" data-field="course" placeholder="e.g. B.Tech Computer Science" class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 text-sm focus:ring-1 focus:ring-primary outline-none">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block">College / University</label>
+                        <input type="text" data-field="college" placeholder="e.g. Stanford University" class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 text-sm focus:ring-1 focus:ring-primary outline-none">
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 md:col-span-2">
+                        <div>
+                            <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block">Mark (CGPA/%)</label>
+                            <input type="text" data-field="mark" placeholder="e.g. 9.2" class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 text-sm focus:ring-1 focus:ring-primary outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block">Status</label>
+                            <select data-field="status" class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 text-sm focus:ring-1 focus:ring-primary outline-none">
+                                <option value="Passout">Passout</option>
+                                <option value="Pursuing">Pursuing</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block">Year</label>
+                            <input type="text" data-field="year" placeholder="2024" class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 text-sm focus:ring-1 focus:ring-primary outline-none">
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(row);
+        }
+
+        function addCustomSection() {
+            const container = document.getElementById('customSectionsContainer');
+            const placeholder = container.querySelector('.italic');
+            if (placeholder) placeholder.remove();
+
+            const row = document.createElement('div');
+            row.className = 'custom-section-row p-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 relative group';
+            row.innerHTML = `
+                <button type="button" onclick="removeRow(this)" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-md">
+                    <span class="material-symbols-outlined text-xs">close</span>
+                </button>
+                <div class="mb-4">
+                    <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block">Section Title</label>
+                    <input type="text" data-field="title" placeholder="e.g. Languages or Projects" class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 font-bold text-primary focus:ring-1 focus:ring-primary outline-none">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block">Content / Items</label>
+                    <textarea data-field="content" rows="3" placeholder="e.g. English, Hindi, Spanish" class="input-field w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 text-sm focus:ring-1 focus:ring-primary outline-none"></textarea>
+                </div>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeRow(btn) {
+            const row = btn.closest('.edu-row, .custom-section-row');
+            const container = row.parentElement;
+            row.remove();
+            if (container.children.length === 0) {
+                if (container.id === 'educationContainer') {
+                    container.innerHTML = '<div class="view-content italic text-sm text-slate-400 p-4 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-center">No education history added yet.</div>';
+                } else {
+                    container.innerHTML = '<div class="view-content italic text-sm text-slate-400 p-4 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-center">No custom sections added.</div>';
+                }
+            }
+        }
+
         function saveProfile() {
-            const form = document.getElementById('profileForm');
-            const formData = new FormData(form);
-            fetch("{% url 'career_analysis:update_profile' %}", {
-                method: "POST",
-                headers: { "X-CSRFToken": "{{ csrf_token }}" },
-                body: formData
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === "success") {
-                        showToast("Profile updated successfully!");
-                        setTimeout(() => window.location.reload(), 1000);
-                    } else {
-                        showToast("Error updating profile", true);
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    showToast("Network error", true);
+            const saveBtn = document.querySelector('button[onclick="saveProfile()"]');
+            const originalContent = saveBtn.innerHTML;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span> Saving...';
+
+            try {
+                const form = document.getElementById('profileForm');
+                
+                // Serialize Education List robustly using data attributes
+                const eduList = [];
+                document.querySelectorAll('.edu-row').forEach(row => {
+                    const obj = {};
+                    row.querySelectorAll('[data-field]').forEach(input => {
+                        obj[input.getAttribute('data-field')] = input.value;
+                    });
+                    if (obj.course || obj.college) eduList.push(obj);
                 });
+                document.getElementById('educationListInput').value = JSON.stringify(eduList);
+
+                // Serialize Custom Sections
+                const customSections = [];
+                document.querySelectorAll('.custom-section-row').forEach(row => {
+                    const obj = {};
+                    row.querySelectorAll('[data-field]').forEach(input => {
+                        obj[input.getAttribute('data-field')] = input.value;
+                    });
+                    if (obj.title) customSections.push(obj);
+                });
+                document.getElementById('customSectionsInput').value = JSON.stringify(customSections);
+
+                const formData = new FormData(form);
+                fetch("{% url 'career_analysis:update_profile' %}", {
+                    method: "POST",
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                    body: formData
+                })
+                    .then(res => {
+                        if (!res.ok) throw new Error("Server returned " + res.status);
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (data.status === "success") {
+                            showToast("Profile saved successfully!");
+                            setTimeout(() => window.location.reload(), 1000);
+                        } else {
+                            throw new Error(data.message || "Failed to save");
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Save Error:", err);
+                        showToast("Error: " + err.message, true);
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = originalContent;
+                    });
+            } catch (err) {
+                console.error("Critical Save Error:", err);
+                showToast("System error: " + err.message, true);
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalContent;
+            }
         }
 
         function showToast(message, isError = false) {
@@ -774,7 +1051,64 @@
             toast.classList.remove('hidden');
             setTimeout(() => toast.classList.add('hidden'), 3000);
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Smooth Scroll & Unhide logic
+            const reviewLink = document.getElementById('navReviewLink');
+            const reviewSection = document.getElementById('reviewSection');
+            if(reviewLink && reviewSection) {
+                reviewLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    reviewSection.classList.remove('hidden');
+                    reviewSection.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+
+            // Star rating logic
+            document.querySelectorAll('.star-rating-container').forEach(container => {
+                const stars = container.querySelectorAll('.star-btn');
+                const input = container.querySelector('.rating-input');
+                stars.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        let val = parseInt(this.getAttribute('data-value'));
+                        input.value = val;
+                        stars.forEach((s, idx) => {
+                            if (idx < val) {
+                                s.classList.add('text-yellow-400');
+                                s.classList.remove('text-slate-300', 'dark:text-slate-600');
+                            } else {
+                                s.classList.remove('text-yellow-400');
+                                s.classList.add('text-slate-300', 'dark:text-slate-600');
+                            }
+                        });
+                    });
+                });
+            });
+        });
     </script>
+
+    <script>
+    async function updateNotifications() {
+        try {
+            const res = await fetch("{% url 'career_analysis:chat_notifications' %}");
+            const data = await res.json();
+            const badge = document.getElementById('chat-notification-badge-gap');
+            if(data.count > 0) {
+                badge.innerText = data.count;
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+            } else {
+                badge.classList.add('hidden');
+                badge.classList.remove('flex');
+            }
+        } catch(e) {}
+    }
+    setInterval(updateNotifications, 5000);
+    updateNotifications();
+  </script>
+
+  {% include 'ai_mentor_snippet.html' %}
+  
 </body>
 
 </html>

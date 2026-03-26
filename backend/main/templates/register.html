@@ -95,8 +95,11 @@
           <div class="flex items-center gap-3 text-primary">
             <div class="size-8">
             </div>
-            <h2 class="text-[#111318] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">Learn Loop
-            </h2>
+            <h2
+  class="text-[#111318] dark:text-white text-2xl font-semibold tracking-wide"
+  style="font-family: Georgia, serif; letter-spacing: 1px;">
+  LEARN LOOP
+</h2>
           </div>
           <div class="hidden sm:flex items-center gap-2 text-sm font-medium">
             <span class="text-[#616f89] dark:text-gray-400">Already a member?</span>
@@ -120,8 +123,8 @@
             <div id="g_id_onload" data-client_id="{{ google_client_id }}" data-context="signup" data-ux_mode="popup"
               data-callback="handleGoogleSignIn" data-auto_prompt="false">
             </div>
-            <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline"
-              data-text="signup_with" data-size="large" data-logo_alignment="left" data-width="480">
+            <div class="g_id_signin w-full flex justify-center" data-type="standard" data-shape="rectangular" data-theme="outline"
+              data-text="signup_with" data-size="large" data-logo_alignment="center">
             </div>
             <!-- Fallback Google form -->
             <form id="google-form" method="POST" action="{% url 'accounts:google_signin' %}" style="display:none;">
@@ -182,8 +185,8 @@
                   id="terms" type="checkbox" required="" />
               </div>
               <label class="text-sm font-normal text-[#616f89] dark:text-gray-400 select-none" for="terms">
-                I agree to the <a class="font-semibold text-primary hover:underline" href="#">Terms of Service</a> and
-                <a class="font-semibold text-primary hover:underline" href="#">Privacy Policy</a>.
+                I agree to the <a class="font-semibold text-primary hover:underline cursor-pointer" onclick="togglePolicy('terms')">Terms of Service</a> and
+                <a class="font-semibold text-primary hover:underline cursor-pointer" onclick="togglePolicy('privacy')">Privacy Policy</a>.
               </label>
             </div>
             <button
@@ -334,6 +337,82 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 
+    <!-- Privacy & Terms Modals -->
+    <div id="policyModal" class="fixed inset-0 z-[110] hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+        <div class="bg-white dark:bg-[#1a202c] w-full max-w-2xl max-h-[80vh] rounded-[40px] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
+            <div class="p-8 border-b dark:border-slate-800 flex items-center justify-between bg-primary/5">
+                <h2 id="policyTitle" class="text-2xl font-black text-slate-800 dark:text-white leading-none">Privacy Policy</h2>
+                <button onclick="togglePolicy()" class="size-10 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-colors">
+                    <span class="material-symbols-outlined text-slate-500">close</span>
+                </button>
+            </div>
+            <div id="policyContent" class="flex-1 overflow-y-auto p-8 custom-scrollbar text-sm text-slate-600 dark:text-slate-400 leading-relaxed space-y-6">
+                <!-- Content injected via JS -->
+            </div>
+            <div class="p-6 border-t dark:border-slate-800 flex justify-end">
+                <button onclick="togglePolicy()" class="bg-primary text-white px-8 py-3 rounded-xl font-bold hover:opacity-90 transition-opacity">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const policyData = {
+            privacy: {
+                title: "Privacy Policy",
+                content: `
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-slate-800 dark:text-white">1. Data Collection</h4>
+                        <p>We collect information you provide directly to us, such as your name, email address, and career interests, to create your personalized LearnLoop profile.</p>
+                        
+                        <h4 class="font-bold text-slate-800 dark:text-white">2. AI Processing</h4>
+                        <p>Your inputs are processed by our AI algorithms to generate career roadmaps and skill gap analyses. We use secure API channels and do not store your data for third-party training.</p>
+                        
+                        <h4 class="font-bold text-slate-800 dark:text-white">3. Information Sharing</h4>
+                        <p>We do not sell your personal data. Your profile information (like name and target role) is only visible to other community members within the LearnLoop platform.</p>
+                        
+                        <h4 class="font-bold text-slate-800 dark:text-white">4. Data Security</h4>
+                        <p>We implement industry-standard security measures to protect your information from unauthorized access, alteration, or disclosure.</p>
+                    </div>
+                `
+            },
+            terms: {
+                title: "Terms & Conditions",
+                content: `
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-slate-800 dark:text-white">1. Acceptance of Terms</h4>
+                        <p>By accessing LearnLoop, you agree to be bound by these Terms and Conditions and our Privacy Policy.</p>
+                        
+                        <h4 class="font-bold text-slate-800 dark:text-white">2. User Conduct</h4>
+                        <p>Users must interact respectfully within the community. Any form of harassment, spamming, or exploitation of the platform will result in immediate account termination.</p>
+                        
+                        <h4 class="font-bold text-slate-800 dark:text-white">3. Disclaimer of AI Advice</h4>
+                        <p>LearLoop provides AI-generated guidance for informational purposes. While we strive for accuracy, we do not guarantee specific employment outcomes or career rankings.</p>
+                        
+                        <h4 class="font-bold text-slate-800 dark:text-white">4. Intellectural Property</h4>
+                        <p>All platform content, including AI-generated roadmaps and the platform interface, is the exclusive property of LearnLoop Inc.</p>
+                    </div>
+                `
+            }
+        };
+
+        function togglePolicy(type) {
+            const modal = document.getElementById('policyModal');
+            if (type) {
+                document.getElementById('policyTitle').textContent = policyData[type].title;
+                document.getElementById('policyContent').innerHTML = policyData[type].content;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.style.overflow = '';
+            }
+        }
+        document.getElementById('policyModal').addEventListener('click', function(e) {
+            if (e.target === this) togglePolicy();
+        });
+    </script>
 </body>
 
 </html>
