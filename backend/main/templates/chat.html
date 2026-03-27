@@ -89,7 +89,7 @@
                     <div class="max-w-[70%] {% if msg.sender_email == user_email %}bg-primary text-white rounded-[24px] rounded-tr-[4px] shadow-lg shadow-primary/20{% else %}bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-[24px] rounded-tl-[4px] shadow-sm border border-slate-100 dark:border-slate-700{% endif %} px-6 py-4">
                         <p class="text-sm leading-relaxed mb-2 font-medium">{{ msg.message }}</p>
                         <p class="text-[9px] {% if msg.sender_email == user_email %}text-white/70{% else %}text-slate-400{% endif %} font-bold uppercase tracking-wider">
-                            {{ msg.timestamp|date:"h:i A" }}
+                            {{ msg.local_timestamp|date:"h:i A" }}
                         </p>
                     </div>
                 </div>

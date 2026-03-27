@@ -1,0 +1,50 @@
+{% if messages %}
+  <div class="fixed top-20 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-4 space-y-3">
+    {% for message in messages %}
+      <div 
+        class="flash-toast bg-[#f0fdf4] border border-emerald-200 rounded-full py-2.5 pl-4 pr-3 shadow-lg shadow-emerald-900/5 flex items-center justify-between backdrop-blur-sm
+        {% if message.tags == 'error' %}
+          !bg-red-50 !border-red-200
+        {% endif %}"
+      >
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined 
+            {% if message.tags == 'error' %}
+              text-red-600
+            {% else %}
+              text-emerald-600
+            {% endif %}
+            text-[20px] leading-none">
+            {% if message.tags == 'error' %}
+              error
+            {% else %}
+              check_circle
+            {% endif %}
+          </span>
+
+          <span class="text-[#1e293b] text-sm font-medium">
+            {{ message }}
+          </span>
+        </div>
+
+        <button 
+          onclick="this.closest('.flash-toast').remove()"
+          class="flex items-center justify-center p-1 rounded-full hover:bg-emerald-100 text-emerald-600 transition-colors
+          {% if message.tags == 'error' %}
+            hover:bg-red-100 text-red-600
+          {% endif %}">
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </div>
+    {% endfor %}
+  </div>
+
+  <script>
+    setTimeout(() => {
+      document.querySelectorAll('.flash-toast').forEach(toast => {
+        toast.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+        setTimeout(() => toast.remove(), 300);
+      });
+    }, 3000);
+  </script>
+{% endif %}

@@ -184,3 +184,13 @@ class DirectMessage(Document):
         "ordering": ["timestamp"],
         "indexes": ["sender_email", "receiver_email"]
     }
+
+    @property
+    def local_timestamp(self):
+        from django.utils import timezone
+        import datetime
+        if self.timestamp.tzinfo is None:
+            aware_dt = timezone.make_aware(self.timestamp, datetime.timezone.utc)
+        else:
+            aware_dt = self.timestamp
+        return timezone.localtime(aware_dt)

@@ -1,5 +1,6 @@
 import os, json, re, random, bson
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from groq import Groq
 from dotenv import load_dotenv
 from .models import CareerSubmission, SavedCareer, SkillProgress, UserProfile, CompletedRoadmapSkill, CachedRoadmap, CommunityPost, PostLike, DirectMessage, PostComment
@@ -100,6 +101,7 @@ def create_community_post(request):
         media_type=media_type
     ).save()
     
+    messages.success(request, "Post created successfully!")
     return JsonResponse({'success': True, 'post_id': str(post.id)})
 
 @csrf_exempt
@@ -264,7 +266,7 @@ def get_messages(request):
             'id': str(m.id),
             'sender_email': m.sender_email,
             'message': m.message,
-            'timestamp': m.timestamp.strftime('%I:%M %p')
+            'timestamp': m.local_timestamp.strftime('%I:%M %p')
         })
     
     return JsonResponse({'success': True, 'messages': msg_list})
@@ -292,7 +294,7 @@ def send_direct_message(request):
         message=message
     ).save()
     
-    return JsonResponse({'success': True, 'msg_id': str(msg.id), 'timestamp': msg.timestamp.strftime('%I:%M %p')})
+    return JsonResponse({'success': True, 'msg_id': str(msg.id), 'timestamp': msg.local_timestamp.strftime('%I:%M %p')})
 
 def get_chat_notifications(request):
     if not request.session.get('user_email'):
@@ -314,7 +316,7 @@ def get_chat_notifications(request):
                 'sender_name': sender.full_name if sender else msg.sender_email,
                 'sender_email': msg.sender_email,
                 'message': msg.message[:40] + ('...' if len(msg.message) > 40 else ''),
-                'timestamp': msg.timestamp.strftime('%I:%M %p'),
+                'timestamp': msg.local_timestamp.strftime('%I:%M %p'),
                 'profile_pic': sender.profile_pic if sender else None
             })
             seen_senders.add(msg.sender_email)

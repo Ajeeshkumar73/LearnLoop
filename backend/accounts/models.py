@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 class User(Document):
     email = EmailField(required=True, unique=True)
     password = StringField(required=True)
+    role = StringField(default="user")
 
     def set_password(self, raw_password):
         self.password = generate_password_hash(raw_password)

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Admin Dashboard - CareerAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        display: ["Manrope", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-white">
+
+<header class="bg-white dark:bg-[#1a202c] shadow-sm border-b border-gray-200 dark:border-gray-800 w-full py-4 px-6 md:px-10 flex items-center justify-between sticky top-0 z-50">
+    <div class="flex items-center gap-3 text-primary">
+        <span class="material-symbols-outlined text-3xl">admin_panel_settings</span>
+        <h2 class="text-2xl font-bold font-serif tracking-wide text-slate-800 dark:text-white">Admin Dashboard</h2>
+    </div>
+    <div class="flex items-center gap-6">
+        <span class="text-sm font-semibold">{{ request.session.user_email }}</span>
+        <a href="{% url 'accounts:logout' %}" class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md transition-colors">Log Out</a>
+    </div>
+</header>
+
+<main class="max-w-[1280px] mx-auto p-6 md:p-10 space-y-12 mt-4">
+    
+    <!-- Users Section -->
+    <section>
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold flex items-center gap-2"><span class="material-symbols-outlined text-primary">group</span> Manage Users</h3>
+            <span class="bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full">{{ users|length }} Total</span>
+        </div>
+        <div class="overflow-hidden rounded-xl bg-white dark:bg-[#1a2332] border border-gray-200 dark:border-gray-800 shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400">
+                        <tr>
+                            <th class="p-4 font-semibold">Email</th>
+                            <th class="p-4 font-semibold">Profile Name</th>
+                            <th class="p-4 font-semibold text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                        {% for user in users %}
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
+                                <td class="p-4 font-medium">{{ user.email }}</td>
+                                <td class="p-4 text-slate-600 dark:text-slate-400">{{ user.full_name }}</td>
+                                <td class="p-4 text-right">
+                                    <form action="{% url 'delete_user' user.email %}" method="POST" class="inline" onsubmit="return confirm('Delete this user?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1 ml-auto">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="p-8 text-center text-slate-500">No users found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Posts Section -->
+    <section>
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold flex items-center gap-2"><span class="material-symbols-outlined text-primary">forum</span> Manage Community Posts</h3>
+            <span class="bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full">{{ posts|length }} Total</span>
+        </div>
+        <div class="overflow-hidden rounded-xl bg-white dark:bg-[#1a2332] border border-gray-200 dark:border-gray-800 shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400">
+                        <tr>
+                            <th class="p-4 font-semibold">Author</th>
+                            <th class="p-4 font-semibold">Content Preview</th>
+                            <th class="p-4 font-semibold">Posted At</th>
+                            <th class="p-4 font-semibold text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                        {% for post in posts %}
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
+                            <td class="p-4">
+                                <span class="font-medium block">{{ post.author_name }}</span>
+                                <span class="text-xs text-slate-500">{{ post.user_email }}</span>
+                            </td>
+                            <td class="p-4 text-slate-600 dark:text-slate-400 max-w-xs truncate">{{ post.content }}</td>
+                            <td class="p-4 text-slate-600 dark:text-slate-400 text-xs">{{ post.created_at|date:"M d, Y h:i A" }}</td>
+                            <td class="p-4 text-right">
+                                <form action="{% url 'delete_post' post.id %}" method="POST" class="inline" onsubmit="return confirm('Delete this post?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1 ml-auto">
+                                        <span class="material-symbols-outlined text-[18px]">delete</span> Remove
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="p-8 text-center text-slate-500">No posts found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>

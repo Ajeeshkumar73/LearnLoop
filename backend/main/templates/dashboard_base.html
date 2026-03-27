@@ -163,7 +163,11 @@
     updateNotifications();
 </script>
 
+{% include 'flash_messages.html' %}
+
+{% if request.resolver_match.url_name != 'chat' %}
 {% include 'ai_mentor_snippet.html' %}
+{% endif %}
 
 </body>
 </html>

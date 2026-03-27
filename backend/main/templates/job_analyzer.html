@@ -343,7 +343,7 @@
                 </div>
                 <div id="quizQuestions" class="hidden space-y-6"></div>
                 <div id="quizSubmit" class="hidden mt-6">
-                    <button onclick="submitQuiz()" id="submitBtn" class="w-full py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl hover:opacity-90 transition shadow-md">
+                    <button onclick="submitQuiz()" id="submitBtn" class="w-full py-3 bg-primary text-white font-bold rounded-xl hover:bg-blue-700 transition shadow-md">
                         Submit Test
                     </button>
                 </div>
@@ -597,7 +597,7 @@
                                         Answer 5 questions to certify this week
                                     </div>
                                     <button onclick="startQuiz('${data.skill.replace(/'/g, "\\'")}', '${week.goal.replace(/'/g, "\\'")}', ${weekNum}, '${data.type}')"
-                                            class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-accent text-white text-sm font-bold rounded-xl hover:opacity-90 transition shadow-md">
+                                            class="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition shadow-md">
                                         <span class="material-symbols-outlined text-base">quiz</span>
                                         Take Topic Test
                                     </button>
@@ -822,6 +822,7 @@
         setInterval(updateNotifications, 5000);
         updateNotifications();
     </script>
+    {% include 'flash_messages.html' %}
     {% include 'ai_mentor_snippet.html' %}
 </body>
 </html>

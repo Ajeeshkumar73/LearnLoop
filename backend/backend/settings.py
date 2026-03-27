@@ -94,7 +94,9 @@ SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
+TIME_FORMAT = 'h:i A'
+DATETIME_FORMAT = 'N j, Y, h:i A'
 
 USE_I18N = True
 

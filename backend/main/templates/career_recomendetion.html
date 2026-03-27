@@ -302,7 +302,7 @@
                                                         <input
                                                             class="w-full rounded-lg border border-[#dbdfe6] dark:border-[#4a5568] bg-transparent p-3 text-[#111318] dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400"
                                                             type="text" name="expert_skills" id="expert_skills"
-                                                            placeholder="Select education first" />
+                                                            placeholder="Select education first (separated with comma)" />
                                                     </div>
                                                     <div>
                                                         <label
@@ -312,7 +312,7 @@
                                                             class="w-full rounded-lg border border-[#dbdfe6] dark:border-[#4a5568] bg-transparent p-3 text-[#111318] dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400"
                                                             type="text" name="intermediate_skills"
                                                             id="intermediate_skills"
-                                                            placeholder="Select education first" />
+                                                            placeholder="Select education first (separated with comma)" />
                                                     </div>
                                                     <div>
                                                         <label
@@ -361,7 +361,18 @@
                                                                     class="text-sm text-[#111318] dark:text-white font-medium">Critical
                                                                     Thinking</span>
                                                             </label>
-
+                                                            <label
+                                                                class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors">
+                                                                <input
+                                                                    class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent"
+                                                                    type="checkbox" onchange="toggleOtherInput('softSkillsOtherInput', this)" />
+                                                                <span
+                                                                    class="text-sm text-[#111318] dark:text-white font-medium">Other</span>
+                                                            </label>
+                                                        </div>
+                                                        <div id="softSkillsOtherInput" class="hidden mt-3">
+                                                            <input type="text" name="soft_skills" placeholder="Please specify (comma separated)"
+                                                                class="w-full rounded-lg border border-[#dbdfe6] dark:border-[#4a5568] bg-transparent p-3 text-[#111318] dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -468,6 +479,18 @@
                                                             class="text-sm text-[#111318] dark:text-white font-medium">Independent
                                                             Worker</span>
                                                     </label>
+                                                    <label
+                                                        class="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-[#39455a] transition-colors">
+                                                        <input
+                                                            class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary bg-transparent"
+                                                            type="checkbox" onchange="toggleOtherInput('personalityOtherInput', this)" />
+                                                        <span
+                                                            class="text-sm text-[#111318] dark:text-white font-medium">Other</span>
+                                                    </label>
+                                                </div>
+                                                <div id="personalityOtherInput" class="hidden mt-3">
+                                                    <input type="text" name="personality" placeholder="Please specify (comma separated)"
+                                                        class="w-full rounded-lg border border-[#dbdfe6] dark:border-[#4a5568] bg-transparent p-3 text-[#111318] dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-gray-400" />
                                                 </div>
                                             </div>
                                         </details>
@@ -674,7 +697,7 @@
 
             if (education === "MCA") {
                 [
-                    "MCA (General)",
+                    "MCA General",
                     "MCA in Data Analytics",
                     "MCA in Cyber Security",
                     "MCA in Data Science",
@@ -730,14 +753,16 @@
                 spec.includes("computer") ||
                 spec.includes("cse") ||
                 spec.includes("it") ||
-                spec.includes("science")
+                spec.includes("science") ||
+                spec.includes("mca") ||
+                spec.includes("ai")
             ) {
-                expert.placeholder = "DSA, Python, SQL, Machine Learning, Cloud Platforms";
-                intermediate.placeholder = "Java, APIs, Linux, Statistics, Git";
+                expert.placeholder = "e.g. DSA, Python, SQL, ML (separated with comma)";
+                intermediate.placeholder = "e.g. Java, APIs, Linux, Git (separated with comma)";
             }
             else if (spec.includes("mechanical")) {
-                expert.placeholder = "AutoCAD, SolidWorks, Thermodynamics";
-                intermediate.placeholder = "Manufacturing Processes, Materials";
+                expert.placeholder = "e.g. AutoCAD, SolidWorks (separated with comma)";
+                intermediate.placeholder = "e.g. Manufacturing Processes (separated with comma)";
             }
             else if (
                 spec.includes("finance") ||
@@ -745,12 +770,24 @@
                 spec.includes("hr") ||
                 spec.includes("business")
             ) {
-                expert.placeholder = "Financial Modeling, Market Analysis, Strategy";
-                intermediate.placeholder = "Excel, Power BI, Communication";
+                expert.placeholder = "e.g. Financial Modeling, Strategy (separated with comma)";
+                intermediate.placeholder = "e.g. Excel, Power BI, Communication (separated with comma)";
             }
             else {
-                expert.placeholder = "Enter expert-level skills";
-                intermediate.placeholder = "Enter intermediate-level skills";
+                expert.placeholder = "Enter expert-level skills (separated with comma)";
+                intermediate.placeholder = "Enter intermediate-level skills (separated with comma)";
+            }
+        }
+
+        function toggleOtherInput(targetId, checkbox) {
+            const container = document.getElementById(targetId);
+            const inputField = container.querySelector('input');
+            if (checkbox.checked) {
+                container.classList.remove('hidden');
+                inputField.focus();
+            } else {
+                container.classList.add('hidden');
+                inputField.value = '';
             }
         }
     </script>
@@ -895,7 +932,7 @@ function closeModal() {
     </script>
 
 
-
+{% include 'flash_messages.html' %}
 </body>
 
 </html>

@@ -72,24 +72,7 @@
       class="w-full lg:w-[45%] xl:w-[40%] h-full flex flex-col bg-white dark:bg-background-dark relative z-10 overflow-y-auto">
 
       <div class="flex flex-col min-h-full px-6 py-8 md:px-12 lg:px-16">
-        <div class="alert mb-4 px-4 py-3 rounded-lg ...">
-          {% if messages %}
-          {% for message in messages %}
-          <div class="mb-4 px-4 py-3 rounded-lg text-sm font-medium
-      {% if message.tags == 'success' %}
-        bg-green-100 text-green-800
-      {% elif message.tags == 'error' %}
-        bg-red-100 text-red-800
-      {% elif message.tags == 'warning' %}
-        bg-yellow-100 text-yellow-800
-      {% else %}
-        bg-blue-100 text-blue-800
-      {% endif %}">
-            {{ message }}
-          </div>
-          {% endfor %}
-          {% endif %}
-        </div>
+        {% include 'flash_messages.html' %}
         <!-- Header: Logo & Login Link -->
         <header class="flex items-center justify-between w-full mb-12">
           <div class="flex items-center gap-3 text-primary">
@@ -124,7 +107,7 @@
               data-callback="handleGoogleSignIn" data-auto_prompt="false">
             </div>
             <div class="g_id_signin w-full flex justify-center" data-type="standard" data-shape="rectangular" data-theme="outline"
-              data-text="signup_with" data-size="large" data-logo_alignment="center">
+              data-text="signup_with" data-size="large" data-logo_alignment="center" data-width="400">
             </div>
             <!-- Fallback Google form -->
             <form id="google-form" method="POST" action="{% url 'accounts:google_signin' %}" style="display:none;">
@@ -141,7 +124,7 @@
             <div class="flex-grow border-t border-[#f0f2f4] dark:border-gray-700"></div>
           </div>
           <!-- Form Fields -->
-          <form method="POST" action="{% url 'accounts:register' %}" class="flex flex-col gap-5">
+          <form id="register-form" method="POST" action="{% url 'accounts:register' %}" class="flex flex-col gap-5">
             {% csrf_token %}
             <label class="flex flex-col gap-2">
               <span class="text-[#111318] dark:text-white text-sm font-bold leading-normal">Full Name</span>
@@ -153,7 +136,8 @@
               <span class="text-[#111318] dark:text-white text-sm font-bold leading-normal">Email Address</span>
               <input
                 class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111318] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#dbdfe6] dark:border-gray-600 bg-white dark:bg-[#1e2532] focus:border-primary h-14 placeholder:text-[#616f89] dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal transition-all shadow-sm"
-                type="email" name="email" placeholder="Email" required="" value="" />
+                id="email" type="email" name="email" placeholder="Email" required="" value="" />
+              <span id="email-error" class="hidden text-red-500 text-xs mt-1">Please enter a valid email address.</span>
             </label>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <label class="flex flex-col gap-2 relative group">
@@ -168,14 +152,16 @@
                     <span class="material-symbols-outlined text-[20px]">visibility_off</span>
                   </button>
                 </div>
+                <span id="password-error" class="hidden text-red-500 text-xs mt-1">Password must be at least 8 characters, include a letter, a digit, and a special character.</span>
               </label>
               <label class="flex flex-col gap-2 relative">
                 <span class="text-[#111318] dark:text-white text-sm font-bold leading-normal">Confirm Password</span>
                 <div class="relative">
                   <input
                     class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111318] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#dbdfe6] dark:border-gray-600 bg-white dark:bg-[#1e2532] focus:border-primary h-14 placeholder:text-[#616f89] dark:placeholder:text-gray-500 p-[15px] pr-12 text-base font-normal leading-normal transition-all shadow-sm"
-                    type="password" name="confirm_password" placeholder="Confirm Password" required="" value="" />
+                    id="confirm_password" type="password" name="confirm_password" placeholder="Confirm Password" required="" value="" />
                 </div>
+                <span id="confirm-password-error" class="hidden text-red-500 text-xs mt-1">Passwords do not match.</span>
               </label>
             </div>
             <div class="flex items-start gap-3 mt-1">
@@ -195,9 +181,15 @@
               Get Started
             </button>
           </form>
-          <div class="sm:hidden mt-8 text-center text-sm">
-            <span class="text-[#616f89] dark:text-gray-400">Already a member?</span>
-            <button class="text-primary font-bold ml-1">Log in</button>
+          <div class="sm:hidden flex flex-col items-center gap-4 mt-8 text-center text-sm">
+            <div>
+              <span class="text-[#616f89] dark:text-gray-400">Already a member?</span>
+              <a href="{% url 'accounts:login' %}" class="text-primary font-bold ml-1">Log in</a>
+            </div>
+            <a href="{% url 'home' %}" class="flex items-center justify-center gap-1 text-[#616f89] hover:text-[#111318] dark:text-gray-400 dark:hover:text-white transition-colors font-medium">
+              <span class="material-symbols-outlined text-[18px]">home</span>
+              Back to Home
+            </a>
           </div>
         </main>
         <footer class="mt-12 text-center text-xs text-[#9aa4b2] dark:text-gray-600">
@@ -208,6 +200,13 @@
     <!-- Right Side: Feature / Visual Area -->
     <div
       class="hidden lg:flex flex-1 relative bg-background-light dark:bg-[#0b101b] items-center justify-center p-12 overflow-hidden">
+      
+      <!-- Back to Home Button (Top Right) -->
+      <a href="{% url 'home' %}" class="absolute top-8 right-8 z-50 flex items-center gap-2 px-5 py-2.5 bg-white/70 dark:bg-black/30 hover:bg-white dark:hover:bg-black/50 backdrop-blur-md rounded-full shadow-lg ring-1 ring-black/5 dark:ring-white/10 transition-all group" title="Back to Home">
+        <span class="material-symbols-outlined text-[20px] text-[#111318] dark:text-white transition-transform"></span>
+        <span class="text-[#111318] dark:text-white text-sm font-bold">Back to Home</span>
+      </a>
+
       <!-- Abstract Background Shapes -->
       <div
         class="absolute top-0 right-0 -mr-32 -mt-32 w-[600px] h-[600px] bg-primary/10 dark:bg-primary/20 rounded-full blur-[120px]">
@@ -307,13 +306,49 @@
     }
   </script>
 
-  <!--agree terms-->
+  <!-- Form Validation & Agree Terms -->
   <script>
-    document.querySelector("form").addEventListener("submit", function (e) {
+    document.getElementById("register-form").addEventListener("submit", function (e) {
+      let isValid = true;
+      
+      const emailInput = document.getElementById("email");
+      const emailError = document.getElementById("email-error");
+      const emailRegex = /^[^\s@]+@gmail\.com$/i;
+      if (emailInput && !emailRegex.test(emailInput.value)) {
+        emailError.classList.remove("hidden");
+        isValid = false;
+      } else if (emailInput) {
+        emailError.classList.add("hidden");
+      }
+
+      const passwordInput = document.getElementById("password");
+      const passwordError = document.getElementById("password-error");
+      // Password must be at least 8 chars, 1 letter, 1 digit, 1 special char
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+      if (passwordInput && !passwordRegex.test(passwordInput.value)) {
+        passwordError.classList.remove("hidden");
+        isValid = false;
+      } else if (passwordInput) {
+        passwordError.classList.add("hidden");
+      }
+
+      const confirmInput = document.getElementById("confirm_password");
+      const confirmError = document.getElementById("confirm-password-error");
+      if (passwordInput && confirmInput && passwordInput.value !== confirmInput.value) {
+        confirmError.classList.remove("hidden");
+        isValid = false;
+      } else if (confirmInput) {
+        confirmError.classList.add("hidden");
+      }
+
       const terms = document.getElementById("terms");
-      if (!terms.checked) {
-        e.preventDefault();
+      if (terms && !terms.checked) {
         alert("You must agree to the Terms and Privacy Policy");
+        isValid = false;
+      }
+
+      if (!isValid) {
+        e.preventDefault();
       }
     });
   </script>

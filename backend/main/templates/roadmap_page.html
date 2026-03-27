@@ -111,9 +111,10 @@
            <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal"
              href="{% url 'career_analysis:community' %}">Community</a>
            <a class="text-[#111318] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors relative flex items-center justify-center size-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
-             href="{% url 'career_analysis:chat' %}" title="Messages">
-             <span class="material-symbols-outlined !text-2xl">notifications</span>
-           </a>
+            href="{% url 'career_analysis:chat' %}" title="Messages">
+            <span class="material-symbols-outlined !text-2xl">notifications</span>
+            <span id="chat-notification-badge-job" class="hidden absolute top-1 right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900 font-bold scale-90 transition-transform">0</span>
+          </a>
          </div>
                             <a href="{% url 'accounts:logout' %}">
                                 <button
@@ -407,7 +408,7 @@
                                     </div>
                                     <button
                                         onclick="startQuiz('{{ roadmap.skill }}', '{{ step.goal|escapejs }}', {{ forloop.counter }}, {{ roadmap.total }}, '{{ roadmap.type }}')"
-                                        class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-accent text-white text-sm font-bold rounded-xl hover:opacity-90 transition-all shadow-md">
+                                        class="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all shadow-md">
                                         <span class="material-symbols-outlined text-base">quiz</span>
                                         Take Topic Test
                                     </button>
@@ -485,7 +486,7 @@
             <!-- Submit button -->
             <div id="quizSubmit" class="hidden mt-6">
                 <button onclick="submitQuiz()" id="submitBtn"
-                    class="w-full py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl hover:opacity-90 transition shadow-md">
+                    class="w-full py-3 bg-primary text-white font-bold rounded-xl hover:bg-blue-700 transition shadow-md">
                     Submit Test
                 </button>
             </div>
@@ -719,7 +720,6 @@
                 // Trigger Week Completion API (which handles progress & auto-profiling)
                 markWeekDone(skill, week, currentQuiz.total);
             } else {
-            } else {
                 resultIcon.textContent  = '📚';
                 resultTitle.textContent = `${correct}/5 — Need to Review`;
                 resultTitle.className   = 'text-xl font-black text-red-600 mb-1';
@@ -921,8 +921,28 @@
         }
 
     </script>
-
-
+<script>
+        async function updateNotifications() {
+            try {
+                const res = await fetch("{% url 'career_analysis:chat_notifications' %}");
+                const data = await res.json();
+                const badge = document.getElementById('chat-notification-badge-job');
+                if(!badge) return;
+                if(data.count > 0) {
+                    badge.innerText = data.count;
+                    badge.classList.remove('hidden');
+                    badge.classList.add('flex');
+                } else {
+                    badge.classList.add('hidden');
+                    badge.classList.remove('flex');
+                }
+            } catch(e) {}
+        }
+        setInterval(updateNotifications, 5000);
+        updateNotifications();
+    </script>
+    {% include 'flash_messages.html' %}
     {% include 'ai_mentor_snippet.html' %}
+
 </body>
 </html>

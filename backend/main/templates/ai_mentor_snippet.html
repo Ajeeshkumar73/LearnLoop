@@ -27,9 +27,13 @@
     }
     .hii-cloud-svg { animation: hii-pop 4s ease-in-out infinite; transform-origin: 85px 35px; }
 
-    #mentorChat { position: fixed; bottom: 100px; right: 30px; width: 350px; height: 500px; background: white; border-radius: 28px; box-shadow: 0 25px 60px rgba(0,0,0,0.18); display: none; flex-direction: column; z-index: 1001; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); transition: all 0.3s ease; }
+    #mentorChat { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 85vh; max-height: 900px; max-width: 95vw; background: white; border-radius: 28px; box-shadow: 0 25px 60px rgba(0,0,0,0.25); display: none; flex-direction: column; z-index: 1001; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); }
     .dark #mentorChat { background: #1e293b; border-color: rgba(255,255,255,0.1); }
-    #mentorChat.open { display: flex; animation: fadeUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    #mentorChat.open { display: flex; animation: mentorZoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    @keyframes mentorZoomIn {
+        0% { opacity: 0; transform: translate(-50%, -45%) scale(0.95); }
+        100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
 </style>
 
 <!-- AI Mentor Component -->
